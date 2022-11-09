@@ -69,11 +69,11 @@ class ActiveModal extends React.Component<Props, PropsFromRedux> {
   }
 
   makeTagActive = () => {
-    const workSpaceId = (this.props as any)?.currentFirm._id;
+    const organisationId = (this.props as any)?.currentOrganisation._id;
     const tagId = this.props.state.selectedRow._id;
     if (tagId !== undefined) {
       this.setState({ logging: true });
-      agent.Tag.makeTagActive(tagId, workSpaceId)
+      agent.Tag.makeTagActive(tagId, organisationId)
         .then((response: any) => {
           (this.props as any).addNotification(
             "Tag is Activated",
@@ -96,11 +96,11 @@ class ActiveModal extends React.Component<Props, PropsFromRedux> {
   };
 
   makeStatusActive = () => {
-    const workSpaceId = (this.props as any)?.currentFirm._id;
+    const organisationId = (this.props as any)?.currentOrganisation._id;
     const statusId = this.props.state.selectedRow._id;
     if (statusId !== undefined) {
       this.setState({ logging: true });
-      agent.Status.makeStatusActive(statusId, workSpaceId)
+      agent.Status.makeStatusActive(statusId, organisationId)
         .then((response: any) => {
           (this.props as any).addNotification(
             "Status is Activated",
@@ -123,11 +123,11 @@ class ActiveModal extends React.Component<Props, PropsFromRedux> {
   };
 
   makeCustomFieldActive = () => {
-    const workSpaceId = (this.props as any)?.currentFirm._id;
+    const organisationId = (this.props as any)?.currentOrganisation._id;
     const customFieldId = this.props.state.selectedRow._id;
     if (customFieldId !== undefined) {
       this.setState({ logging: true });
-      agent.CustomField.makeCustomFieldActive(customFieldId, workSpaceId)
+      agent.CustomField.makeCustomFieldActive(customFieldId, organisationId)
         .then((response: any) => {
           (this.props as any).addNotification(
             "Field Active",
@@ -150,11 +150,11 @@ class ActiveModal extends React.Component<Props, PropsFromRedux> {
   };
 
   makePersonActive = () => {
-    const workSpaceId = (this.props as any)?.currentFirm._id;
+    const organisationId = (this.props as any)?.currentOrganisation._id;
     const contactPersonId = this.props.state.selectedRow._id;
     if (contactPersonId !== undefined) {
       this.setState({ logging: true });
-      agent.ContactPerson.makePersonActive(contactPersonId, workSpaceId)
+      agent.ContactPerson.makePersonActive(contactPersonId, organisationId)
         .then((response: any) => {
           (this.props as any).addNotification(
             "Person Active",
@@ -177,11 +177,11 @@ class ActiveModal extends React.Component<Props, PropsFromRedux> {
   };
 
   makeGroupActive = () => {
-    const workSpaceId = (this.props as any)?.currentFirm._id;
+    const organisationId = (this.props as any)?.currentOrganisation._id;
     const groupId = this.props.state.selectedRow._id;
     if (groupId !== undefined) {
       this.setState({ logging: true });
-      agent.ClientGroups.makeClientGroupActive(workSpaceId, groupId)
+      agent.ClientGroups.makeClientGroupActive(organisationId, groupId)
         .then((response: any) => {
           (this.props as any).addNotification(
             "Group Active",
@@ -203,15 +203,15 @@ class ActiveModal extends React.Component<Props, PropsFromRedux> {
     }
   };
 
-  makeFirmActive = () => {
-    const workSpaceId = this.props.state.selectedRow._id;
-    if (workSpaceId !== undefined) {
+  makeOrganisationActive = () => {
+    const organisationId = this.props.state.selectedRow._id;
+    if (organisationId !== undefined) {
       this.setState({ logging: true });
-      agent.Firm.makeFirmActive(workSpaceId)
+      agent.Organisation.makeOrganisationActive(organisationId)
         .then((response: any) => {
           (this.props as any).addNotification(
-            "Firm Active",
-            "Successfully Activated a firm.",
+            "Organisation Active",
+            "Successfully Activated a organisation.",
             "success"
           );
           this.setState({ logging: false });
@@ -230,11 +230,11 @@ class ActiveModal extends React.Component<Props, PropsFromRedux> {
   };
 
   makeClientActive = () => {
-    const workSpaceId = (this.props as any)?.currentFirm._id;
+    const organisationId = (this.props as any)?.currentOrganisation._id;
     const clientId = this.props.state.selectedRow._id;
     if (clientId !== undefined) {
       this.setState({ logging: true });
-      agent.Clients.makeClientActive(workSpaceId, clientId)
+      agent.Clients.makeClientActive(organisationId, clientId)
         .then((response: any) => {
           (this.props as any).addNotification(
             "Client Active",
@@ -257,11 +257,11 @@ class ActiveModal extends React.Component<Props, PropsFromRedux> {
   };
 
   makeUserActive = () => {
-    const workSpaceId = (this.props as any)?.currentFirm._id;
+    const organisationId = (this.props as any)?.currentOrganisation._id;
     const userId = this.props.state.selectedRow._id;
     if (userId !== undefined) {
       this.setState({ logging: true });
-      agent.User.makeUserActive(workSpaceId, userId)
+      agent.User.makeUserActive(organisationId, userId)
         .then((response: any) => {
           (this.props as any).addNotification(
             "User Active",
@@ -295,8 +295,8 @@ class ActiveModal extends React.Component<Props, PropsFromRedux> {
         return this.makePersonActive();
       case "group":
         return this.makeGroupActive();
-      case "firm":
-        return this.makeFirmActive();
+      case "organisation":
+        return this.makeOrganisationActive();
       case "client":
         return this.makeClientActive();
       case "user":

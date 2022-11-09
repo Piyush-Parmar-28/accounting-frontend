@@ -1,7 +1,7 @@
-const AgencyClients: string = "/firms";
+const AgencyClients: string = "/organisations";
 
 let routes = {
-  AgencyClients
+  AgencyClients,
 };
 
 export default routes;

@@ -33,7 +33,7 @@ const connector = connect(mapStateToProps, mapDispatchToProps);
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
-class AddFirm extends React.Component<Props, PropsFromRedux> {
+class AddOrganisation extends React.Component<Props, PropsFromRedux> {
   state: {
     logging: boolean;
     name: string;
@@ -54,7 +54,7 @@ class AddFirm extends React.Component<Props, PropsFromRedux> {
     }
 
     if (event.keyCode === 13) {
-      this.addFirm();
+      this.addOrganisation();
     }
   }
 
@@ -66,16 +66,16 @@ class AddFirm extends React.Component<Props, PropsFromRedux> {
     document.removeEventListener("keydown", this.onKeyUpFunction, false);
   }
 
-  addFirm = () => {
+  addOrganisation = () => {
     const name = this.state.name;
     if (name !== "") {
       this.setState({ logging: true });
-      agent.Firm.addFirm(name)
+      agent.Organisation.addOrganisation(name)
         .then((response: any) => {
           this.setState({ logging: false });
           (this.props as any).addNotification(
-            "Firm Added",
-            "Successfully added a new firm.",
+            "Organisation Added",
+            "Successfully added a new organisation.",
             "success"
           );
           this.onLoad();
@@ -85,7 +85,7 @@ class AddFirm extends React.Component<Props, PropsFromRedux> {
           this.setState({ logging: false });
 
           (this.props as any).addNotification(
-            "Could not add the firm",
+            "Could not add the organisation",
             err?.response?.data?.message || err?.message || err,
             "danger"
           );
@@ -93,7 +93,7 @@ class AddFirm extends React.Component<Props, PropsFromRedux> {
     } else {
       (this.props as any).addNotification(
         "Empty Name Field",
-        "Firm Name Field is Required!.",
+        "Organisation Name Field is Required!.",
         "danger"
       );
     }
@@ -116,7 +116,10 @@ class AddFirm extends React.Component<Props, PropsFromRedux> {
   render() {
     return (
       <Transition.Root
-        show={(this.props as any)?.currentModal?.modalName === "ADD_FIRM_MODAL"}
+        show={
+          (this.props as any)?.currentModal?.modalName ===
+          "ADD_ORGANISATION_MODAL"
+        }
         as={Fragment}
         appear
       >
@@ -158,7 +161,7 @@ class AddFirm extends React.Component<Props, PropsFromRedux> {
                 <div>
                   <div>
                     <h3 className="text-lg font-medium leading-6 text-gray-900">
-                      Add Firm
+                      Add Organisation
                     </h3>
                   </div>
                   <div>
@@ -199,7 +202,7 @@ class AddFirm extends React.Component<Props, PropsFromRedux> {
                           className={
                             "mt-3 sm:ml-4 w-full inline-flex items-center justify-center rounded-md border border-transparent border-gray-300 shadow-sm py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none sm:mt-0 sm:w-32 sm:text-sm"
                           }
-                          onClick={this.addFirm}
+                          onClick={this.addOrganisation}
                         >
                           <span className="w-full flex justify-end">
                             {this.state.logging ? (
@@ -222,4 +225,4 @@ class AddFirm extends React.Component<Props, PropsFromRedux> {
   }
 }
 
-export default connector(AddFirm);
+export default connector(AddOrganisation);

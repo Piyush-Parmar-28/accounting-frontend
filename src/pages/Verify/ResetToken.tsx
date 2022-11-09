@@ -37,7 +37,7 @@ class ResetToken extends React.Component<any, PropsFromRedux> {
     logging: boolean;
     newPassword: string;
     passwordErr: boolean;
-    confirmPassword: string;
+    conorganisationPassword: string;
     isMatch: boolean;
     validLength: boolean;
     hasNumber: boolean;
@@ -53,7 +53,7 @@ class ResetToken extends React.Component<any, PropsFromRedux> {
     this.state = {
       logging: false,
       newPassword: "",
-      confirmPassword: "",
+      conorganisationPassword: "",
       passwordErr: false,
       isMatch: false,
       validLength: true,
@@ -92,7 +92,7 @@ class ResetToken extends React.Component<any, PropsFromRedux> {
         : this.setState({ hasNumber: false });
     }
 
-    if (field === "confirmPassword") {
+    if (field === "conorganisationPassword") {
       if (ev.target.value === this.state.newPassword) {
         this.setState({
           isMatch: true,
@@ -104,7 +104,7 @@ class ResetToken extends React.Component<any, PropsFromRedux> {
       }
     }
     if (field === "newPassword") {
-      if (ev.target.value === this.state.confirmPassword) {
+      if (ev.target.value === this.state.conorganisationPassword) {
         this.setState({
           isMatch: true,
         });
@@ -125,7 +125,7 @@ class ResetToken extends React.Component<any, PropsFromRedux> {
   isResetEnabled = () => {
     return (
       this.state.newPassword &&
-      this.state.confirmPassword &&
+      this.state.conorganisationPassword &&
       !this.state.passwordErr &&
       this.state.isMatch
     );
@@ -237,18 +237,18 @@ class ResetToken extends React.Component<any, PropsFromRedux> {
 
             <div className="mt-5">
               <label
-                htmlFor="confirmPassword"
+                htmlFor="conorganisationPassword"
                 className="block text-sm font-medium text-gray-700"
               >
-                Confirm Password
+                Conorganisation Password
               </label>
               <div className="mt-1">
                 <input
-                  id="confirmPassword"
-                  name="confirmPassword"
+                  id="conorganisationPassword"
+                  name="conorganisationPassword"
                   type="password"
-                  value={this.state.confirmPassword}
-                  onChange={this.updateState("confirmPassword")}
+                  value={this.state.conorganisationPassword}
+                  onChange={this.updateState("conorganisationPassword")}
                   required
                   className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:border-indigo-500 sm:text-sm"
                 />

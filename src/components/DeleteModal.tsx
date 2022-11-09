@@ -70,10 +70,10 @@ class DeleteModal extends React.Component<Props, PropsFromRedux> {
   }
 
   deleteTag = () => {
-    const workSpaceId = (this.props as any)?.currentFirm._id;
+    const organisationId = (this.props as any)?.currentOrganisation._id;
     const id = this.props.state.selectedRow._id;
     this.setState({ logging: true });
-    agent.Tag.deleteTag(id, workSpaceId)
+    agent.Tag.deleteTag(id, organisationId)
       .then((response: any) => {
         (this.props as any).addNotification(
           "Success!",
@@ -95,11 +95,11 @@ class DeleteModal extends React.Component<Props, PropsFromRedux> {
   };
 
   deleteStatus = () => {
-    const workSpaceId = (this.props as any)?.currentFirm._id;
+    const organisationId = (this.props as any)?.currentOrganisation._id;
     const id = this.props.state.selectedRow._id;
 
     this.setState({ logging: true });
-    agent.Status.deleteStatus(id, workSpaceId)
+    agent.Status.deleteStatus(id, organisationId)
       .then((response: any) => {
         (this.props as any).addNotification(
           "Success!",
@@ -121,10 +121,10 @@ class DeleteModal extends React.Component<Props, PropsFromRedux> {
   };
 
   deleteCustomField = () => {
-    const workSpaceId = (this.props as any)?.currentFirm._id;
+    const organisationId = (this.props as any)?.currentOrganisation._id;
     const customFieldId = this.props.state.selectedRow._id;
     this.setState({ logging: true });
-    agent.CustomField.deleteCustomField(customFieldId, workSpaceId)
+    agent.CustomField.deleteCustomField(customFieldId, organisationId)
       .then((response: any) => {
         (this.props as any).addNotification(
           "Success!",
@@ -146,10 +146,10 @@ class DeleteModal extends React.Component<Props, PropsFromRedux> {
   };
 
   deletePerson = () => {
-    const workSpaceId = (this.props as any)?.currentFirm._id;
+    const organisationId = (this.props as any)?.currentOrganisation._id;
     const contactPersonId = this.props.state.selectedRow._id;
     this.setState({ logging: true });
-    agent.ContactPerson.deletePersonField(contactPersonId, workSpaceId)
+    agent.ContactPerson.deletePersonField(contactPersonId, organisationId)
       .then((response: any) => {
         (this.props as any).addNotification(
           "Success!",
@@ -171,10 +171,10 @@ class DeleteModal extends React.Component<Props, PropsFromRedux> {
   };
 
   deleteGroup = () => {
-    const workSpaceId = (this.props as any)?.currentFirm._id;
+    const organisationId = (this.props as any)?.currentOrganisation._id;
     const groupId = this.props.state.selectedRow._id;
     this.setState({ logging: true });
-    agent.ClientGroups.deleteClientGroup(workSpaceId, groupId)
+    agent.ClientGroups.deleteClientGroup(organisationId, groupId)
       .then((response: any) => {
         (this.props as any).addNotification(
           "Success!",
@@ -196,10 +196,10 @@ class DeleteModal extends React.Component<Props, PropsFromRedux> {
   };
 
   deleteClient = () => {
-    const workSpaceId = (this.props as any)?.currentFirm._id;
+    const organisationId = (this.props as any)?.currentOrganisation._id;
     const clientId = this.props.state.selectedRow._id;
     this.setState({ logging: true });
-    agent.Clients.deleteClient(workSpaceId, clientId)
+    agent.Clients.deleteClient(organisationId, clientId)
       .then((response: any) => {
         (this.props as any).addNotification(
           "Success!",
@@ -221,24 +221,25 @@ class DeleteModal extends React.Component<Props, PropsFromRedux> {
       });
   };
 
-  deleteFirm = () => {
-    const workSpaceId = this.props.state.selectedRow._id;
+  deleteOrganisation = () => {
+    const organisationId = this.props.state.selectedRow._id;
     this.setState({ logging: true });
-    agent.Firm.deleteFirm(workSpaceId)
+    agent.Organisation.deleteOrganisation(organisationId)
       .then((response: any) => {
         (this.props as any).addNotification(
           "Success!",
-          "Firm Deleted Successfully.",
+          "Organisation Deleted Successfully.",
           "success"
         );
-        const currentSelectedFirm = (this.props as any).currentFirm;
-        if (currentSelectedFirm._id === workSpaceId) {
-          const firms = (this.props as any).firms;
-          const filterFirm = firms.filter(
-            (item: any) => item._id !== workSpaceId
+        const currentSelectedOrganisation = (this.props as any)
+          .currentOrganisation;
+        if (currentSelectedOrganisation._id === organisationId) {
+          const organisations = (this.props as any).organisations;
+          const filterOrganisation = organisations.filter(
+            (item: any) => item._id !== organisationId
           );
           (this.props as any).updateCommon({
-            currentFirm: filterFirm[0],
+            currentOrganisation: filterOrganisation[0],
           });
         }
         this.setState({ logging: false });
@@ -257,10 +258,10 @@ class DeleteModal extends React.Component<Props, PropsFromRedux> {
   };
 
   deleteUser = () => {
-    const workSpaceId = (this.props as any)?.currentFirm._id;
+    const organisationId = (this.props as any)?.currentOrganisation._id;
     const userId = this.props.state.selectedRow._id;
     this.setState({ logging: true });
-    agent.User.removeUser(workSpaceId, userId)
+    agent.User.removeUser(organisationId, userId)
       .then((response: any) => {
         (this.props as any).addNotification(
           "User Deleted",
@@ -282,10 +283,10 @@ class DeleteModal extends React.Component<Props, PropsFromRedux> {
   };
 
   deleteTodoList = () => {
-    const workSpaceId = (this.props as any)?.currentFirm._id;
+    const organisationId = (this.props as any)?.currentOrganisation._id;
     const toDoListId = this.props.state.selectedRow._id;
     this.setState({ logging: true });
-    agent.Todo.deleteList(workSpaceId, toDoListId)
+    agent.Todo.deleteList(organisationId, toDoListId)
       .then(() => {
         (this.props as any).addNotification(
           "Success!",
@@ -307,13 +308,13 @@ class DeleteModal extends React.Component<Props, PropsFromRedux> {
   };
 
   deleteTodoItem = () => {
-    const workSpaceId = (this.props as any)?.currentFirm._id;
+    const organisationId = (this.props as any)?.currentOrganisation._id;
     const toDoId = this.props.state.selectedRow._id;
     console.log(this.props.state);
     this.setState({ logging: true });
-		agent.Todo.delete({ workSpaceId, toDoId })
+    agent.Todo.delete({ organisationId, toDoId })
       .then(() => {
-			(this.props as any).addNotification(
+        (this.props as any).addNotification(
           "Success!",
           "Todo List Deleted Successfully.",
           "success"
@@ -322,15 +323,15 @@ class DeleteModal extends React.Component<Props, PropsFromRedux> {
         this.setOpen(false);
         this.onLoad();
       })
-			.catch((err: any) => {
-				this.setState({ logging: false });
-				(this.props as any).addNotification(
-					"Error",
-					err?.response?.data?.message || err?.message || err,
-					"danger"
-				);
-			});
-	};
+      .catch((err: any) => {
+        this.setState({ logging: false });
+        (this.props as any).addNotification(
+          "Error",
+          err?.response?.data?.message || err?.message || err,
+          "danger"
+        );
+      });
+  };
 
   deleteIdRow = () => {
     switch (this.props.type) {
@@ -350,8 +351,8 @@ class DeleteModal extends React.Component<Props, PropsFromRedux> {
         return this.deleteTodoList();
       case "todo item":
         return this.deleteTodoItem();
-      case "firm":
-        return this.deleteFirm();
+      case "organisation":
+        return this.deleteOrganisation();
       case "user":
         return this.deleteUser();
       default:
@@ -421,7 +422,7 @@ class DeleteModal extends React.Component<Props, PropsFromRedux> {
                           as="h3"
                           className="text-lg leading-6 font-medium text-gray-900"
                         >
-                          Confirm Delete
+                          Conorganisation Delete
                         </Dialog.Title>
                         <div className="mt-2">
                           <p className="text-sm text-gray-500">

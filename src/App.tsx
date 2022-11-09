@@ -122,7 +122,7 @@ class App extends React.Component<PropsFromRedux> {
     return !(this.props as any).isAuthenticated ? (
       children
     ) : (
-      <Navigate to="/firms" />
+      <Navigate to="/organisations" />
     );
   };
 
@@ -134,32 +134,29 @@ class App extends React.Component<PropsFromRedux> {
 
   render() {
     return (
-			<div>
-				<Notification />
-				{(this.props as any)?.currentModal?.modalName === "ADD_TAG_MODAL" && (
-					<AddTag closeModal={this.closeModal} />
-				)}
-				{(this.props as any)?.currentModal?.modalName ===
-					"ADD_STATUS_MODAL" && <AddStatus closeModal={this.closeModal} />}
+      <div>
+        <Notification />
+        {(this.props as any)?.currentModal?.modalName === "ADD_TAG_MODAL" && (
+          <AddTag closeModal={this.closeModal} />
+        )}
+        {(this.props as any)?.currentModal?.modalName ===
+          "ADD_STATUS_MODAL" && <AddStatus closeModal={this.closeModal} />}
 
-				{(this.props as any)?.currentModal?.modalName ===
-					"ADD_PERSON_MODAL" && <AddPerson closeModal={this.closeModal} />}
+        {(this.props as any)?.currentModal?.modalName ===
+          "ADD_PERSON_MODAL" && <AddPerson closeModal={this.closeModal} />}
 
-				{(this.props as any)?.currentModal?.modalName ===
-					"ADD_CUSTOM_FIELD_MODAL" && (
-					<AddCustomField closeModal={this.closeModal} />
-				)}
+        {(this.props as any)?.currentModal?.modalName ===
+          "ADD_CUSTOM_FIELD_MODAL" && (
+          <AddCustomField closeModal={this.closeModal} />
+        )}
 
-				{(this.props as any)?.currentModal?.modalName === "ADD_GROUP_MODAL" && (
-					<AddClientGroups closeModal={this.closeModal} />
-				)}
+        {(this.props as any)?.currentModal?.modalName === "ADD_GROUP_MODAL" && (
+          <AddClientGroups closeModal={this.closeModal} />
+        )}
 
-				{(this.props as any)?.currentModal?.modalName === "ADD_TODO_MODAL" && (
-					<AddEditList
-						closeModal={this.closeModal}
-						props={this.props}
-					/>
-				)}
+        {(this.props as any)?.currentModal?.modalName === "ADD_TODO_MODAL" && (
+          <AddEditList closeModal={this.closeModal} props={this.props} />
+        )}
 
         {!this.state.loading ? (
           <Router>
@@ -214,9 +211,9 @@ class App extends React.Component<PropsFromRedux> {
                   </this.PublicRoute>
                 }
               />
-              {/* Firm Page */}
+              {/* Organisation Page */}
               <Route
-                path="/firms"
+                path="/organisations"
                 element={
                   <this.PrivateRoute>
                     <GSTs />
@@ -225,7 +222,7 @@ class App extends React.Component<PropsFromRedux> {
               />
               {/* Tag Page */}
               <Route
-                path="/:firmId/tags/list"
+                path="/:organisationId/tags/list"
                 element={
                   <this.PrivateRoute>
                     <Tags />
@@ -234,7 +231,7 @@ class App extends React.Component<PropsFromRedux> {
               />
               {/* Status Page */}
               <Route
-                path="/:firmId/status/list"
+                path="/:organisationId/status/list"
                 element={
                   <this.PrivateRoute>
                     <Status />
@@ -243,7 +240,7 @@ class App extends React.Component<PropsFromRedux> {
               />
               {/* Custom Field Page */}
               <Route
-                path="/:firmId/custom-field/list"
+                path="/:organisationId/custom-field/list"
                 element={
                   <this.PrivateRoute>
                     <CustomField />
@@ -252,7 +249,7 @@ class App extends React.Component<PropsFromRedux> {
               />
               {/* Contact Perosn Page */}
               <Route
-                path="/:firmId/contact-person/list"
+                path="/:organisationId/contact-person/list"
                 element={
                   <this.PrivateRoute>
                     <ContactPerson />
@@ -261,7 +258,7 @@ class App extends React.Component<PropsFromRedux> {
               />
               {/* User Page */}
               <Route
-                path="/:firmId/user/list"
+                path="/:organisationId/user/list"
                 element={
                   <this.PrivateRoute>
                     <Users />
@@ -269,7 +266,7 @@ class App extends React.Component<PropsFromRedux> {
                 }
               />
               <Route
-                path="/:firmId/user/add"
+                path="/:organisationId/user/add"
                 element={
                   <this.PrivateRoute>
                     <AddUser />
@@ -278,7 +275,7 @@ class App extends React.Component<PropsFromRedux> {
               />
 
               <Route
-                path="/:firmId/user/edit"
+                path="/:organisationId/user/edit"
                 element={
                   <this.PrivateRoute>
                     <EditUser />
@@ -287,7 +284,7 @@ class App extends React.Component<PropsFromRedux> {
               />
               {/* Group */}
               <Route
-                path="/:firmId/groups/list"
+                path="/:organisationId/groups/list"
                 element={
                   <this.PrivateRoute>
                     <ClientGroups />
@@ -297,7 +294,7 @@ class App extends React.Component<PropsFromRedux> {
 
               {/* Clients */}
               <Route
-                path="/:firmId/clients/list"
+                path="/:organisationId/clients/list"
                 element={
                   <this.PrivateRoute>
                     <Clients />
@@ -306,7 +303,7 @@ class App extends React.Component<PropsFromRedux> {
               />
 
               <Route
-                path="/:firmId/clients/add"
+                path="/:organisationId/clients/add"
                 element={
                   <this.PrivateRoute>
                     <AddClient />
@@ -315,7 +312,7 @@ class App extends React.Component<PropsFromRedux> {
               />
 
               <Route
-                path="/:firmId/clients/edit"
+                path="/:organisationId/clients/edit"
                 element={
                   <this.PrivateRoute>
                     <EditClient />
@@ -330,39 +327,39 @@ class App extends React.Component<PropsFromRedux> {
                 component={Settings}
               /> */}
 
-							{/* Todo Page */}
-							<Route
-								path="/:firmId/todo/list/:list"
-								element={
-									<this.PrivateRoute>
-										<Todos />
-									</this.PrivateRoute>
-								}
-							/>
-							<Route
-								path="/:firmId/todo/:toDoListId"
-								element={
-									<this.PrivateRoute>
-										<Todos />
-									</this.PrivateRoute>
-								}
-							/>
-							{/* Login */}
-							<Route
-								path="/"
-								element={
-									<this.PublicRoute>
-										<Login />
-									</this.PublicRoute>
-								}
-							/>
-							{/* No Match */}
-							<Route path="*" element={<p>404 Page Not Found</p>} />
-						</Routes>
-					</Router>
-				) : null}
-			</div>
-		);
+              {/* Todo Page */}
+              <Route
+                path="/:organisationId/todo/list/:list"
+                element={
+                  <this.PrivateRoute>
+                    <Todos />
+                  </this.PrivateRoute>
+                }
+              />
+              <Route
+                path="/:organisationId/todo/:toDoListId"
+                element={
+                  <this.PrivateRoute>
+                    <Todos />
+                  </this.PrivateRoute>
+                }
+              />
+              {/* Login */}
+              <Route
+                path="/"
+                element={
+                  <this.PublicRoute>
+                    <Login />
+                  </this.PublicRoute>
+                }
+              />
+              {/* No Match */}
+              <Route path="*" element={<p>404 Page Not Found</p>} />
+            </Routes>
+          </Router>
+        ) : null}
+      </div>
+    );
   }
 }
 

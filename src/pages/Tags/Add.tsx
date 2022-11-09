@@ -66,12 +66,12 @@ class AddTag extends React.Component<Props, PropsFromRedux> {
   }
 
   addTag = () => {
-    const workSpaceId = (this.props as any).currentFirm._id;
+    const organisationId = (this.props as any).currentOrganisation._id;
     const name = this.state.name;
     const description = this.state.description;
     if (name !== "") {
       this.setState({ logging: true });
-      agent.Tag.addTag(name, description, workSpaceId)
+      agent.Tag.addTag(name, description, organisationId)
         .then((response: any) => {
           this.setState({ logging: false });
           (this.props as any).addNotification(

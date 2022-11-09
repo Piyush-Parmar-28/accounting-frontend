@@ -19,8 +19,8 @@ import TagManager from "react-gtm-module";
 import { Menu, Transition } from "@headlessui/react";
 import ActiveModal from "../../components/ActiveModal";
 import InActiveModal from "../../components/InActiveModal";
-import AddFirm from "./Add";
-import EditFirm from "./Edit";
+import AddOrganisation from "./Add";
+import EditOrganisation from "./Edit";
 import DeleteModal from "../../components/DeleteModal";
 import InvitationModal from "../../components/InvitationModal";
 import { compose } from "redux";
@@ -58,15 +58,15 @@ const connector = connect(mapStateToProps, mapDispatchToProps);
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
-class Firms extends React.Component<any, PropsFromRedux> {
+class Organisations extends React.Component<any, PropsFromRedux> {
   state: {
-    firmLoading: boolean;
+    organisationLoading: boolean;
     posX: number;
     posY: number;
     showBackDrop: boolean;
-    firmDetails: any;
+    organisationDetails: any;
     totalRecords: number;
-    displayFirmDetails: any;
+    displayOrganisationDetails: any;
     selectedGstId: string;
     showAddModal: boolean;
     currentYear: any;
@@ -92,13 +92,13 @@ class Firms extends React.Component<any, PropsFromRedux> {
     super(props);
 
     this.state = {
-      firmLoading: false,
+      organisationLoading: false,
       posX: 0,
       posY: 0,
       showBackDrop: false,
-      firmDetails: [],
+      organisationDetails: [],
       totalRecords: 0,
-      displayFirmDetails: [],
+      displayOrganisationDetails: [],
       selectedGstId: "",
       showAddModal: false,
       currentYear: years[0].name,
@@ -122,36 +122,39 @@ class Firms extends React.Component<any, PropsFromRedux> {
   }
 
   // Chunk Size for number of table data displayed in each page during pagination
-  firmChunkSize = 12;
+  organisationChunkSize = 12;
   sentChunkSize = 12;
   recieveChunkSize = 12;
   // Selected pagination value
-  currFirmPage = 0;
+  currOrganisationPage = 0;
   currSentPage = 0;
   currRecievePage = 0;
 
-  //Get Firm Data
+  //Get Organisation Data
 
-  getFirmData = () => {
-    this.setState({ firmLoading: true });
-    agent.Firm.getFirms()
+  getOrganisationData = () => {
+    this.setState({ organisationLoading: true });
+    agent.Organisation.getOrganisations()
       .then((response: any) => {
         this.setState({
-          firmDetails: response.workspaces,
-          firmLoading: false,
-          totalRecords: response.workspaces.length,
-          displayFirmDetails: response.workspaces.slice(
-            this.currFirmPage * this.firmChunkSize,
-            this.currFirmPage * this.firmChunkSize + this.firmChunkSize
+          organisationDetails: response.organisations,
+          organisationLoading: false,
+          totalRecords: response.organisations.length,
+          displayOrganisationDetails: response.organisations.slice(
+            this.currOrganisationPage * this.organisationChunkSize,
+            this.currOrganisationPage * this.organisationChunkSize +
+              this.organisationChunkSize
           ),
         });
-        (this.props as any).updateCommon({ firms: response.workspaces });
+        (this.props as any).updateCommon({
+          organisations: response.organisations,
+        });
       })
       .catch((err: any) => {
         console.log({ err });
-        this.setState({ firmLoading: false });
+        this.setState({ organisationLoading: false });
         (this.props as any).onNotify(
-          "Could not load Firm Details",
+          "Could not load Organisation Details",
           err?.response?.data?.message || err?.message || err,
           "danger"
         );
@@ -159,9 +162,9 @@ class Firms extends React.Component<any, PropsFromRedux> {
   };
 
   getInvitaionSentList = () => {
-    const workSpaceId = (this.props as any)?.currentFirm?._id;
+    const organisationId = (this.props as any)?.currentOrganisation?._id;
     this.setState({ sentLoading: true });
-    agent.Firm.listofInvitationSent(workSpaceId)
+    agent.Organisation.listofInvitationSent(organisationId)
       .then((response: any) => {
         this.setState({
           invitationSentDetails: response.invitations,
@@ -185,9 +188,9 @@ class Firms extends React.Component<any, PropsFromRedux> {
   };
 
   getInvitaionRecievedList = () => {
-    const workSpaceId = (this.props as any)?.currentFirm?._id;
+    const organisationId = (this.props as any)?.currentOrganisation?._id;
     this.setState({ recieveLoading: true });
-    agent.Firm.listofInvitationReceived(workSpaceId)
+    agent.Organisation.listofInvitationReceived(organisationId)
       .then((response: any) => {
         this.setState({
           invitationRecieveDetails: response.invitations,
@@ -212,34 +215,35 @@ class Firms extends React.Component<any, PropsFromRedux> {
 
   // onMount Load data
   componentDidMount() {
-    this.getFirmData();
-    const currentFirmId = (this.props as any)?.currentFirm?._id;
-    if (currentFirmId) {
+    this.getOrganisationData();
+    const currentOrganisationId = (this.props as any)?.currentOrganisation?._id;
+    if (currentOrganisationId) {
       this.getInvitaionSentList();
       this.getInvitaionRecievedList();
     }
   }
 
   componentDidUpdate(prevProps: any, prevState: any) {
-    const prevFirmId = prevProps.currentFirm?._id;
-    const currFirmId = (this.props as any).currentFirm?._id;
+    const prevOrganisationId = prevProps.currentOrganisation?._id;
+    const currOrganisationId = (this.props as any).currentOrganisation?._id;
 
-    if (prevFirmId === undefined && currFirmId) {
+    if (prevOrganisationId === undefined && currOrganisationId) {
       this.getInvitaionSentList();
       this.getInvitaionRecievedList();
     }
 
-    if (prevFirmId !== currFirmId) {
+    if (prevOrganisationId !== currOrganisationId) {
       this.getInvitaionSentList();
     }
   }
 
-  handleFirmPageClick = (data: any) => {
-    this.currFirmPage = data.selected;
+  handleOrganisationPageClick = (data: any) => {
+    this.currOrganisationPage = data.selected;
     this.setState({
-      displayFirmDetails: this.state.firmDetails.slice(
-        this.currFirmPage * this.firmChunkSize,
-        this.currFirmPage * this.firmChunkSize + this.firmChunkSize
+      displayOrganisationDetails: this.state.organisationDetails.slice(
+        this.currOrganisationPage * this.organisationChunkSize,
+        this.currOrganisationPage * this.organisationChunkSize +
+          this.organisationChunkSize
       ),
     });
   };
@@ -287,9 +291,9 @@ class Firms extends React.Component<any, PropsFromRedux> {
     });
   };
 
-  openAddFirmModal = () => {
+  openAddOrganisationModal = () => {
     (this.props as any).updateCommon({
-      currentModal: { modalName: "ADD_FIRM_MODAL", fetchAgain: false },
+      currentModal: { modalName: "ADD_ORGANISATION_MODAL", fetchAgain: false },
     });
   };
 
@@ -299,8 +303,8 @@ class Firms extends React.Component<any, PropsFromRedux> {
     });
   };
 
-  openEditModal = (firm: any) => {
-    this.setState({ selectedRow: firm, showBackDrop: false });
+  openEditModal = (organisation: any) => {
+    this.setState({ selectedRow: organisation, showBackDrop: false });
     this.editModalSetOpen(true);
   };
 
@@ -310,8 +314,8 @@ class Firms extends React.Component<any, PropsFromRedux> {
     });
   };
 
-  openDeleteModal = (firm: any) => {
-    this.setState({ selectedRow: firm, showBackDrop: false });
+  openDeleteModal = (organisation: any) => {
+    this.setState({ selectedRow: organisation, showBackDrop: false });
     this.deleteModalSetOpen(true);
   };
 
@@ -321,8 +325,8 @@ class Firms extends React.Component<any, PropsFromRedux> {
     });
   };
 
-  openActiveModal = (firm: any) => {
-    this.setState({ selectedRow: firm, showBackDrop: false });
+  openActiveModal = (organisation: any) => {
+    this.setState({ selectedRow: organisation, showBackDrop: false });
     this.activeModalSetOpen(true);
   };
 
@@ -332,8 +336,8 @@ class Firms extends React.Component<any, PropsFromRedux> {
     });
   };
 
-  openInActiveModal = (firm: any) => {
-    this.setState({ selectedRow: firm, showBackDrop: false });
+  openInActiveModal = (organisation: any) => {
+    this.setState({ selectedRow: organisation, showBackDrop: false });
     this.inActiveModalSetOpen(true);
   };
 
@@ -373,11 +377,11 @@ class Firms extends React.Component<any, PropsFromRedux> {
     this.invitationModalSetOpen(true);
   };
 
-  openLeaveFirmModal = (item: any) => {
+  openLeaveOrganisationModal = (item: any) => {
     this.setState({
       selectedRow: item,
       showBackDrop: false,
-      invitationHeading: "Leave Firm",
+      invitationHeading: "Leave Organisation",
       invitationType: "Leave",
     });
     this.invitationModalSetOpen(true);
@@ -397,9 +401,9 @@ class Firms extends React.Component<any, PropsFromRedux> {
       this.getInvitaionRecievedList();
     } else if (type === "Accept") {
       this.getInvitaionRecievedList();
-      this.getFirmData();
+      this.getOrganisationData();
     } else if (type === "Leave") {
-      this.getFirmData();
+      this.getOrganisationData();
     }
   };
 
@@ -409,45 +413,45 @@ class Firms extends React.Component<any, PropsFromRedux> {
       <Dashboard>
         <div className="gsts">
           {(this.props as any)?.currentModal?.modalName ===
-            "ADD_FIRM_MODAL" && (
-            <AddFirm
+            "ADD_ORGANISATION_MODAL" && (
+            <AddOrganisation
               state={this.state}
-              onLoad={this.getFirmData}
+              onLoad={this.getOrganisationData}
               addModalSetOpen={this.closeModal}
             />
           )}
 
           {this.state.showEditModal && (
-            <EditFirm
+            <EditOrganisation
               state={this.state}
-              onLoad={this.getFirmData}
+              onLoad={this.getOrganisationData}
               editModalSetOpen={this.editModalSetOpen}
             />
           )}
 
           {this.state.showInActiveModal && (
             <InActiveModal
-              type={"firm"}
+              type={"organisation"}
               state={this.state}
-              onLoad={this.getFirmData}
+              onLoad={this.getOrganisationData}
               inActiveModalSetOpen={this.inActiveModalSetOpen}
             />
           )}
 
           {this.state.showActiveModal && (
             <ActiveModal
-              type={"firm"}
+              type={"organisation"}
               state={this.state}
-              onLoad={this.getFirmData}
+              onLoad={this.getOrganisationData}
               activeModalSetOpen={this.activeModalSetOpen}
             />
           )}
 
           {this.state.showDeleteModal && (
             <DeleteModal
-              type={"firm"}
+              type={"organisation"}
               state={this.state}
-              onLoad={this.getFirmData}
+              onLoad={this.getOrganisationData}
               deleteModalSetOpen={this.deleteModalSetOpen}
             />
           )}
@@ -463,23 +467,26 @@ class Firms extends React.Component<any, PropsFromRedux> {
           )}
 
           <div className="max-w-7xl mx-auto flex justify-between px-4 sm:px-6 md:px-8">
-            <h1 className="text-2xl font-semibold text-gray-900">Firms</h1>
+            <h1 className="text-2xl font-semibold text-gray-900">
+              Organisations
+            </h1>
             <div>
               <button
                 type="button"
                 className="relative inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none"
-                onClick={this.openAddFirmModal}
+                onClick={this.openAddOrganisationModal}
               >
                 <Icon name="add" className="h-4 w-4 mr-2" />
-                Add Firms
+                Add Organisations
               </button>
             </div>
           </div>
 
-          {!this.state.firmLoading && this.state.displayFirmDetails ? (
+          {!this.state.organisationLoading &&
+          this.state.displayOrganisationDetails ? (
             this.state.totalRecords > 0 ? (
               <div className={"max-w-7xl mx-auto px-4 sm:px-6 md:px-8"}>
-                {/* Firm List Table */}
+                {/* Organisation List Table */}
                 <div className="mt-8 flex flex-col max-h-screen ">
                   <div
                     id="table-scroll"
@@ -497,7 +504,7 @@ class Firms extends React.Component<any, PropsFromRedux> {
                                 scope="col"
                                 className="sticky top-0 z-8 border-b font-bold border-gray-300 bg-gray-50 px-4 py-3 text-left text-xs text-gray-500 uppercase tracking-wider sm:pl-6"
                               >
-                                FIRM NAME
+                                ORGANISATION NAME
                               </th>
                               <th
                                 scope="col"
@@ -527,35 +534,39 @@ class Firms extends React.Component<any, PropsFromRedux> {
                             </tr>
                           </thead>
                           <tbody className="bg-white">
-                            {this.state.displayFirmDetails?.map(
-                              (firm: any, index: any) => (
+                            {this.state.displayOrganisationDetails?.map(
+                              (organisation: any, index: any) => (
                                 <tr
-                                  key={firm._id}
+                                  key={organisation._id}
                                   className={
                                     index % 2 === 0 ? undefined : "bg-gray-100"
                                   }
                                 >
                                   <td className="w-3/12 whitespace-nowrap py-4 pl-4 pr-3 font-bold text-sm text-gray-900 sm:pl-6">
-                                    {firm.isOwner ? (
+                                    {organisation.isOwner ? (
                                       <button
                                         title="Edit"
                                         className="hover:underline font-bold"
-                                        onClick={() => this.openEditModal(firm)}
+                                        onClick={() =>
+                                          this.openEditModal(organisation)
+                                        }
                                       >
-                                        {firm.name}
+                                        {organisation.name}
                                       </button>
                                     ) : (
-                                      firm.name
+                                      organisation.name
                                     )}
                                   </td>
                                   <td className="w-3/10 px-6 py-3 whitespace-nowrap text-sm text-gray-500">
-                                    {firm.owner}
+                                    {organisation.owner}
                                   </td>
                                   <td className="w-2/10 px-6 py-3 whitespace-nowrap text-sm font-bold text-gray-900">
-                                    {firm.type.toUpperCase()}
+                                    {organisation.type.toUpperCase()}
                                   </td>
                                   <td className="w-2/10 px-6 py-3 whitespace-nowrap text-sm text-gray-500">
-                                    {firm.active ? "Active" : "Inactive"}
+                                    {organisation.active
+                                      ? "Active"
+                                      : "Inactive"}
                                   </td>
 
                                   <td className="w-2/10 px-6 py-3 text-center whitespace-nowrap text-sm text-gray-900">
@@ -604,13 +615,15 @@ class Firms extends React.Component<any, PropsFromRedux> {
                                           }}
                                         >
                                           <Menu.Items className="overscroll-none mt-1 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
-                                            {firm.isOwner ? (
+                                            {organisation.isOwner ? (
                                               <div className="py-1">
                                                 <Menu.Item>
                                                   <button
                                                     className="flex items-center w-full p-1 px-4 py-2 text-sm hover:bg-gray-100 text-gray-900"
                                                     onClick={() =>
-                                                      this.openEditModal(firm)
+                                                      this.openEditModal(
+                                                        organisation
+                                                      )
                                                     }
                                                   >
                                                     <Icon
@@ -621,12 +634,12 @@ class Firms extends React.Component<any, PropsFromRedux> {
                                                   </button>
                                                 </Menu.Item>
                                                 <Menu.Item>
-                                                  {firm.active ? (
+                                                  {organisation.active ? (
                                                     <button
                                                       className="flex items-center w-full p-1 px-4 py-2 text-sm hover:bg-gray-100 text-gray-900"
                                                       onClick={() =>
                                                         this.openInActiveModal(
-                                                          firm
+                                                          organisation
                                                         )
                                                       }
                                                     >
@@ -641,7 +654,7 @@ class Firms extends React.Component<any, PropsFromRedux> {
                                                       className="flex items-center w-full p-1 px-4 py-2 text-sm hover:bg-gray-100 text-gray-900"
                                                       onClick={() =>
                                                         this.openActiveModal(
-                                                          firm
+                                                          organisation
                                                         )
                                                       }
                                                     >
@@ -658,7 +671,9 @@ class Firms extends React.Component<any, PropsFromRedux> {
                                                   <button
                                                     className="flex items-center w-full p-1 px-4 py-2 text-sm hover:bg-gray-100 text-gray-900"
                                                     onClick={() =>
-                                                      this.openDeleteModal(firm)
+                                                      this.openDeleteModal(
+                                                        organisation
+                                                      )
                                                     }
                                                   >
                                                     <Icon
@@ -675,8 +690,8 @@ class Firms extends React.Component<any, PropsFromRedux> {
                                                   <button
                                                     className="flex items-center w-full p-1 px-4 py-2 text-sm hover:bg-gray-100 text-gray-900"
                                                     onClick={() =>
-                                                      this.openLeaveFirmModal(
-                                                        firm
+                                                      this.openLeaveOrganisationModal(
+                                                        organisation
                                                       )
                                                     }
                                                   >
@@ -712,19 +727,19 @@ class Firms extends React.Component<any, PropsFromRedux> {
                   strokeWidth="1"
                 />
                 <h3 className="mt-2 text-sm font-medium text-gray-900">
-                  No Firm Entry
+                  No Organisation Entry
                 </h3>
                 <p className="mt-1 text-sm text-gray-500">
-                  Get started by adding a new Firm.
+                  Get started by adding a new Organisation.
                 </p>
                 <div className="mt-6">
                   <button
                     type="button"
                     className="relative inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none"
-                    onClick={this.openAddFirmModal}
+                    onClick={this.openAddOrganisationModal}
                   >
                     <Icon name="add" className="h-4 w-4 mr-2" />
-                    Add Firms
+                    Add Organisations
                   </button>
                 </div>
               </div>
@@ -743,7 +758,7 @@ class Firms extends React.Component<any, PropsFromRedux> {
                                 scope="col"
                                 className="w-2/12 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                               >
-                                FIRM NAME
+                                ORGANISATION NAME
                               </th>
                               <th
                                 scope="col"
@@ -793,21 +808,24 @@ class Firms extends React.Component<any, PropsFromRedux> {
               </div>
             </div>
           )}
-          {this.state.displayFirmDetails.length > 0 && (
+          {this.state.displayOrganisationDetails.length > 0 && (
             <div className="bg-white px-4 py-3 my-4 lg:mx-8 flex items-center justify-between border-t border-gray-200 sm:px-6">
               <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
                 <div>
                   <p className="text-sm text-gray-700">
                     Showing{" "}
                     <span className="font-medium">
-                      {this.currFirmPage * this.firmChunkSize + 1}
+                      {this.currOrganisationPage * this.organisationChunkSize +
+                        1}
                     </span>{" "}
                     to{" "}
                     <span className="font-medium">
-                      {(this.currFirmPage + 1) * this.firmChunkSize >
+                      {(this.currOrganisationPage + 1) *
+                        this.organisationChunkSize >
                       this.state.totalRecords
                         ? this.state.totalRecords
-                        : (this.currFirmPage + 1) * this.firmChunkSize}
+                        : (this.currOrganisationPage + 1) *
+                          this.organisationChunkSize}
                     </span>{" "}
                     of{" "}
                     <span className="font-medium">
@@ -824,11 +842,11 @@ class Firms extends React.Component<any, PropsFromRedux> {
                   breakLabel={"..."}
                   breakClassName={"break-me"}
                   pageCount={Math.ceil(
-                    this.state.totalRecords / this.firmChunkSize
+                    this.state.totalRecords / this.organisationChunkSize
                   )}
                   marginPagesDisplayed={2}
                   pageRangeDisplayed={2}
-                  onPageChange={this.handleFirmPageClick}
+                  onPageChange={this.handleOrganisationPageClick}
                   containerClassName={"pagination"}
                   activeClassName={"active"}
                 />
@@ -836,17 +854,17 @@ class Firms extends React.Component<any, PropsFromRedux> {
             </div>
           )}
 
-          {/*   Firm Invitation Received */}
+          {/*   Organisation Invitation Received */}
           <>
             <div className="max-w-7xl pt-10 mx-auto px-4 sm:px-6 md:px-8">
               <h1 className="text-2xl font-semibold text-gray-900">
-                Firm Invitation Received
+                Organisation Invitation Received
               </h1>
             </div>
             {!this.state.recieveLoading &&
             this.state.displayInvitationRecieveDetails ? (
               <>
-                {/*  Firm Invitation Received Table*/}
+                {/*  Organisation Invitation Received Table*/}
                 <div className={"max-w-7xl mx-auto px-4 sm:px-6 md:px-8"}>
                   <div className="mt-8 flex flex-col max-h-screen ">
                     <div
@@ -865,7 +883,7 @@ class Firms extends React.Component<any, PropsFromRedux> {
                                   scope="col"
                                   className="sticky top-0 z-8 border-b font-bold border-gray-300 bg-gray-50 px-4 py-3 text-left text-xs text-gray-500 uppercase tracking-wider sm:pl-6"
                                 >
-                                  FIRM NAME
+                                  ORGANISATION NAME
                                 </th>
                                 <th
                                   scope="col"
@@ -915,7 +933,7 @@ class Firms extends React.Component<any, PropsFromRedux> {
                                       }
                                     >
                                       <td className="w-3/12 whitespace-nowrap py-4 pl-4 pr-3 font-bold text-sm text-gray-900 sm:pl-6">
-                                        {invitation.workSpaceId.name}
+                                        {invitation.organisationId.name}
                                       </td>
                                       <td className="w-4/10 px-6 py-3 whitespace-nowrap text-sm text-gray-500">
                                         {invitation.sentBy}
@@ -1088,7 +1106,7 @@ class Firms extends React.Component<any, PropsFromRedux> {
                                   scope="col"
                                   className="w-2/12 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                                 >
-                                  FIRM NAME
+                                  ORGANISATION NAME
                                 </th>
                                 <th
                                   scope="col"
@@ -1170,7 +1188,7 @@ class Firms extends React.Component<any, PropsFromRedux> {
                                   scope="col"
                                   className="sticky top-0 z-8 border-b font-bold border-gray-300 bg-gray-50 px-4 py-3 text-left text-xs text-gray-500 uppercase tracking-wider sm:pl-6"
                                 >
-                                  FIRM NAME
+                                  ORGANISATION NAME
                                 </th>
                                 <th
                                   scope="col"
@@ -1220,7 +1238,7 @@ class Firms extends React.Component<any, PropsFromRedux> {
                                       }
                                     >
                                       <td className="w-3/12 whitespace-nowrap py-4 pl-4 pr-3 font-bold text-sm text-gray-900 sm:pl-6">
-                                        {invitation.workSpaceId.name}
+                                        {invitation.organisationId.name}
                                       </td>
                                       <td className="w-4/10 px-6 py-3 whitespace-nowrap text-sm text-gray-500">
                                         {invitation.sentBy}
@@ -1373,7 +1391,7 @@ class Firms extends React.Component<any, PropsFromRedux> {
                                   scope="col"
                                   className="w-2/12 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                                 >
-                                  FIRM NAME
+                                  ORGANISATION NAME
                                 </th>
                                 <th
                                   scope="col"
@@ -1431,4 +1449,7 @@ class Firms extends React.Component<any, PropsFromRedux> {
   }
 }
 
-export default compose(connector, withRouter)(Firms) as React.ComponentType;
+export default compose(
+  connector,
+  withRouter
+)(Organisations) as React.ComponentType;

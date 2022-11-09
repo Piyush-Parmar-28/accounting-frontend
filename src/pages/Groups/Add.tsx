@@ -68,12 +68,12 @@ class AddGroup extends React.Component<Props, PropsFromRedux> {
   }
 
   addGroup = () => {
-    const workSpaceId = (this.props as any).currentFirm._id;
+    const organisationId = (this.props as any).currentOrganisation._id;
     const name = this.state.name;
     const description = this.state.description;
     if (name !== "" && description !== "") {
       this.setState({ logging: true });
-      agent.ClientGroups.addClientGroup(name, description, workSpaceId)
+      agent.ClientGroups.addClientGroup(name, description, organisationId)
         .then((response: any) => {
           this.setState({ logging: false });
           if (this.props.showGroupModal) {

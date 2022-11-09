@@ -33,7 +33,7 @@ const connector = connect(mapStateToProps, mapDispatchToProps);
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
-class EditFirmModal extends React.Component<Props, PropsFromRedux> {
+class EditOrganisationModal extends React.Component<Props, PropsFromRedux> {
   state: {
     logging: boolean;
     name: string;
@@ -54,7 +54,7 @@ class EditFirmModal extends React.Component<Props, PropsFromRedux> {
     }
 
     if (event.keyCode === 13) {
-      this.editFirm();
+      this.editOrganisation();
     }
   }
 
@@ -66,23 +66,24 @@ class EditFirmModal extends React.Component<Props, PropsFromRedux> {
     document.removeEventListener("keydown", this.onKeyUpFunction, false);
   }
 
-  editFirm = () => {
-    const workSpaceId = this.props.state.selectedRow._id;
+  editOrganisation = () => {
+    const organisationId = this.props.state.selectedRow._id;
     const name = this.state.name;
     if (name !== "") {
       this.setState({ logging: true });
-      agent.Firm.editFirm(workSpaceId, name)
+      agent.Organisation.editOrganisation(organisationId, name)
         .then((response: any) => {
           this.setState({ logging: false });
           (this.props as any).addNotification(
-            "Firm Name Edited",
-            "Successfully updated firm name.",
+            "Organisation Name Edited",
+            "Successfully updated organisation name.",
             "success"
           );
-          const currentSelectedFirm = (this.props as any).currentFirm;
-          if (currentSelectedFirm._id === workSpaceId) {
+          const currentSelectedOrganisation = (this.props as any)
+            .currentOrganisation;
+          if (currentSelectedOrganisation._id === organisationId) {
             (this.props as any).updateCommon({
-              currentFirm: { ...currentSelectedFirm, name },
+              currentOrganisation: { ...currentSelectedOrganisation, name },
             });
           }
           this.setOpen(false);
@@ -92,7 +93,7 @@ class EditFirmModal extends React.Component<Props, PropsFromRedux> {
           console.log({ err });
           this.setState({ logging: false });
           (this.props as any).addNotification(
-            "Could not edit the firm name",
+            "Could not edit the organisation name",
             err?.response?.data?.message || err?.message || err,
             "danger"
           );
@@ -167,7 +168,7 @@ class EditFirmModal extends React.Component<Props, PropsFromRedux> {
                 <div>
                   <div>
                     <h3 className="text-lg font-medium leading-6 text-gray-900">
-                      Edit Firm
+                      Edit Organisation
                     </h3>
                   </div>
                   <div>
@@ -207,7 +208,7 @@ class EditFirmModal extends React.Component<Props, PropsFromRedux> {
                           className={
                             "mt-3 sm:ml-4 w-full inline-flex items-center justify-center rounded-md border border-transparent border-gray-300 shadow-sm py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none sm:mt-0 sm:w-32 sm:text-sm"
                           }
-                          onClick={this.editFirm}
+                          onClick={this.editOrganisation}
                         >
                           <span className="w-full flex justify-end">
                             {this.state.logging ? (
@@ -230,4 +231,4 @@ class EditFirmModal extends React.Component<Props, PropsFromRedux> {
   }
 }
 
-export default connector(EditFirmModal);
+export default connector(EditOrganisationModal);

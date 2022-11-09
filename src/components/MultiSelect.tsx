@@ -77,7 +77,7 @@ export default function MultiSelect(props: Props) {
         {filteredoptions?.length > 0 && (
           <Combobox.Options
             className={`${
-              props.type === "firms" ? "max-h-120" : "max-h-40"
+              props.type === "organisations" ? "max-h-120" : "max-h-40"
             } absolute z-10 mt-1 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm`}
           >
             {filteredoptions?.map((option) => (

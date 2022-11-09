@@ -19,94 +19,93 @@ import SearchNavigation from "../SearchNavigation";
 
 import { todoList } from "../../pages/Todo/Index";
 
+const menuItems = (organisationId: string) => {
+  const list = todoList.map((item) => {
+    return {
+      name: item.name || "Default",
+      iconName: "outline/document-text",
+      route: `/${organisationId}/todo/${item._id}`,
+    };
+  });
 
-const menuItems = (firmId: string) => {
-	const list = todoList.map((item) => {
-		return {
-				name: item.name || "Default",
-				iconName: "outline/document-text",
-				route: `/${firmId}/todo/${item._id}`,
-			}		
-	});
-  
-	return [
-		{
-			name: "Clients",
-			iconName: "outline/users",
-			route: `/${firmId}/clients/list`,
-		},
-		{
-			name: "Contact Person",
-			iconName: "outline/user",
-			route: `/${firmId}/contact-person/list`,
-		},
-		list.length > 0
-			? {
-					name: "To Do List",
-					iconName: "outline/document-text",
-					route: `/${firmId}/todo`,
-					children: [
-						{
-							name: "Starred",
-							iconName: "outline/star",
-							route: `/${firmId}/todo/list/starred`,
-						},
-						{
-							name: "Today",
-							iconName: "outline/calendar",
-							route: `/${firmId}/todo/list/today`,
-						},
-						{
-							name: "Overdue",
-							iconName: "outline/calendar",
-							route: `/${firmId}/todo/list/overdue`,
-						},
-						{
-							name: "Week",
-							iconName: "outline/calendar",
-							route: `/${firmId}/todo/list/week`,
-						},
-						...list,
-					],
-			  }
-			: {
-					name: "To Do List",
-					iconName: "outline/document-text",
-					route: `/${firmId}/todo/list/starred`,
-			  },
-		{
-			name: "Settings",
-			iconName: "outline/settings",
-			route: "/settings",
-			children: [
-				{
-					name: "Custom Field",
-					iconName: "outline/document-add",
-					route: `/${firmId}/custom-field/list`,
-				},
-				{
-					name: "Groups",
-					iconName: "outline/group",
-					route: `/${firmId}/groups/list`,
-				},
-				{
-					name: "Status",
-					iconName: "outline/document-text",
-					route: `/${firmId}/status/list`,
-				},
-				{
-					name: "Tags",
-					iconName: "outline/tag",
-					route: `/${firmId}/tags/list`,
-				},
-				{
-					name: "User",
-					iconName: "outline/user-plus",
-					route: `/${firmId}/user/list`,
-				},
-			],
-		},
-	];
+  return [
+    {
+      name: "Clients",
+      iconName: "outline/users",
+      route: `/${organisationId}/clients/list`,
+    },
+    {
+      name: "Contact Person",
+      iconName: "outline/user",
+      route: `/${organisationId}/contact-person/list`,
+    },
+    list.length > 0
+      ? {
+          name: "To Do List",
+          iconName: "outline/document-text",
+          route: `/${organisationId}/todo`,
+          children: [
+            {
+              name: "Starred",
+              iconName: "outline/star",
+              route: `/${organisationId}/todo/list/starred`,
+            },
+            {
+              name: "Today",
+              iconName: "outline/calendar",
+              route: `/${organisationId}/todo/list/today`,
+            },
+            {
+              name: "Overdue",
+              iconName: "outline/calendar",
+              route: `/${organisationId}/todo/list/overdue`,
+            },
+            {
+              name: "Week",
+              iconName: "outline/calendar",
+              route: `/${organisationId}/todo/list/week`,
+            },
+            ...list,
+          ],
+        }
+      : {
+          name: "To Do List",
+          iconName: "outline/document-text",
+          route: `/${organisationId}/todo/list/starred`,
+        },
+    {
+      name: "Settings",
+      iconName: "outline/settings",
+      route: "/settings",
+      children: [
+        {
+          name: "Custom Field",
+          iconName: "outline/document-add",
+          route: `/${organisationId}/custom-field/list`,
+        },
+        {
+          name: "Groups",
+          iconName: "outline/group",
+          route: `/${organisationId}/groups/list`,
+        },
+        {
+          name: "Status",
+          iconName: "outline/document-text",
+          route: `/${organisationId}/status/list`,
+        },
+        {
+          name: "Tags",
+          iconName: "outline/tag",
+          route: `/${organisationId}/tags/list`,
+        },
+        {
+          name: "User",
+          iconName: "outline/user-plus",
+          route: `/${organisationId}/user/list`,
+        },
+      ],
+    },
+  ];
 };
 
 interface DashboardProps {
@@ -162,44 +161,52 @@ class Dashboard extends React.Component<DashboardProps, PropsFromRedux> {
     };
   }
 
-  getAllFirms = () => {
+  getAllOrganisations = () => {
     this.setState({ loading: true });
-    agent.Firm.getFirms()
+    agent.Organisation.getOrganisations()
       .then((response: any) => {
-        (this.props as any).updateCommon({ firms: response.workspaces });
-        this.selectDefaultFirm();
+        (this.props as any).updateCommon({
+          organisations: response.organisations,
+        });
+        this.selectDefaultOrganisation();
         this.setState({ loading: false });
       })
       .catch((err: any) => {
         this.setState({ loading: false });
         (this.props as any).onNotify(
-          "Could not fetch Firms",
+          "Could not fetch Organisations",
           err?.response?.data?.message || err?.message || err,
           "danger"
         );
       });
   };
 
-  selectDefaultFirm = () => {
-    const firmId = (this.props as any).params?.firmId;
-    const firms = (this.props as any).firms;
-    const currentFirmId = (this.props as any).currentFirm?._id;
-    if (!currentFirmId && firms?.length > 0) {
-      if (firmId) {
-        const selectFirm = firms.find((firm: any) => firm._id === firmId);
-        (this.props as any).updateCommon({ currentFirm: selectFirm });
+  selectDefaultOrganisation = () => {
+    const organisationId = (this.props as any).params?.organisationId;
+    const organisations = (this.props as any).organisations;
+    const currentOrganisationId = (this.props as any).currentOrganisation?._id;
+    if (!currentOrganisationId && organisations?.length > 0) {
+      if (organisationId) {
+        const selectOrganisation = organisations.find(
+          (organisation: any) => organisation._id === organisationId
+        );
+        (this.props as any).updateCommon({
+          currentOrganisation: selectOrganisation,
+        });
       } else {
-        (this.props as any).updateCommon({ currentFirm: firms[0] });
+        (this.props as any).updateCommon({
+          currentOrganisation: organisations[0],
+        });
       }
     }
   };
 
   getUserRights = () => {
-    const workSpaceId =
-      (this.props as any).params?.firmId ||
-      (this.props as any).currentFirm?._id;
-    if (workSpaceId) {
-      agent.User.getUserRights(workSpaceId)
+    const organisationId =
+      (this.props as any).params?.organisationId ||
+      (this.props as any).currentOrganisation?._id;
+    if (organisationId) {
+      agent.User.getUserRights(organisationId)
         .then((response: any) => {
           console.log({ righstsss: response });
           if (response.hasOwnProperty("allRights") && response.allRights) {
@@ -219,13 +226,13 @@ class Dashboard extends React.Component<DashboardProps, PropsFromRedux> {
   };
 
   getStatusList = () => {
-    const workSpaceId =
-      (this.props as any).params?.firmId ||
-      (this.props as any).currentFirm?._id;
+    const organisationId =
+      (this.props as any).params?.organisationId ||
+      (this.props as any).currentOrganisation?._id;
     const searchText = "";
     const active = true;
-    if (workSpaceId) {
-      agent.Status.getStatusList(workSpaceId, active, searchText)
+    if (organisationId) {
+      agent.Status.getStatusList(organisationId, active, searchText)
         .then((response: any) => {
           (this.props as any).updateCommon({ status: response.status });
         })
@@ -240,10 +247,10 @@ class Dashboard extends React.Component<DashboardProps, PropsFromRedux> {
   };
 
   settingMenuToggle = () => {
-    const firmId = (this.props as any).params?.firmId;
-    if (firmId) {
+    const organisationId = (this.props as any).params?.organisationId;
+    if (organisationId) {
       let childrenMenus: any = [];
-      menuItems(firmId).forEach((item: any) => {
+      menuItems(organisationId).forEach((item: any) => {
         if (item.children) {
           item.children.forEach((child: any) => {
             const subMenu = { name: item.name, route: child.route };
@@ -260,7 +267,7 @@ class Dashboard extends React.Component<DashboardProps, PropsFromRedux> {
   };
 
   componentDidMount = () => {
-    this.getAllFirms();
+    this.getAllOrganisations();
     this.updateRoute();
     this.getInitialUserInfo();
     this.settingMenuToggle();
@@ -303,20 +310,22 @@ class Dashboard extends React.Component<DashboardProps, PropsFromRedux> {
 
   componentDidUpdate = (prevProps: any, prevState: any) => {
     if (
-      prevProps.currentFirm?._id === undefined &&
-      (this.props as any)?.currentFirm?._id
+      prevProps.currentOrganisation?._id === undefined &&
+      (this.props as any)?.currentOrganisation?._id
     ) {
       this.getUserRights();
       this.getStatusList();
     }
 
-    const prevFirmId = prevProps.params.firmId;
-    const currFirmId = (this.props as any).params.firmId;
-    if (prevFirmId !== currFirmId) {
-      const selectFirm = (this.props as any).firms.find(
-        (firm: any) => firm._id === currFirmId
+    const prevOrganisationId = prevProps.params.organisationId;
+    const currOrganisationId = (this.props as any).params.organisationId;
+    if (prevOrganisationId !== currOrganisationId) {
+      const selectOrganisation = (this.props as any).organisations.find(
+        (organisation: any) => organisation._id === currOrganisationId
       );
-      (this.props as any).updateCommon({ currentFirm: selectFirm });
+      (this.props as any).updateCommon({
+        currentOrganisation: selectOrganisation,
+      });
       this.getUserRights();
       this.getStatusList();
     }
@@ -326,14 +335,15 @@ class Dashboard extends React.Component<DashboardProps, PropsFromRedux> {
     setTimeout(() => {
       if (!this.state.loading) {
         const path = (this.props as any).location.pathname;
-        if (path !== "/firms") {
-          if ((this.props as any).currentFirm) {
-            let newParams = (this.props as any).currentFirm._id;
+        if (path !== "/organisations") {
+          if ((this.props as any).currentOrganisation) {
+            let newParams = (this.props as any).currentOrganisation._id;
             let path = (this.props as any).location.pathname;
             (this.props as any).updateCommon({ urlInfo: "/" + newParams });
             let newPath;
-            if ((this.props as any).params?.firmId) {
-              let paramLength = (this.props as any).params.firmId.length;
+            if ((this.props as any).params?.organisationId) {
+              let paramLength = (this.props as any).params.organisationId
+                .length;
               newPath = "/" + newParams + path.substring(paramLength + 1);
             } else {
               newPath = "/" + newParams + path;
@@ -347,13 +357,13 @@ class Dashboard extends React.Component<DashboardProps, PropsFromRedux> {
 
   updateRoute = () => {
     let url = (this.props as any).location.pathname;
-    let paramLength = (this.props as any).params?.firmId?.length;
+    let paramLength = (this.props as any).params?.organisationId?.length;
     let path = url.substring(paramLength + 1);
-    const selectedFirmId = (this.props as any).currentFirm?._id;
+    const selectedOrganisationId = (this.props as any).currentOrganisation?._id;
 
     let menuState: any = {};
     let subMenuState: any = {};
-    menuItems(selectedFirmId).forEach((menuItem: any) => {
+    menuItems(selectedOrganisationId).forEach((menuItem: any) => {
       if (path.indexOf(menuItem.route) === 0) {
         menuState[menuItem.name] = true;
       }
@@ -369,8 +379,8 @@ class Dashboard extends React.Component<DashboardProps, PropsFromRedux> {
   getInitialUserInfo = () => {
     // let path = (this.props as any).match?.url;
     // if (path && !(path === "/gsts")) {
-    //   let firmId = (this.props as any).match.params?.firmId;
-    //   console.log({ firmId });
+    //   let organisationId = (this.props as any).match.params?.organisationId;
+    //   console.log({ organisationId });
     //   if (!userId || !year || !month) {
     //     // this.updatePathName();
     //     (this.props as any).onNotify(
@@ -427,11 +437,11 @@ class Dashboard extends React.Component<DashboardProps, PropsFromRedux> {
     // }
   };
 
-  onFirmChange = (item: any) => {
-    (this.props as any).updateCommon({ currentFirm: item });
+  onOrganisationChange = (item: any) => {
+    (this.props as any).updateCommon({ currentOrganisation: item });
     (this.props as any).onNotify(
-      "Firm Changed",
-      `Current Firm ${item.name}`,
+      "Organisation Changed",
+      `Current Organisation ${item.name}`,
       "success"
     );
     this.updatePathName();
@@ -467,16 +477,19 @@ class Dashboard extends React.Component<DashboardProps, PropsFromRedux> {
     this.setState({ profileMenuShow: !this.state.profileMenuShow });
   };
 
-  noFirmClickHandler = () => {
-    const firmsCount = (this.props as any).firms
-      ? (this.props as any).firms?.length
+  noOrganisationClickHandler = () => {
+    const organisationsCount = (this.props as any).organisations
+      ? (this.props as any).organisations?.length
       : 0;
 
     if (!this.state.loading) {
-      if (firmsCount === 0) {
+      if (organisationsCount === 0) {
         this.setState({ menuShow: false });
         (this.props as any).updateCommon({
-          currentModal: { modalName: "ADD_FIRM_MODAL", fetchAgain: false },
+          currentModal: {
+            modalName: "ADD_ORGANISATION_MODAL",
+            fetchAgain: false,
+          },
         });
       } else {
         return;
@@ -485,12 +498,12 @@ class Dashboard extends React.Component<DashboardProps, PropsFromRedux> {
   };
 
   linkRouteDirect = (route: string) => {
-    const firmsCount = (this.props as any).firms
-      ? (this.props as any).firms?.length
+    const organisationsCount = (this.props as any).organisations
+      ? (this.props as any).organisations?.length
       : 0;
 
-    if (firmsCount === 0) {
-      return "/firms";
+    if (organisationsCount === 0) {
+      return "/organisations";
     } else {
       return route;
     }
@@ -498,7 +511,10 @@ class Dashboard extends React.Component<DashboardProps, PropsFromRedux> {
 
   logout = () => {
     (this.props as any).onLogout();
-    (this.props as any).updateCommon({ firms: [], currentFirm: undefined });
+    (this.props as any).updateCommon({
+      organisations: [],
+      currentOrganisation: undefined,
+    });
     (this.props as any).onNotify(
       "Successful",
       "You have been successfully logged out.",
@@ -572,179 +588,180 @@ class Dashboard extends React.Component<DashboardProps, PropsFromRedux> {
                   </div>
                   <div className="mt-5 flex-1 h-0 overflow-y-auto">
                     <nav className="px-2 space-y-1">
-                      {menuItems((this.props as any).currentFirm?._id).map(
-                        (menuItem: any) =>
-                          !menuItem.children ? (
-                            <div key={menuItem.name}>
-                              <Link
-                                to={this.linkRouteDirect(menuItem.route)}
-                                key={menuItem.name}
+                      {menuItems(
+                        (this.props as any).currentOrganisation?._id
+                      ).map((menuItem: any) =>
+                        !menuItem.children ? (
+                          <div key={menuItem.name}>
+                            <Link
+                              to={this.linkRouteDirect(menuItem.route)}
+                              key={menuItem.name}
+                              className={
+                                (this.props as any).location.pathname ===
+                                menuItem.route
+                                  ? "bg-gray-900 text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md"
+                                  : "text-gray-300 hover:bg-gray-700 hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md"
+                              }
+                              onClick={this.noOrganisationClickHandler}
+                            >
+                              <Icon
+                                name={menuItem.iconName}
                                 className={
-                                  (this.props as any).location.pathname ===
-                                  menuItem.route
-                                    ? "bg-gray-900 text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md"
-                                    : "text-gray-300 hover:bg-gray-700 hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md"
+                                  this.state.menuState[menuItem.name]
+                                    ? "text-gray-500 mr-3 flex-shrink-0 h-5 w-5"
+                                    : "text-gray-400 group-hover:text-gray-500 mr-3 flex-shrink-0 h-5 w-5"
                                 }
-                                onClick={this.noFirmClickHandler}
-                              >
-                                <Icon
-                                  name={menuItem.iconName}
-                                  className={
-                                    this.state.menuState[menuItem.name]
-                                      ? "text-gray-500 mr-3 flex-shrink-0 h-5 w-5"
-                                      : "text-gray-400 group-hover:text-gray-500 mr-3 flex-shrink-0 h-5 w-5"
+                                aria-hidden="true"
+                              />
+                              {menuItem.name}
+                            </Link>
+                          </div>
+                        ) : (
+                          <div key={menuItem.name}>
+                            <Disclosure
+                              as="div"
+                              key={menuItem.name}
+                              className="space-y-1"
+                            >
+                              {({ open }) => (
+                                <div
+                                  onClick={() =>
+                                    this.toggleDropdown(menuItem.name)
                                   }
-                                  aria-hidden="true"
-                                />
-                                {menuItem.name}
-                              </Link>
-                            </div>
-                          ) : (
-                            <div key={menuItem.name}>
-                              <Disclosure
-                                as="div"
-                                key={menuItem.name}
-                                className="space-y-1"
-                              >
-                                {({ open }) => (
-                                  <div
-                                    onClick={() =>
-                                      this.toggleDropdown(menuItem.name)
-                                    }
-                                  >
-                                    <Disclosure.Button className="text-gray-300 w-full justify-between hover:bg-gray-700 hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md">
-                                      <span className="flex items-center">
-                                        <Icon
-                                          name={menuItem.iconName}
-                                          className="mr-3 flex-shrink-0 h-5 w-5 text-gray-400 group-hover:text-gray-500"
-                                          aria-hidden="true"
-                                        />
-                                        {menuItem.name}
-                                      </span>
-                                      <ChevronDownIcon
-                                        className={
-                                          !this.state.menuState[menuItem.name]
-                                            ? "text-gray-400 -rotate-90 ml-3 h-5 w-5 transform group-hover:text-gray-400 transition-colors ease-in-out duration-150"
-                                            : "text-gray-300 ml-3 h-5 w-5 transform group-hover:text-gray-400 transition-colors ease-in-out duration-150"
-                                        }
+                                >
+                                  <Disclosure.Button className="text-gray-300 w-full justify-between hover:bg-gray-700 hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md">
+                                    <span className="flex items-center">
+                                      <Icon
+                                        name={menuItem.iconName}
+                                        className="mr-3 flex-shrink-0 h-5 w-5 text-gray-400 group-hover:text-gray-500"
+                                        aria-hidden="true"
                                       />
-                                    </Disclosure.Button>
-                                    {this.state.menuState[menuItem.name] ? (
-                                      <Disclosure.Panel
-                                        className="space-y-1 ml-11 border-l border-gray-700"
-                                        static
-                                      >
-                                        {menuItem.children.map((subItem: any) =>
-                                          !subItem.children ? (
-                                            <div key={subItem.name}>
-                                              <Link
-                                                to={this.linkRouteDirect(
-                                                  subItem.route
-                                                )}
-                                                key={subItem.name}
+                                      {menuItem.name}
+                                    </span>
+                                    <ChevronDownIcon
+                                      className={
+                                        !this.state.menuState[menuItem.name]
+                                          ? "text-gray-400 -rotate-90 ml-3 h-5 w-5 transform group-hover:text-gray-400 transition-colors ease-in-out duration-150"
+                                          : "text-gray-300 ml-3 h-5 w-5 transform group-hover:text-gray-400 transition-colors ease-in-out duration-150"
+                                      }
+                                    />
+                                  </Disclosure.Button>
+                                  {this.state.menuState[menuItem.name] ? (
+                                    <Disclosure.Panel
+                                      className="space-y-1 ml-11 border-l border-gray-700"
+                                      static
+                                    >
+                                      {menuItem.children.map((subItem: any) =>
+                                        !subItem.children ? (
+                                          <div key={subItem.name}>
+                                            <Link
+                                              to={this.linkRouteDirect(
+                                                subItem.route
+                                              )}
+                                              key={subItem.name}
+                                              className={
+                                                (this.props as any).location
+                                                  .pathname === subItem.route
+                                                  ? "bg-gray-900 text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md"
+                                                  : "text-gray-300 hover:bg-gray-700 hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md"
+                                              }
+                                              onClick={
+                                                this.noOrganisationClickHandler
+                                              }
+                                            >
+                                              <Icon
+                                                name={subItem.iconName}
                                                 className={
-                                                  (this.props as any).location
-                                                    .pathname === subItem.route
-                                                    ? "bg-gray-900 text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md"
-                                                    : "text-gray-300 hover:bg-gray-700 hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md"
+                                                  this.state.menuState[
+                                                    menuItem.name
+                                                  ]
+                                                    ? "text-gray-500 mr-3 flex-shrink-0 h-5 w-5"
+                                                    : "text-gray-400 group-hover:text-gray-500 mr-3 flex-shrink-0 h-5 w-5"
                                                 }
-                                                onClick={
-                                                  this.noFirmClickHandler
-                                                }
-                                              >
-                                                <Icon
-                                                  name={subItem.iconName}
-                                                  className={
-                                                    this.state.menuState[
-                                                      menuItem.name
-                                                    ]
-                                                      ? "text-gray-500 mr-3 flex-shrink-0 h-5 w-5"
-                                                      : "text-gray-400 group-hover:text-gray-500 mr-3 flex-shrink-0 h-5 w-5"
-                                                  }
-                                                />
-                                                {subItem.name}
-                                              </Link>
-                                            </div>
-                                          ) : (
-                                            <div key={subItem.name}>
-                                              <Disclosure
-                                                as="div"
-                                                key={subItem.name}
-                                                className="space-y-1"
-                                              >
-                                                {({ open }) => (
-                                                  <div
-                                                    onClick={() =>
-                                                      this.toggleSubItemDropdown(
-                                                        subItem.name
-                                                      )
-                                                    }
-                                                  >
-                                                    <Disclosure.Button className="text-gray-300 w-full justify-between hover:bg-gray-700 hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md">
-                                                      <span className="flex items-center">
-                                                        {subItem.name}
-                                                      </span>
-                                                      <ChevronDownIcon
-                                                        className={
-                                                          !this.state
-                                                            .subMenuState[
-                                                            subItem.name
-                                                          ]
-                                                            ? "text-gray-400 -rotate-90 ml-3 h-5 w-5 transform group-hover:text-gray-400 transition-colors ease-in-out duration-150"
-                                                            : "text-gray-300 ml-3 h-5 w-5 transform group-hover:text-gray-400 transition-colors ease-in-out duration-150"
-                                                        }
-                                                      />
-                                                    </Disclosure.Button>
-                                                    {this.state.subMenuState[
+                                              />
+                                              {subItem.name}
+                                            </Link>
+                                          </div>
+                                        ) : (
+                                          <div key={subItem.name}>
+                                            <Disclosure
+                                              as="div"
+                                              key={subItem.name}
+                                              className="space-y-1"
+                                            >
+                                              {({ open }) => (
+                                                <div
+                                                  onClick={() =>
+                                                    this.toggleSubItemDropdown(
                                                       subItem.name
-                                                    ] ? (
-                                                      <Disclosure.Panel
-                                                        className="space-y-1 ml-6 border-l border-gray-700"
-                                                        static
-                                                      >
-                                                        {subItem.children.map(
-                                                          (subSubItem: any) => (
-                                                            <Link
-                                                              to={this.linkRouteDirect(
-                                                                subSubItem.route
-                                                              )}
-                                                              key={
-                                                                subSubItem.name
-                                                              }
-                                                              className={
-                                                                (
-                                                                  this
-                                                                    .props as any
-                                                                ).location
-                                                                  .pathname ===
-                                                                subSubItem.route
-                                                                  ? "bg-gray-900 text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md"
-                                                                  : "text-gray-300 hover:bg-gray-700 hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md"
-                                                              }
-                                                              onClick={
+                                                    )
+                                                  }
+                                                >
+                                                  <Disclosure.Button className="text-gray-300 w-full justify-between hover:bg-gray-700 hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md">
+                                                    <span className="flex items-center">
+                                                      {subItem.name}
+                                                    </span>
+                                                    <ChevronDownIcon
+                                                      className={
+                                                        !this.state
+                                                          .subMenuState[
+                                                          subItem.name
+                                                        ]
+                                                          ? "text-gray-400 -rotate-90 ml-3 h-5 w-5 transform group-hover:text-gray-400 transition-colors ease-in-out duration-150"
+                                                          : "text-gray-300 ml-3 h-5 w-5 transform group-hover:text-gray-400 transition-colors ease-in-out duration-150"
+                                                      }
+                                                    />
+                                                  </Disclosure.Button>
+                                                  {this.state.subMenuState[
+                                                    subItem.name
+                                                  ] ? (
+                                                    <Disclosure.Panel
+                                                      className="space-y-1 ml-6 border-l border-gray-700"
+                                                      static
+                                                    >
+                                                      {subItem.children.map(
+                                                        (subSubItem: any) => (
+                                                          <Link
+                                                            to={this.linkRouteDirect(
+                                                              subSubItem.route
+                                                            )}
+                                                            key={
+                                                              subSubItem.name
+                                                            }
+                                                            className={
+                                                              (
                                                                 this
-                                                                  .noFirmClickHandler
-                                                              }
-                                                            >
-                                                              {subSubItem.name}
-                                                            </Link>
-                                                          )
-                                                        )}
-                                                      </Disclosure.Panel>
-                                                    ) : null}
-                                                  </div>
-                                                )}
-                                              </Disclosure>
-                                            </div>
-                                          )
-                                        )}
-                                      </Disclosure.Panel>
-                                    ) : null}
-                                  </div>
-                                )}
-                              </Disclosure>
-                            </div>
-                          )
+                                                                  .props as any
+                                                              ).location
+                                                                .pathname ===
+                                                              subSubItem.route
+                                                                ? "bg-gray-900 text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md"
+                                                                : "text-gray-300 hover:bg-gray-700 hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md"
+                                                            }
+                                                            onClick={
+                                                              this
+                                                                .noOrganisationClickHandler
+                                                            }
+                                                          >
+                                                            {subSubItem.name}
+                                                          </Link>
+                                                        )
+                                                      )}
+                                                    </Disclosure.Panel>
+                                                  ) : null}
+                                                </div>
+                                              )}
+                                            </Disclosure>
+                                          </div>
+                                        )
+                                      )}
+                                    </Disclosure.Panel>
+                                  ) : null}
+                                </div>
+                              )}
+                            </Disclosure>
+                          </div>
+                        )
                       )}
                     </nav>
                   </div>
@@ -816,7 +833,7 @@ class Dashboard extends React.Component<DashboardProps, PropsFromRedux> {
               </div>
               <div className="mt-5 flex-1 h-0 overflow-y-auto">
                 <nav className="px-2 space-y-1">
-                  {menuItems((this.props as any).currentFirm?._id).map(
+                  {menuItems((this.props as any).currentOrganisation?._id).map(
                     (menuItem: any) =>
                       !menuItem.children ? (
                         <div key={menuItem.name}>
@@ -985,7 +1002,7 @@ class Dashboard extends React.Component<DashboardProps, PropsFromRedux> {
               </div>
               <div className="flex-1 flex flex-col overflow-y-auto">
                 <nav className="flex-1 px-2 py-4 bg-gray-800 space-y-1">
-                  {menuItems((this.props as any).currentFirm?._id).map(
+                  {menuItems((this.props as any).currentOrganisation?._id).map(
                     (menuItem: any) =>
                       !menuItem.children ? (
                         <div key={menuItem.name}>
@@ -998,7 +1015,7 @@ class Dashboard extends React.Component<DashboardProps, PropsFromRedux> {
                                 ? "bg-gray-900 text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md"
                                 : "text-gray-300 hover:bg-gray-700 hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md"
                             }
-                            onClick={this.noFirmClickHandler}
+                            onClick={this.noOrganisationClickHandler}
                           >
                             <Icon
                               name={menuItem.iconName}
@@ -1063,7 +1080,9 @@ class Dashboard extends React.Component<DashboardProps, PropsFromRedux> {
                                                 ? "bg-gray-900 text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md"
                                                 : "text-gray-300 hover:bg-gray-700 hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md"
                                             }
-                                            onClick={this.noFirmClickHandler}
+                                            onClick={
+                                              this.noOrganisationClickHandler
+                                            }
                                           >
                                             <Icon
                                               name={subItem.iconName}
@@ -1136,7 +1155,7 @@ class Dashboard extends React.Component<DashboardProps, PropsFromRedux> {
                                                           }
                                                           onClick={
                                                             this
-                                                              .noFirmClickHandler
+                                                              .noOrganisationClickHandler
                                                           }
                                                         >
                                                           {subSubItem.name}
@@ -1179,23 +1198,25 @@ class Dashboard extends React.Component<DashboardProps, PropsFromRedux> {
             </button>
             <div className="flex-1 px-4 flex justify-between">
               <div className="flex items-center">
-                {((this.props as any).params.firmId ||
-                  (this.props as any).location.pathname === "/firms") &&
-                  (this.props as any).firms?.length > 1 && (
+                {((this.props as any).params.organisationId ||
+                  (this.props as any).location.pathname === "/organisations") &&
+                  (this.props as any).organisations?.length > 0 && (
                     <div className="ml-4 mr-4 w-72 grow">
                       <MultiSelect
-                        items={(this.props as any).firms?.map((firm: any) => {
-                          return {
-                            ...firm,
-                            name: firm.name,
-                          };
-                        })}
+                        items={(this.props as any).organisations?.map(
+                          (organisation: any) => {
+                            return {
+                              ...organisation,
+                              name: organisation.name,
+                            };
+                          }
+                        )}
                         selected={{
-                          name: (this.props as any).currentFirm?.name,
+                          name: (this.props as any).currentOrganisation?.name,
                         }}
-                        type="firms"
-                        onChange={this.onFirmChange}
-                        placeholder="Select Firm"
+                        type="organisations"
+                        onChange={this.onOrganisationChange}
+                        placeholder="Select Organisation"
                       />
                     </div>
                   )}
@@ -1226,7 +1247,7 @@ class Dashboard extends React.Component<DashboardProps, PropsFromRedux> {
                               <Menu.Item>
                                 <Link
                                   to={`/${
-                                    (this.props as any).currentFirm?._id
+                                    (this.props as any).currentOrganisation?._id
                                   }/tags/add`}
                                   className="flex items-center w-full p-1 text-gray-700 border-b block px-4 py-2 text-sm text-gray-900"
                                 >
@@ -1240,7 +1261,7 @@ class Dashboard extends React.Component<DashboardProps, PropsFromRedux> {
                               <Menu.Item>
                                 <Link
                                   to={`/${
-                                    (this.props as any).currentFirm?._id
+                                    (this.props as any).currentOrganisation?._id
                                   }/status/add`}
                                   className="flex items-center w-full p-1 border-b text-gray-700 block px-4 py-2 text-sm text-gray-900"
                                 >
@@ -1349,7 +1370,7 @@ class Dashboard extends React.Component<DashboardProps, PropsFromRedux> {
                           </Menu.Item>
                           <Menu.Item>
                             <Link
-                              to="/firms"
+                              to="/organisations"
                               className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                               role="menuitem"
                               tabIndex={-1}
@@ -1359,7 +1380,7 @@ class Dashboard extends React.Component<DashboardProps, PropsFromRedux> {
                                 name="building-office-2"
                                 className="h-5 w-5 mr-2 text-gray-700"
                               />
-                              <span>Your Firms</span>
+                              <span>Your Organisations</span>
                             </Link>
                           </Menu.Item>
                           <Menu.Item>

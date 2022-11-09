@@ -67,7 +67,7 @@ class Clients extends React.Component<any, PropsFromRedux> {
     totalRecords: number;
     displayContactPersonDetails: any;
     selectedGstId: string;
-    selectedFirm: any;
+    selectedOrganisation: any;
     modalOpen: boolean;
     typingTimeout: number;
     selectedRow: any;
@@ -93,7 +93,7 @@ class Clients extends React.Component<any, PropsFromRedux> {
       totalRecords: 0,
       displayContactPersonDetails: [],
       selectedGstId: "",
-      selectedFirm: undefined,
+      selectedOrganisation: undefined,
       modalOpen: false,
       typingTimeout: 0,
       selectedRow: undefined,
@@ -112,14 +112,14 @@ class Clients extends React.Component<any, PropsFromRedux> {
   // Selected pagination value
   currPage = 0;
 
-  //Get Firm Data
+  //Get Organisation Data
 
   getPersonsList = (forSearch: boolean) => {
-    const workSpaceId = (this.props as any).params?.firmId;
+    const organisationId = (this.props as any).params?.organisationId;
     const searchText = forSearch ? this.state.searchText : "";
     const active = this.state.active;
     this.setState({ loading: true });
-    agent.ContactPerson.getPersonList(workSpaceId, active, searchText)
+    agent.ContactPerson.getPersonList(organisationId, active, searchText)
       .then((response: any) => {
         this.setState({
           contactPerson: response.contactPerson,
@@ -134,7 +134,7 @@ class Clients extends React.Component<any, PropsFromRedux> {
       .catch((err: any) => {
         this.setState({ loading: false });
         (this.props as any).onNotify(
-          "Could not load Firm Details",
+          "Could not load Organisation Details",
           err?.response?.data?.message || err?.message || err,
           "danger"
         );
@@ -147,10 +147,10 @@ class Clients extends React.Component<any, PropsFromRedux> {
   }
 
   componentDidUpdate(prevProps: any, prevState: any) {
-    const prevFirmId = prevProps.params.firmId;
-    const currFirmId = (this.props as any).params.firmId;
+    const prevOrganisationId = prevProps.params.organisationId;
+    const currOrganisationId = (this.props as any).params.organisationId;
 
-    if (prevFirmId !== currFirmId) {
+    if (prevOrganisationId !== currOrganisationId) {
       this.setState({ searchText: "" });
       this.getPersonsList(false);
     }
@@ -186,8 +186,8 @@ class Clients extends React.Component<any, PropsFromRedux> {
     this.setState({ requireFetch: true });
   };
 
-  onFirmChange = (item: any) => {
-    this.setState({ selectedFirm: item });
+  onOrganisationChange = (item: any) => {
+    this.setState({ selectedOrganisation: item });
   };
 
   onActionClick = (e: any) => {
@@ -424,7 +424,7 @@ class Clients extends React.Component<any, PropsFromRedux> {
           {!this.state.loading && this.state.displayContactPersonDetails ? (
             this.state.totalRecords > 0 || this.state.searchText.length > 0 ? (
               <div className={"max-w-7xl mx-auto px-4 sm:px-6 md:px-8"}>
-                {/* Firm List Table */}
+                {/* Organisation List Table */}
                 <div className="mt-4 flex flex-col max-h-screen">
                   <div
                     id="table-scroll"

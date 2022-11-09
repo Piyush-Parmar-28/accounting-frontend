@@ -71,10 +71,10 @@ class InvitationModal extends React.Component<Props, PropsFromRedux> {
   }
 
   revokeInvitation = () => {
-    const workSpaceId = this.props.state.selectedRow.workSpaceId._id;
+    const organisationId = this.props.state.selectedRow.organisationId._id;
     const invitationId = this.props.state.selectedRow._id;
     this.setState({ logging: true });
-    agent.Firm.revokeInvitation(workSpaceId, invitationId)
+    agent.Organisation.revokeInvitation(organisationId, invitationId)
       .then((response: any) => {
         (this.props as any).addNotification(
           "Initation revoked",
@@ -96,10 +96,10 @@ class InvitationModal extends React.Component<Props, PropsFromRedux> {
   };
 
   rejectInvitation = () => {
-    const workSpaceId = this.props.state.selectedRow.workSpaceId._id;
+    const organisationId = this.props.state.selectedRow.organisationId._id;
     const invitationId = this.props.state.selectedRow._id;
     this.setState({ logging: true });
-    agent.Firm.rejectInvitation(workSpaceId, invitationId)
+    agent.Organisation.rejectInvitation(organisationId, invitationId)
       .then((response: any) => {
         (this.props as any).addNotification(
           "Initation Rejected",
@@ -121,10 +121,10 @@ class InvitationModal extends React.Component<Props, PropsFromRedux> {
   };
 
   acceptInvitation = () => {
-    const workSpaceId = this.props.state.selectedRow.workSpaceId._id;
+    const organisationId = this.props.state.selectedRow.organisationId._id;
     const invitationId = this.props.state.selectedRow._id;
     this.setState({ logging: true });
-    agent.Firm.acceptInvitation(workSpaceId, invitationId)
+    agent.Organisation.acceptInvitation(organisationId, invitationId)
       .then((response: any) => {
         (this.props as any).addNotification(
           "Initation Accepted",
@@ -145,25 +145,26 @@ class InvitationModal extends React.Component<Props, PropsFromRedux> {
       });
   };
 
-  leaveFirm = () => {
-    const workSpaceId = this.props.state.selectedRow._id;
+  leaveOrganisation = () => {
+    const organisationId = this.props.state.selectedRow._id;
     this.setState({ logging: true });
-    agent.Firm.leaveFirm(workSpaceId)
+    agent.Organisation.leaveOrganisation(organisationId)
       .then((response: any) => {
         (this.props as any).addNotification(
-          "Leave Firm",
-          "Successfully left a firm.",
+          "Leave Organisation",
+          "Successfully left a organisation.",
           "success"
         );
         this.setState({ logging: false });
-        const currentSelectedFirm = (this.props as any).currentFirm;
-        if (currentSelectedFirm._id === workSpaceId) {
-          const firms = (this.props as any).firms;
-          const filterFirm = firms.filter(
-            (item: any) => item._id !== workSpaceId
+        const currentSelectedOrganisation = (this.props as any)
+          .currentOrganisation;
+        if (currentSelectedOrganisation._id === organisationId) {
+          const organisations = (this.props as any).organisations;
+          const filterOrganisation = organisations.filter(
+            (item: any) => item._id !== organisationId
           );
           (this.props as any).updateCommon({
-            currentFirm: filterFirm[0],
+            currentOrganisation: filterOrganisation[0],
           });
         }
         this.setOpen(false);
@@ -188,7 +189,7 @@ class InvitationModal extends React.Component<Props, PropsFromRedux> {
       case "Accept":
         return this.acceptInvitation();
       case "Leave":
-        return this.leaveFirm();
+        return this.leaveOrganisation();
       default:
         return;
     }
@@ -290,7 +291,8 @@ class InvitationModal extends React.Component<Props, PropsFromRedux> {
                             {this.props.type.toLowerCase()} '
                             {this.props.type === "Leave"
                               ? this.props.state.selectedRow.name
-                              : this.props.state.selectedRow.workSpaceId.name}
+                              : this.props.state.selectedRow.organisationId
+                                  .name}
                             '?
                           </p>
                         </div>

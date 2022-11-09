@@ -69,11 +69,11 @@ class InActiveModal extends React.Component<Props, PropsFromRedux> {
   }
 
   makeTagInactive = () => {
-    const workSpaceId = (this.props as any)?.currentFirm._id;
+    const organisationId = (this.props as any)?.currentOrganisation._id;
     const tagId = this.props.state.selectedRow._id;
     if (tagId !== undefined) {
       this.setState({ logging: true });
-      agent.Tag.makeTagInactive(tagId, workSpaceId)
+      agent.Tag.makeTagInactive(tagId, organisationId)
         .then((response: any) => {
           (this.props as any).addNotification(
             "Tag Inactive",
@@ -96,11 +96,11 @@ class InActiveModal extends React.Component<Props, PropsFromRedux> {
   };
 
   makeStatusInactive = () => {
-    const workSpaceId = (this.props as any)?.currentFirm._id;
+    const organisationId = (this.props as any)?.currentOrganisation._id;
     const statusId = this.props.state.selectedRow._id;
     if (statusId !== undefined) {
       this.setState({ logging: true });
-      agent.Status.makeStatusInactive(statusId, workSpaceId)
+      agent.Status.makeStatusInactive(statusId, organisationId)
         .then((response: any) => {
           (this.props as any).addNotification(
             "Status Inactive",
@@ -123,11 +123,11 @@ class InActiveModal extends React.Component<Props, PropsFromRedux> {
   };
 
   makeCustomFieldInactive = () => {
-    const workSpaceId = (this.props as any)?.currentFirm._id;
+    const organisationId = (this.props as any)?.currentOrganisation._id;
     const customFieldId = this.props.state.selectedRow._id;
     if (customFieldId !== undefined) {
       this.setState({ logging: true });
-      agent.CustomField.makeCustomFieldInactive(customFieldId, workSpaceId)
+      agent.CustomField.makeCustomFieldInactive(customFieldId, organisationId)
         .then((response: any) => {
           (this.props as any).addNotification(
             "Field Inactive",
@@ -150,11 +150,11 @@ class InActiveModal extends React.Component<Props, PropsFromRedux> {
   };
 
   makePersonInactive = () => {
-    const workSpaceId = (this.props as any)?.currentFirm._id;
+    const organisationId = (this.props as any)?.currentOrganisation._id;
     const contactPersonId = this.props.state.selectedRow._id;
     if (contactPersonId !== undefined) {
       this.setState({ logging: true });
-      agent.ContactPerson.makePersonInactive(contactPersonId, workSpaceId)
+      agent.ContactPerson.makePersonInactive(contactPersonId, organisationId)
         .then((response: any) => {
           (this.props as any).addNotification(
             "Person Inactive",
@@ -177,11 +177,11 @@ class InActiveModal extends React.Component<Props, PropsFromRedux> {
   };
 
   makeGroupInactive = () => {
-    const workSpaceId = (this.props as any)?.currentFirm._id;
+    const organisationId = (this.props as any)?.currentOrganisation._id;
     const groupId = this.props.state.selectedRow._id;
     if (groupId !== undefined) {
       this.setState({ logging: true });
-      agent.ClientGroups.makeClientGroupInactive(workSpaceId, groupId)
+      agent.ClientGroups.makeClientGroupInactive(organisationId, groupId)
         .then((response: any) => {
           (this.props as any).addNotification(
             "Group Inactive",
@@ -203,15 +203,15 @@ class InActiveModal extends React.Component<Props, PropsFromRedux> {
     }
   };
 
-  makeFirmInactive = () => {
-    const workSpaceId = this.props.state.selectedRow._id;
-    if (workSpaceId !== undefined) {
+  makeOrganisationInactive = () => {
+    const organisationId = this.props.state.selectedRow._id;
+    if (organisationId !== undefined) {
       this.setState({ logging: true });
-      agent.Firm.makeFirmInactive(workSpaceId)
+      agent.Organisation.makeOrganisationInactive(organisationId)
         .then((response: any) => {
           (this.props as any).addNotification(
-            "Firm Inactive",
-            "Successfully Inactivated a firm.",
+            "Organisation Inactive",
+            "Successfully Inactivated a organisation.",
             "success"
           );
           this.setState({ logging: false });
@@ -219,7 +219,7 @@ class InActiveModal extends React.Component<Props, PropsFromRedux> {
           this.onLoad();
         })
         .catch((err: any) => {
-          console.log("INACTIVE FIRM----->", { err });
+          console.log("INACTIVE ORGANISATION----->", { err });
           this.setState({ logging: false });
           (this.props as any).addNotification(
             "Error",
@@ -231,11 +231,11 @@ class InActiveModal extends React.Component<Props, PropsFromRedux> {
   };
 
   makeClientInactive = () => {
-    const workSpaceId = (this.props as any)?.currentFirm._id;
+    const organisationId = (this.props as any)?.currentOrganisation._id;
     const clientId = this.props.state.selectedRow._id;
     if (clientId !== undefined) {
       this.setState({ logging: true });
-      agent.Clients.makeClientInactive(workSpaceId, clientId)
+      agent.Clients.makeClientInactive(organisationId, clientId)
         .then((response: any) => {
           (this.props as any).addNotification(
             "Client Inactive",
@@ -258,11 +258,11 @@ class InActiveModal extends React.Component<Props, PropsFromRedux> {
   };
 
   makeUserInactive = () => {
-    const workSpaceId = (this.props as any)?.currentFirm._id;
+    const organisationId = (this.props as any)?.currentOrganisation._id;
     const userId = this.props.state.selectedRow._id;
     if (userId !== undefined) {
       this.setState({ logging: true });
-      agent.User.makeUserInactive(workSpaceId, userId)
+      agent.User.makeUserInactive(organisationId, userId)
         .then((response: any) => {
           (this.props as any).addNotification(
             "User Inactive",
@@ -296,8 +296,8 @@ class InActiveModal extends React.Component<Props, PropsFromRedux> {
         return this.makePersonInactive();
       case "group":
         return this.makeGroupInactive();
-      case "firm":
-        return this.makeFirmInactive();
+      case "organisation":
+        return this.makeOrganisationInactive();
       case "client":
         return this.makeClientInactive();
       case "user":

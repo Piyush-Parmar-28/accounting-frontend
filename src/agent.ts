@@ -14,8 +14,8 @@ const getHeader = () => {
 
   return {
     headers: {
-      Authorization: `Bearer ${token}`
-    }
+      Authorization: `Bearer ${token}`,
+    },
   };
 };
 
@@ -32,7 +32,7 @@ const requests: any = {
   delete: (url: string, body: any) =>
     axios
       .delete(url, { headers: getHeader().headers, data: body })
-      .then(responseBody)
+      .then(responseBody),
 
   // delete: (url: string) =>
   // axios.delete(url, getHeader()).then(responseBody)
@@ -40,8 +40,8 @@ const requests: any = {
 
 const Agency = {
   Client: {
-    list: () => requests.get("/gsts")
-  }
+    list: () => requests.get("/gsts"),
+  },
 };
 
 const Auth = {
@@ -65,71 +65,108 @@ const Auth = {
   verifyResetOtp: (userId: string, otp: number, password: string) =>
     requests.post("/auth/verify/reset/otp", { userId, otp, password }),
   verifyResetToken: (token: string, password: string) =>
-    requests.post("/auth/verify/reset/token", { token, password })
+    requests.post("/auth/verify/reset/token", { token, password }),
 };
 
-const Firm = {
-  getFirms: () => requests.get("/workspace/list"),
-  addFirm: (name: string) => requests.post("/workspace/add", { name }),
-  editFirm: (workSpaceId: string, name: string) => requests.patch("/workspace/updatename", { workSpaceId, name }),
-  makeFirmInactive: (workSpaceId: string) => requests.patch("/workspace/inactive", { workSpaceId }),
-  makeFirmActive: (workSpaceId: string) => requests.patch("/workspace/active", { workSpaceId }),
-  listofInvitationSent: (workSpaceId: string) => requests.get(`/workspace/listofinvitationsent?workSpaceId=${workSpaceId}`, { workSpaceId }),
-  listofInvitationReceived: (workSpaceId: string) => requests.get(`/workspace/listofinvitationreceived?workSpaceId=${workSpaceId}`, { workSpaceId }),
-  leaveFirm: (workSpaceId: string) => requests.post("/workspace/leaveworkspace", { workSpaceId }),
-  revokeInvitation: (workSpaceId: string, invitationId: string) => requests.post("/workspace/revokeinvitation", { workSpaceId, invitationId }),
-  rejectInvitation: (workSpaceId: string, invitationId: string) => requests.post("/workspace/rejecttinvitation", { workSpaceId, invitationId }),
-  acceptInvitation: (workSpaceId: string, invitationId: string) => requests.post("/workspace/acceptinvitation", { workSpaceId, invitationId }),
-  addUser: (workSpaceId: string, userEmail: string) => requests.post("/workspace/adduser", { workSpaceId, userEmail }),
-  deleteFirm: (workSpaceId: string) => requests.delete(`/workspace/delete?workSpaceId=${workSpaceId}`, {}),
+const Organisation = {
+  getOrganisations: () => requests.get("/organisation/list"),
+  addOrganisation: (name: string) =>
+    requests.post("/organisation/add", { name }),
+  editOrganisation: (organisationId: string, name: string) =>
+    requests.patch("/organisation/updatename", { organisationId, name }),
+  makeOrganisationInactive: (organisationId: string) =>
+    requests.patch("/organisation/inactive", { organisationId }),
+  makeOrganisationActive: (organisationId: string) =>
+    requests.patch("/organisation/active", { organisationId }),
+  listofInvitationSent: (organisationId: string) =>
+    requests.get(
+      `/organisation/listofinvitationsent?organisationId=${organisationId}`,
+      {
+        organisationId,
+      }
+    ),
+  listofInvitationReceived: (organisationId: string) =>
+    requests.get(
+      `/organisation/listofinvitationreceived?organisationId=${organisationId}`,
+      { organisationId }
+    ),
+  leaveOrganisation: (organisationId: string) =>
+    requests.post("/organisation/leaveorganisation", { organisationId }),
+  revokeInvitation: (organisationId: string, invitationId: string) =>
+    requests.post("/organisation/revokeinvitation", {
+      organisationId,
+      invitationId,
+    }),
+  rejectInvitation: (organisationId: string, invitationId: string) =>
+    requests.post("/organisation/rejecttinvitation", {
+      organisationId,
+      invitationId,
+    }),
+  acceptInvitation: (organisationId: string, invitationId: string) =>
+    requests.post("/organisation/acceptinvitation", {
+      organisationId,
+      invitationId,
+    }),
+  addUser: (organisationId: string, userEmail: string) =>
+    requests.post("/organisation/adduser", { organisationId, userEmail }),
+  deleteOrganisation: (organisationId: string) =>
+    requests.delete(
+      `/organisation/delete?organisationId=${organisationId}`,
+      {}
+    ),
 };
 
 const Tag = {
-  getTagList: (workSpaceId: string, active: boolean, searchText: string) =>
+  getTagList: (organisationId: string, active: boolean, searchText: string) =>
     requests.get(
-      `/tag/list?workSpaceId=${workSpaceId}&active=${active}&searchText=${searchText}`
+      `/tag/list?organisationId=${organisationId}&active=${active}&searchText=${searchText}`
     ),
-  addTag: (name: string, description: string, workSpaceId: string) =>
-    requests.post("/tag/add", { name, description, workSpaceId }),
+  addTag: (name: string, description: string, organisationId: string) =>
+    requests.post("/tag/add", { name, description, organisationId }),
   editTag: (
     name: string,
     description: string,
     tagId: string,
-    workSpaceId: string
-  ) => requests.put("/tag/edittag", { name, description, tagId, workSpaceId }),
-  makeTagInactive: (id: string, workSpaceId: string) =>
-    requests.put("/tag/inactive", { id, workSpaceId }),
-  makeTagActive: (id: string, workSpaceId: string) =>
-    requests.put("/tag/active", { id, workSpaceId }),
-  deleteTag: (id: string, workSpaceId: string) =>
-    requests.delete("/tag/delete", { id, workSpaceId })
+    organisationId: string
+  ) =>
+    requests.put("/tag/edittag", { name, description, tagId, organisationId }),
+  makeTagInactive: (id: string, organisationId: string) =>
+    requests.put("/tag/inactive", { id, organisationId }),
+  makeTagActive: (id: string, organisationId: string) =>
+    requests.put("/tag/active", { id, organisationId }),
+  deleteTag: (id: string, organisationId: string) =>
+    requests.delete("/tag/delete", { id, organisationId }),
 };
 
 const Status = {
-  getStatusList: (workSpaceId: string, active: boolean, searchText: string) =>
+  getStatusList: (
+    organisationId: string,
+    active: boolean,
+    searchText: string
+  ) =>
     requests.get(
-      `/status/list?workSpaceId=${workSpaceId}&active=${active}&skip=0&limit=10&searchText=${searchText}`
+      `/status/list?organisationId=${organisationId}&active=${active}&skip=0&limit=10&searchText=${searchText}`
     ),
   addStatus: (
     name: string,
     color: string,
     description: string,
-    workSpaceId: string,
+    organisationId: string,
     tasks: string[]
   ) =>
     requests.post("/status/add", {
       name,
       color,
       description,
-      workSpaceId,
-      tasks
+      organisationId,
+      tasks,
     }),
   editStatus: (
     statusId: string,
     name: string,
     color: string,
     description: string,
-    workSpaceId: string,
+    organisationId: string,
     tasks: string[]
   ) =>
     requests.put("/status/edit", {
@@ -137,60 +174,76 @@ const Status = {
       name,
       color,
       description,
-      workSpaceId,
-      tasks
+      organisationId,
+      tasks,
     }),
-  makeStatusInactive: (id: string, workSpaceId: string) =>
-    requests.put("/status/inactive", { id, workSpaceId }),
-  makeStatusActive: (id: string, workSpaceId: string) =>
-    requests.put("/status/active", { id, workSpaceId }),
-  statusTaskList: (workSpaceId: string) =>
-    requests.get(`/status/listoftaskforstatus?workSpaceId=${workSpaceId}`),
-  deleteStatus: (id: string, workSpaceId: string) =>
-    requests.delete("/status/delete", { id, workSpaceId })
+  makeStatusInactive: (id: string, organisationId: string) =>
+    requests.put("/status/inactive", { id, organisationId }),
+  makeStatusActive: (id: string, organisationId: string) =>
+    requests.put("/status/active", { id, organisationId }),
+  statusTaskList: (organisationId: string) =>
+    requests.get(
+      `/status/listoftaskforstatus?organisationId=${organisationId}`
+    ),
+  deleteStatus: (id: string, organisationId: string) =>
+    requests.delete("/status/delete", { id, organisationId }),
 };
 
 const User = {
-  getUserList: (workSpaceId: string, active: boolean, searchText: string) =>
-    requests.get(`/user/list?workSpaceId=${workSpaceId}&active=${active}&searchText=${searchText}`),
+  getUserList: (organisationId: string, active: boolean, searchText: string) =>
+    requests.get(
+      `/user/list?organisationId=${organisationId}&active=${active}&searchText=${searchText}`
+    ),
   addUser: (
-    workSpaceId: string,
+    organisationId: string,
     email: string,
     role: string,
     userRightsList: any
   ) =>
-    requests.post("workspace/adduser", {
-      workSpaceId,
+    requests.post("organisation/adduser", {
+      organisationId,
       email,
       role,
-      userRightsList
+      userRightsList,
     }),
-    
+
   editUser: (
-    workSpaceId: string,
+    organisationId: string,
     email: string,
     role: string,
     userRightsList: any
   ) =>
-    requests.post("workspace/edituser", {
-      workSpaceId,
+    requests.post("organisation/edituser", {
+      organisationId,
       email,
       role,
-      userRightsList
+      userRightsList,
     }),
-  getUserRights: (workSpaceId: string, userId?: string) => requests.get(`/user/rights?workSpaceId=${workSpaceId}${userId ? `&userId=${userId}`: "" }`),
-  makeUserInactive: (workSpaceId: string, userId: string) => requests.patch("/user/inactive", { workSpaceId, userId }),
-  makeUserActive: (workSpaceId: string, userId: string) => requests.patch("/user/active", { workSpaceId, userId }),
-  removeUser: (workSpaceId: string, userId: string) => requests.post("/workspace/removeuser", { workSpaceId, userId }),
+  getUserRights: (organisationId: string, userId?: string) =>
+    requests.get(
+      `/user/rights?organisationId=${organisationId}${
+        userId ? `&userId=${userId}` : ""
+      }`
+    ),
+  makeUserInactive: (organisationId: string, userId: string) =>
+    requests.patch("/user/inactive", { organisationId, userId }),
+  makeUserActive: (organisationId: string, userId: string) =>
+    requests.patch("/user/active", { organisationId, userId }),
+  removeUser: (organisationId: string, userId: string) =>
+    requests.post("/organisation/removeuser", { organisationId, userId }),
 };
 
 const ContactPerson = {
-  getPersonList: (workSpaceId: string, active: boolean, searchText: string) =>
+  getPersonList: (
+    organisationId: string,
+    active: boolean,
+    searchText: string
+  ) =>
     requests.get(
-      `/contactperson/list?workSpaceId=${workSpaceId}&active=${active}&skip=0&limit=10&searchText=${searchText}`
+      `/contactperson/list?organisationId=${organisationId}&active=${active}&skip=0&limit=10&searchText=${searchText}`
     ),
   addPerson: (
-    workSpaceId: string,
+    organisationId: string,
     name: string,
     email: any,
     mobile: any,
@@ -207,7 +260,7 @@ const ContactPerson = {
     pan: string
   ) =>
     requests.post("/contactperson/add", {
-      workSpaceId,
+      organisationId,
       name,
       email,
       mobile,
@@ -221,11 +274,11 @@ const ContactPerson = {
       dscExpiryDate,
       dateOfBirth,
       dateOfAnniversary,
-      pan
+      pan,
     }),
   editPerson: (
     contactPersonId: string,
-    workSpaceId: string,
+    organisationId: string,
     name: string,
     email: any,
     mobile: any,
@@ -242,7 +295,7 @@ const ContactPerson = {
   ) =>
     requests.put("/contactperson/edit", {
       contactPersonId,
-      workSpaceId,
+      organisationId,
       name,
       email,
       mobile,
@@ -255,38 +308,47 @@ const ContactPerson = {
       customFields,
       dscExpiryDate,
       dateOfBirth,
-      dateOfAnniversary
+      dateOfAnniversary,
     }),
-  makePersonActive: (contactPersonId: string, workSpaceId: string) =>
-    requests.put("/contactperson/active", { contactPersonId, workSpaceId }),
-  makePersonInactive: (contactPersonId: string, workSpaceId: string) =>
-    requests.put("/contactperson/inactive", { contactPersonId, workSpaceId }),
-  deletePersonField: (contactPersonId: string, workSpaceId: string) =>
+  makePersonActive: (contactPersonId: string, organisationId: string) =>
+    requests.put("/contactperson/active", { contactPersonId, organisationId }),
+  makePersonInactive: (contactPersonId: string, organisationId: string) =>
+    requests.put("/contactperson/inactive", {
+      contactPersonId,
+      organisationId,
+    }),
+  deletePersonField: (contactPersonId: string, organisationId: string) =>
     requests.delete(
-      `/contactperson/delete?contactPersonId=${contactPersonId}&workSpaceId=${workSpaceId}`,
+      `/contactperson/delete?contactPersonId=${contactPersonId}&organisationId=${organisationId}`,
       {}
     ),
-  getPinCodeData: (pincode: string) => requests.get(`/pincode/${pincode}`)
+  getPinCodeData: (pincode: string) => requests.get(`/pincode/${pincode}`),
 };
 
 const CustomField = {
-  getCustomFieldList: (workSpaceId: string, active: boolean, searchText: string, limit: number, skip: number) =>
+  getCustomFieldList: (
+    organisationId: string,
+    active: boolean,
+    searchText: string,
+    limit: number,
+    skip: number
+  ) =>
     requests.get(
-      `customfields/list?workSpaceId=${workSpaceId}&active=${active}&limit=${limit}&skip=${skip}&searchText=${searchText}`
+      `customfields/list?organisationId=${organisationId}&active=${active}&limit=${limit}&skip=${skip}&searchText=${searchText}`
     ),
   addCustomField: (
     name: string,
     description: string,
     type: string,
     applicableFor: string,
-    workSpaceId: string
+    organisationId: string
   ) =>
     requests.post("/customfields/add", {
       name,
       description,
       type,
       applicableFor,
-      workSpaceId
+      organisationId,
     }),
   editCustomField: (
     customFieldId: string,
@@ -294,7 +356,7 @@ const CustomField = {
     description: string,
     type: string,
     applicableFor: string,
-    workSpaceId: string
+    organisationId: string
   ) =>
     requests.put("/customfields/edit", {
       customFieldId,
@@ -302,50 +364,69 @@ const CustomField = {
       description,
       type,
       applicableFor,
-      workSpaceId
+      organisationId,
     }),
-  makeCustomFieldInactive: (customFieldId: string, workSpaceId: string) =>
-    requests.put("/customfields/inactive", { customFieldId, workSpaceId }),
-  makeCustomFieldActive: (customFieldId: string, workSpaceId: string) =>
-    requests.put("/customfields/active", { customFieldId, workSpaceId }),
-  deleteCustomField: (customFieldId: string, workSpaceId: string) =>
-    requests.delete("/customfields/delete", { customFieldId, workSpaceId })
+  makeCustomFieldInactive: (customFieldId: string, organisationId: string) =>
+    requests.put("/customfields/inactive", { customFieldId, organisationId }),
+  makeCustomFieldActive: (customFieldId: string, organisationId: string) =>
+    requests.put("/customfields/active", { customFieldId, organisationId }),
+  deleteCustomField: (customFieldId: string, organisationId: string) =>
+    requests.delete("/customfields/delete", { customFieldId, organisationId }),
 };
 
 const ClientGroups = {
-  getClientGroupList: (workSpaceId: string, active: boolean, searchText: string) =>
-    requests.get(`/group/list?workSpaceId=${workSpaceId}&active=${active}&searchText=${searchText}`),
-  addClientGroup: (name: string, description: string, workSpaceId: string) =>
-    requests.post("/group/add", { name, description, workSpaceId }),
+  getClientGroupList: (
+    organisationId: string,
+    active: boolean,
+    searchText: string
+  ) =>
+    requests.get(
+      `/group/list?organisationId=${organisationId}&active=${active}&searchText=${searchText}`
+    ),
+  addClientGroup: (name: string, description: string, organisationId: string) =>
+    requests.post("/group/add", { name, description, organisationId }),
   editClientGroup: (
     name: string,
     description: string,
     id: string,
-    workSpaceId: string
-  ) => requests.post("/group/edit", { id, name, description, workSpaceId }),
-  makeClientGroupInactive: (workSpaceId: string, groupId: string) =>
-    requests.post("/group/inactive", { workSpaceId, groupId }),
-  makeClientGroupActive: (workSpaceId: string, groupId: string) =>
-    requests.post("/group/active", { workSpaceId, groupId }),
-  deleteClientGroup: (workSpaceId: string, groupId: string) =>
-    requests.delete("/group/delete", { workSpaceId, groupId }),
-  getParticularGroup: (groupId: string) => requests.get(`/group/${groupId}`)
+    organisationId: string
+  ) => requests.post("/group/edit", { id, name, description, organisationId }),
+  makeClientGroupInactive: (organisationId: string, groupId: string) =>
+    requests.post("/group/inactive", { organisationId, groupId }),
+  makeClientGroupActive: (organisationId: string, groupId: string) =>
+    requests.post("/group/active", { organisationId, groupId }),
+  deleteClientGroup: (organisationId: string, groupId: string) =>
+    requests.delete("/group/delete", { organisationId, groupId }),
+  getParticularGroup: (groupId: string) => requests.get(`/group/${groupId}`),
 };
 
 const Clients = {
   getClientList: (
-    workSpaceId: string,
+    organisationId: string,
     skip: number,
     limit: number,
     searchText: string,
     active: boolean
-  ) => requests.post(`/client/list`, { workSpaceId, skip, limit, searchText, active }),
-  getQRMPDetails: (workSpaceId: string, gstin: string) => requests.post("/qrmp/qrmp", { workSpaceId, gstin }),
-  addClient: (workSpaceId:string, data:any) => requests.post("/client/add", {workSpaceId, ...data}),
-  editClient: (workSpaceId:string, data:any, clientId: string) => requests.post("/client/edit", {workSpaceId, clientId, ...data}),
-  makeClientInactive: (workSpaceId: string, clientId: string) => requests.post("/client/inactive", { workSpaceId, clientId }),
-  makeClientActive: (workSpaceId: string, clientId: string) => requests.post("/client/active", { workSpaceId, clientId }),
-  deleteClient: (workSpaceId: string, clientId: string) => requests.post("/client/delete", { workSpaceId, clientId }),
+  ) =>
+    requests.post(`/client/list`, {
+      organisationId,
+      skip,
+      limit,
+      searchText,
+      active,
+    }),
+  getQRMPDetails: (organisationId: string, gstin: string) =>
+    requests.post("/qrmp/qrmp", { organisationId, gstin }),
+  addClient: (organisationId: string, data: any) =>
+    requests.post("/client/add", { organisationId, ...data }),
+  editClient: (organisationId: string, data: any, clientId: string) =>
+    requests.post("/client/edit", { organisationId, clientId, ...data }),
+  makeClientInactive: (organisationId: string, clientId: string) =>
+    requests.post("/client/inactive", { organisationId, clientId }),
+  makeClientActive: (organisationId: string, clientId: string) =>
+    requests.post("/client/active", { organisationId, clientId }),
+  deleteClient: (organisationId: string, clientId: string) =>
+    requests.post("/client/delete", { organisationId, clientId }),
 };
 
 const Gst = {
@@ -353,7 +434,7 @@ const Gst = {
   getAll: () => requests.get("/gsts"),
   getGst: (gstin: string) => requests.get(`/gsts/${gstin}`),
   changeName: (body: { id: string; name: string }) =>
-    requests.put("/gsts/changeName", body)
+    requests.put("/gsts/changeName", body),
 };
 
 const Sales = {
@@ -431,7 +512,7 @@ const Sales = {
       `/sales/gst/downloadTransaction?month=${month}&year=${year}&skip=${skip}&limit=${limit}&gstId=${gstId}&transactionType=${transactionType}
       `,
       {
-        responseType: "blob"
+        responseType: "blob",
       }
     ),
   exportSpecificSalesTransactions: (
@@ -447,9 +528,9 @@ const Sales = {
       `/sales/gst/downloadTransaction?month=${month}&year=${year}&skip=${skip}&limit=${limit}&gstId=${gstId}&transactionType=${transactionType}&platform=${platform}
     `,
       {
-        responseType: "blob"
+        responseType: "blob",
       }
-    )
+    ),
 };
 
 const Purchase = {
@@ -527,7 +608,7 @@ const Purchase = {
       `/purchase/gst/downloadTransaction?month=${month}&year=${year}&skip=${skip}&limit=${limit}&gstId=${gstId}&transactionType=${transactionType}
     `,
       {
-        responseType: "blob"
+        responseType: "blob",
       }
     ),
   exportSpecificPurchaseTransactions: (
@@ -543,9 +624,9 @@ const Purchase = {
       `/purchase/gst/downloadTransaction?month=${month}&year=${year}&skip=${skip}&limit=${limit}&gstId=${gstId}&transactionType=${transactionType}&platform=${platform}
   `,
       {
-        responseType: "blob"
+        responseType: "blob",
       }
-    )
+    ),
 };
 
 const Returns = {
@@ -649,40 +730,62 @@ const Returns = {
       claim,
       month,
       year,
-      removeItcFields
-    })
+      removeItcFields,
+    }),
 };
 
 // Requests for todos
 
 const Todo = {
   addList: (list: any) => requests.post("/todo/addtodolist", list),
-  getAllTodoOfList: (workSpaceId: string, toDoListId: string, todoStatus: string, searchText:string) =>
-    requests.get(`/todo/todo?workSpaceId=${workSpaceId}&toDoListId=${toDoListId}&status=${todoStatus}&searchText=${searchText}`),
-  todoSpecificCases: (workSpaceId: string, type: string, todoStatus: string, searchText:string) =>
-    requests.get(`/todo/todospecificcases?workSpaceId=${workSpaceId}&status=${todoStatus}&type=${type}&searchText=${searchText}`),
-  count: (workSpaceId: string) => requests.get(`/todo/counttodospecificcases?workSpaceId=${workSpaceId}`),
-  getAllTodoListOfUser: (workSpaceId: string) => requests.get(`/todo/todolist?workSpaceId=${workSpaceId}`),
+  getAllTodoOfList: (
+    organisationId: string,
+    toDoListId: string,
+    todoStatus: string,
+    searchText: string
+  ) =>
+    requests.get(
+      `/todo/todo?organisationId=${organisationId}&toDoListId=${toDoListId}&status=${todoStatus}&searchText=${searchText}`
+    ),
+  todoSpecificCases: (
+    organisationId: string,
+    type: string,
+    todoStatus: string,
+    searchText: string
+  ) =>
+    requests.get(
+      `/todo/todospecificcases?organisationId=${organisationId}&status=${todoStatus}&type=${type}&searchText=${searchText}`
+    ),
+  count: (organisationId: string) =>
+    requests.get(
+      `/todo/counttodospecificcases?organisationId=${organisationId}`
+    ),
+  getAllTodoListOfUser: (organisationId: string) =>
+    requests.get(`/todo/todolist?organisationId=${organisationId}`),
   create: (todo: any) => requests.post("/todo/addtodo", todo),
-  markAsComplete: (todo: any) =>
-    requests.post(`/todo/marktodocompleted`, todo),
-  markPending: (todo: any) =>
-    requests.post(`/todo/marktodopending`, todo),
-  edit:(todo: any) => requests.post("/todo/edittodo", todo),
+  markAsComplete: (todo: any) => requests.post(`/todo/marktodocompleted`, todo),
+  markPending: (todo: any) => requests.post(`/todo/marktodopending`, todo),
+  edit: (todo: any) => requests.post("/todo/edittodo", todo),
   delete: (todo: any) => requests.post(`/todo/deletetodo`, todo),
-  addUserToTodoList: (user:any) => requests.post(`/todo/addusertodolist`,user),
-  todoListRename: (list:any) => requests.post(`/todo/todolistchangename`,list),
-  deleteList: (workSpaceId: string, toDoListId: string) => requests.post(`/todo/deletetodolist`,{workSpaceId, toDoListId}),
-  reorder: (workSpaceId:string,toDoId: string,
-  order: number) => requests.post(`/todo/reordertodo`, {
-  workSpaceId,toDoId,order}),
+  addUserToTodoList: (user: any) =>
+    requests.post(`/todo/addusertodolist`, user),
+  todoListRename: (list: any) =>
+    requests.post(`/todo/todolistchangename`, list),
+  deleteList: (organisationId: string, toDoListId: string) =>
+    requests.post(`/todo/deletetodolist`, { organisationId, toDoListId }),
+  reorder: (organisationId: string, toDoId: string, order: number) =>
+    requests.post(`/todo/reordertodo`, {
+      organisationId,
+      toDoId,
+      order,
+    }),
 };
 
 let agent = {
   setToken: (_token: string | undefined) => (token = _token),
   Agency,
   Auth,
-  Firm,
+  Organisation,
   Tag,
   Status,
   User,
@@ -694,7 +797,7 @@ let agent = {
   Sales,
   Purchase,
   Returns,
-  Todo
+  Todo,
 };
 
 export default agent;

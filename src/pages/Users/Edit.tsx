@@ -79,7 +79,7 @@ class AddClient extends React.Component<any, PropsFromRedux> {
   editUserRights = () => {
     const { email, userRole, managerRights, employeeRights } = this.state;
     const isEmailValid = validEmail.test(email);
-    const workSpace = (this.props as any).currentFirm._id;
+    const organisation = (this.props as any).currentOrganisation._id;
     const role = userRole;
     const userRightsList =
       role === "manager"
@@ -89,16 +89,16 @@ class AddClient extends React.Component<any, PropsFromRedux> {
         : adminRights;
     if (email !== "" && isEmailValid) {
       this.setState({ logging: true });
-      agent.User.editUser(workSpace, email, role, userRightsList)
+      agent.User.editUser(organisation, email, role, userRightsList)
         .then((response: any) => {
-          console.log({ workSpace, email, role, userRightsList });
+          console.log({ organisation, email, role, userRightsList });
           this.setState({ logging: false });
           (this.props as any).onNotify(
             "User Rights Edited",
             "Successfully edited users rights.",
             "success"
           );
-          this.props.navigate(`/${workSpace}/user/list`);
+          this.props.navigate(`/${organisation}/user/list`);
         })
         .catch((err: any) => {
           this.setState({ logging: false });
@@ -127,10 +127,10 @@ class AddClient extends React.Component<any, PropsFromRedux> {
   };
 
   getUserRights = () => {
-    const workSpaceId = (this.props as any).params?.firmId;
+    const organisationId = (this.props as any).params?.organisationId;
     const userId = (this.props as any).editUser?._id;
-    if (workSpaceId) {
-      agent.User.getUserRights(workSpaceId, userId)
+    if (organisationId) {
+      agent.User.getUserRights(organisationId, userId)
         .then((response: any) => {
           console.log({ response });
           if (response.hasOwnProperty("allRights") && response.allRights) {
@@ -168,9 +168,10 @@ class AddClient extends React.Component<any, PropsFromRedux> {
   }
 
   cancelHandler = () => {
-    const firmId =
-      (this.props as any).params.firmId || (this.props as any).currentFirm._id;
-    this.props.navigate(`/${firmId}/user/list`);
+    const organisationId =
+      (this.props as any).params.organisationId ||
+      (this.props as any).currentOrganisation._id;
+    this.props.navigate(`/${organisationId}/user/list`);
   };
 
   updateState = (field: string) => (ev: any) => {

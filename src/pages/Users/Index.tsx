@@ -66,7 +66,7 @@ class Clients extends React.Component<any, PropsFromRedux> {
     totalRecords: number;
     displayUserDetails: any;
     selectedGstId: string;
-    selectedFirm: any;
+    selectedOrganisation: any;
     modalOpen: boolean;
     typingTimeout: number;
     selectedRow: any;
@@ -97,7 +97,7 @@ class Clients extends React.Component<any, PropsFromRedux> {
       totalRecords: 0,
       displayUserDetails: [],
       selectedGstId: "",
-      selectedFirm: undefined,
+      selectedOrganisation: undefined,
       modalOpen: false,
       typingTimeout: 0,
       selectedRow: undefined,
@@ -126,11 +126,11 @@ class Clients extends React.Component<any, PropsFromRedux> {
   //Get User Data
 
   getUsersList = (forSearch: boolean) => {
-    const workSpaceId = (this.props as any).params?.firmId;
+    const organisationId = (this.props as any).params?.organisationId;
     const searchText = forSearch ? this.state.searchText : "";
     const active = this.state.active;
     this.setState({ loading: true });
-    agent.User.getUserList(workSpaceId, active, searchText)
+    agent.User.getUserList(organisationId, active, searchText)
       .then((response: any) => {
         console.log({ response });
         this.setState({
@@ -146,7 +146,7 @@ class Clients extends React.Component<any, PropsFromRedux> {
       .catch((err: any) => {
         this.setState({ loading: false });
         (this.props as any).onNotify(
-          "Could not load Firm Details",
+          "Could not load Organisation Details",
           err?.response?.data?.message || err?.message || err,
           "danger"
         );
@@ -154,9 +154,9 @@ class Clients extends React.Component<any, PropsFromRedux> {
   };
 
   getInvitaionSentList = () => {
-    const workSpaceId = (this.props as any).params?.firmId;
+    const organisationId = (this.props as any).params?.organisationId;
     this.setState({ sentLoading: true });
-    agent.Firm.listofInvitationSent(workSpaceId)
+    agent.Organisation.listofInvitationSent(organisationId)
       .then((response: any) => {
         this.setState({
           invitationSentDetails: response.invitations,
@@ -185,10 +185,10 @@ class Clients extends React.Component<any, PropsFromRedux> {
   }
 
   componentDidUpdate(prevProps: any, prevState: any) {
-    const prevFirmId = prevProps.params?.firmId;
-    const currFirmId = (this.props as any).params?.firmId;
+    const prevOrganisationId = prevProps.params?.organisationId;
+    const currOrganisationId = (this.props as any).params?.organisationId;
 
-    if (prevFirmId !== currFirmId) {
+    if (prevOrganisationId !== currOrganisationId) {
       this.setState({ searchText: "" });
       this.getUsersList(false);
       this.getInvitaionSentList();
@@ -223,8 +223,8 @@ class Clients extends React.Component<any, PropsFromRedux> {
     this.setState({ requireFetch: true });
   };
 
-  onFirmChange = (item: any) => {
-    this.setState({ selectedFirm: item });
+  onOrganisationChange = (item: any) => {
+    this.setState({ selectedOrganisation: item });
   };
 
   onActionClick = (e: any) => {
@@ -261,9 +261,9 @@ class Clients extends React.Component<any, PropsFromRedux> {
   openAddUserPage = () => {
     const clientRights = (this.props as any)?.rights?.userRights;
     const createRight = clientRights.add;
-    const currentFirmId = (this.props as any).params?.firmId;
+    const currentOrganisationId = (this.props as any).params?.organisationId;
     if (createRight) {
-      (this.props as any).navigate(`/${currentFirmId}/user/add`);
+      (this.props as any).navigate(`/${currentOrganisationId}/user/add`);
     } else {
       (this.props as any).onNotify(
         "Rights Not Avilable",
@@ -301,10 +301,10 @@ class Clients extends React.Component<any, PropsFromRedux> {
   openEditModal = (user: any) => {
     const userRights = (this.props as any)?.rights?.userRights;
     const editRight = userRights.edit;
-    const currentFirmId = (this.props as any).params?.firmId;
+    const currentOrganisationId = (this.props as any).params?.organisationId;
     if (editRight) {
       (this.props as any).updateCommon({ editUser: user });
-      (this.props as any).navigate(`/${currentFirmId}/user/edit`);
+      (this.props as any).navigate(`/${currentOrganisationId}/user/edit`);
     } else {
       (this.props as any).onNotify(
         "Rights Not Avilable",
@@ -441,7 +441,7 @@ class Clients extends React.Component<any, PropsFromRedux> {
           {!this.state.loading && this.state.displayUserDetails ? (
             this.state.totalRecords > 0 || this.state.searchText.length > 0 ? (
               <div className={"max-w-7xl mx-auto px-4 sm:px-6 md:px-8"}>
-                {/* Firm List Table */}
+                {/* Organisation List Table */}
                 <div className="mt-4 flex flex-col max-h-screen">
                   <div
                     id="table-scroll"
@@ -814,7 +814,7 @@ class Clients extends React.Component<any, PropsFromRedux> {
                                   scope="col"
                                   className="sticky top-0 z-8 border-b font-bold border-gray-300 bg-gray-50 px-4 py-3 text-left text-xs text-gray-500 uppercase tracking-wider sm:pl-6"
                                 >
-                                  FIRM NAME
+                                  ORGANISATION NAME
                                 </th>
                                 <th
                                   scope="col"
@@ -864,7 +864,7 @@ class Clients extends React.Component<any, PropsFromRedux> {
                                       }
                                     >
                                       <td className="w-3/12 whitespace-nowrap py-4 pl-4 pr-3 font-bold text-sm text-gray-900 sm:pl-6">
-                                        {invitation.workSpaceId.name}
+                                        {invitation.organisationId.name}
                                       </td>
                                       <td className="w-4/10 px-6 py-3 whitespace-nowrap text-sm text-gray-500">
                                         {invitation.sentBy}
@@ -1015,7 +1015,7 @@ class Clients extends React.Component<any, PropsFromRedux> {
                                   scope="col"
                                   className="w-2/12 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                                 >
-                                  FIRM NAME
+                                  ORGANISATION NAME
                                 </th>
                                 <th
                                   scope="col"

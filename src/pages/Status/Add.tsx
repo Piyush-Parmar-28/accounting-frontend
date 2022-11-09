@@ -76,7 +76,7 @@ class AddStatus extends React.Component<Props, PropsFromRedux> {
   }
 
   addStatus = () => {
-    const workSpaceId = (this.props as any).currentFirm._id;
+    const organisationId = (this.props as any).currentOrganisation._id;
     const name = this.state.name;
     const description = this.state.description;
     const color = this.state.color.name;
@@ -89,7 +89,7 @@ class AddStatus extends React.Component<Props, PropsFromRedux> {
         : [];
     if (name !== "" && color !== "") {
       this.setState({ logging: true });
-      agent.Status.addStatus(name, color, description, workSpaceId, tasks)
+      agent.Status.addStatus(name, color, description, organisationId, tasks)
         .then((response: any) => {
           this.setState({ logging: false });
           (this.props as any).addNotification(
@@ -126,9 +126,9 @@ class AddStatus extends React.Component<Props, PropsFromRedux> {
   };
 
   getStatusTaskList = () => {
-    const workSpaceId = (this.props as any)?.currentFirm?._id;
-    if (workSpaceId) {
-      agent.Status.statusTaskList(workSpaceId)
+    const organisationId = (this.props as any)?.currentOrganisation?._id;
+    if (organisationId) {
+      agent.Status.statusTaskList(organisationId)
         .then((response: any) => {
           const tasks = response.filter((item: any) => item !== "ALL");
           tasks.unshift("ALL");

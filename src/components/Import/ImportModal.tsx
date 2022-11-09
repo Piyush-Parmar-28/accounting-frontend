@@ -135,7 +135,7 @@ class ImportModal extends React.Component<Props> {
                         as="h3"
                         className="text-left text-lg leading-6 font-medium text-gray-900"
                       >
-                        Confirm Import
+                        Conorganisation Import
                       </Dialog.Title>
                     </div>
 

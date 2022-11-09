@@ -114,14 +114,14 @@ class Clients extends React.Component<PropsFromRedux> {
   // Selected pagination value
   currPage = 0;
 
-  //Get Firm Data
+  //Get Organisation Data
 
   getStatusList = (forSearch: boolean) => {
-    const workSpaceId = (this.props as any).params?.firmId;
+    const organisationId = (this.props as any).params?.organisationId;
     const searchText = forSearch ? this.state.searchText : "";
     const active = this.state.active;
     this.setState({ loading: true });
-    agent.Status.getStatusList(workSpaceId, active, searchText)
+    agent.Status.getStatusList(organisationId, active, searchText)
       .then((response: any) => {
         this.setState({
           status: response.status,
@@ -138,7 +138,7 @@ class Clients extends React.Component<PropsFromRedux> {
         console.log("TAG ERROR", { err });
         this.setState({ loading: false });
         (this.props as any).onNotify(
-          "Could not load Firm Details",
+          "Could not load Organisation Details",
           err?.response?.data?.message || err?.message || err,
           "danger"
         );
@@ -151,10 +151,10 @@ class Clients extends React.Component<PropsFromRedux> {
   }
 
   componentDidUpdate(prevProps: any, prevState: any) {
-    const prevFirmId = prevProps.params?.firmId;
-    const currFirmId = (this.props as any).params?.firmId;
+    const prevOrganisationId = prevProps.params?.organisationId;
+    const currOrganisationId = (this.props as any).params?.organisationId;
 
-    if (prevFirmId !== currFirmId) {
+    if (prevOrganisationId !== currOrganisationId) {
       this.setState({ searchText: "" });
       this.getStatusList(false);
     }
@@ -398,7 +398,7 @@ class Clients extends React.Component<PropsFromRedux> {
             </div>
           </div>
           {/* <div className="flex justify-between mt-6">
-            <Link to={`/${(this.props as any).currentFirm?._id}/tags/add`}>
+            <Link to={`/${(this.props as any).currentOrganisation?._id}/tags/add`}>
               <button
                 type="button"
                 className="relative inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none"
@@ -433,7 +433,7 @@ class Clients extends React.Component<PropsFromRedux> {
           {!this.state.loading && this.state.displayStatusDetails ? (
             this.state.totalRecords > 0 || this.state.searchText.length > 0 ? (
               <div className={"max-w-7xl mx-auto px-4 sm:px-6 md:px-8"}>
-                {/* Firm List Table */}
+                {/* Organisation List Table */}
                 <div className="mt-4 flex flex-col max-h-screen">
                   <div
                     id="table-scroll"

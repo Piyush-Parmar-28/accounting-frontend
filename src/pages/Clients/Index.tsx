@@ -65,7 +65,7 @@ class Clients extends React.Component<PropsFromRedux> {
     totalRecords: number;
     displayClientsDetails: any;
     selectedGstId: string;
-    selectedFirm: any;
+    selectedOrganisation: any;
     modalOpen: boolean;
     typingTimeout: number;
     selectedRow: any;
@@ -91,7 +91,7 @@ class Clients extends React.Component<PropsFromRedux> {
       totalRecords: 0,
       displayClientsDetails: [],
       selectedGstId: "",
-      selectedFirm: undefined,
+      selectedOrganisation: undefined,
       modalOpen: false,
       typingTimeout: 0,
       selectedRow: undefined,
@@ -110,16 +110,16 @@ class Clients extends React.Component<PropsFromRedux> {
   // Selected pagination value
   currPage = 0;
 
-  //Get Firm Data
+  //Get Organisation Data
 
   getClientsList = (forSearch: boolean) => {
-    const workSpaceId = (this.props as any).params?.firmId;
+    const organisationId = (this.props as any).params?.organisationId;
     const searchText = forSearch ? this.state.searchText : "";
     const active = this.state.active;
     const skip = 0;
     const limit = 10;
     this.setState({ loading: true });
-    agent.Clients.getClientList(workSpaceId, skip, limit, searchText, active)
+    agent.Clients.getClientList(organisationId, skip, limit, searchText, active)
       .then((response: any) => {
         console.log("ALL CLIENTS", { response });
         this.setState({
@@ -135,7 +135,7 @@ class Clients extends React.Component<PropsFromRedux> {
       .catch((err: any) => {
         this.setState({ loading: false });
         (this.props as any).onNotify(
-          "Could not load Firm Details",
+          "Could not load Organisation Details",
           err?.response?.data?.message || err?.message || err,
           "danger"
         );
@@ -148,9 +148,9 @@ class Clients extends React.Component<PropsFromRedux> {
   }
 
   componentDidUpdate(prevProps: any, prevState: any) {
-    const prevFirmId = prevProps.params.firmId;
-    const currFirmId = (this.props as any).params.firmId;
-    if (prevFirmId !== currFirmId) {
+    const prevOrganisationId = prevProps.params.organisationId;
+    const currOrganisationId = (this.props as any).params.organisationId;
+    if (prevOrganisationId !== currOrganisationId) {
       this.setState({ searchText: "" });
       this.getClientsList(false);
     }
@@ -174,8 +174,8 @@ class Clients extends React.Component<PropsFromRedux> {
     this.setState({ requireFetch: true });
   };
 
-  onFirmChange = (item: any) => {
-    this.setState({ selectedFirm: item });
+  onOrganisationChange = (item: any) => {
+    this.setState({ selectedOrganisation: item });
   };
 
   onActionClick = (e: any) => {
@@ -212,9 +212,9 @@ class Clients extends React.Component<PropsFromRedux> {
   openAddClientPage = () => {
     const clientRights = (this.props as any)?.rights?.clientRights;
     const createRight = clientRights.create;
-    const currentFirmId = (this.props as any).params?.firmId;
+    const currentOrganisationId = (this.props as any).params?.organisationId;
     if (createRight) {
-      (this.props as any).navigate(`/${currentFirmId}/clients/add`);
+      (this.props as any).navigate(`/${currentOrganisationId}/clients/add`);
     } else {
       (this.props as any).onNotify(
         "Rights Not Avilable",
@@ -271,10 +271,10 @@ class Clients extends React.Component<PropsFromRedux> {
   editClient = (client: any) => {
     const clientRights = (this.props as any)?.rights?.clientRights;
     const editRight = clientRights.edit;
-    const currentFirmId = (this.props as any).params?.firmId;
+    const currentOrganisationId = (this.props as any).params?.organisationId;
     if (editRight) {
       (this.props as any).updateCommon({ editClient: client });
-      (this.props as any).navigate(`/${currentFirmId}/clients/edit`);
+      (this.props as any).navigate(`/${currentOrganisationId}/clients/edit`);
     } else {
       (this.props as any).onNotify(
         "Rights Not Avilable",
@@ -409,7 +409,7 @@ class Clients extends React.Component<PropsFromRedux> {
           {!this.state.loading && this.state.displayClientsDetails ? (
             this.state.totalRecords > 0 || this.state.searchText.length > 0 ? (
               <div className={"max-w-7xl mx-auto px-4 sm:px-6 md:px-8"}>
-                {/* Firm List Table */}
+                {/* Organisation List Table */}
                 <div className="mt-6 flex flex-col max-h-screen">
                   <div
                     id="table-scroll"

@@ -230,10 +230,10 @@ class EditClient extends React.Component<any, PropsFromRedux> {
   }
 
   getUsersList = () => {
-    const workSpaceId = (this.props as any).params?.firmId;
+    const organisationId = (this.props as any).params?.organisationId;
     const searchText = "";
     const active = true;
-    agent.User.getUserList(workSpaceId, active, searchText)
+    agent.User.getUserList(organisationId, active, searchText)
       .then((response: any) => {
         console.log({ response });
         this.setState({
@@ -242,7 +242,7 @@ class EditClient extends React.Component<any, PropsFromRedux> {
       })
       .catch((err: any) => {
         (this.props as any).onNotify(
-          "Could not load Firm Details",
+          "Could not load Organisation Details",
           err?.response?.data?.message || err?.message || err,
           "danger"
         );
@@ -250,13 +250,13 @@ class EditClient extends React.Component<any, PropsFromRedux> {
   };
 
   getCustomField = () => {
-    const workSpaceId = (this.props as any).params?.firmId;
+    const organisationId = (this.props as any).params?.organisationId;
     const active = true;
     const searchText = "";
     const skip = 0;
     const limit = 20;
     agent.CustomField.getCustomFieldList(
-      workSpaceId,
+      organisationId,
       active,
       searchText,
       limit,
@@ -287,10 +287,10 @@ class EditClient extends React.Component<any, PropsFromRedux> {
   };
 
   getPersonsList = () => {
-    const workSpaceId = (this.props as any).params?.firmId;
+    const organisationId = (this.props as any).params?.organisationId;
     const searchText = "";
     const active = true;
-    agent.ContactPerson.getPersonList(workSpaceId, active, searchText)
+    agent.ContactPerson.getPersonList(organisationId, active, searchText)
       .then((response: any) => {
         this.setState({ allPerson: response.contactPerson });
       })
@@ -304,10 +304,10 @@ class EditClient extends React.Component<any, PropsFromRedux> {
   };
 
   getGroupList = () => {
-    const workSpaceId = (this.props as any).params?.firmId;
+    const organisationId = (this.props as any).params?.organisationId;
     const active = true;
     const searchText = "";
-    agent.ClientGroups.getClientGroupList(workSpaceId, active, searchText)
+    agent.ClientGroups.getClientGroupList(organisationId, active, searchText)
       .then((response: any) => {
         this.setState({
           allGroups: response.groups,
@@ -315,7 +315,7 @@ class EditClient extends React.Component<any, PropsFromRedux> {
       })
       .catch((err: any) => {
         (this.props as any).onNotify(
-          "Could not load Firm Details",
+          "Could not load Organisation Details",
           err?.response?.data?.message || err?.message || err,
           "danger"
         );
@@ -323,10 +323,10 @@ class EditClient extends React.Component<any, PropsFromRedux> {
   };
 
   getTagsList = () => {
-    const workSpaceId = (this.props as any).params?.firmId;
+    const organisationId = (this.props as any).params?.organisationId;
     const searchText = "";
     const active = true;
-    agent.Tag.getTagList(workSpaceId, active, searchText)
+    agent.Tag.getTagList(organisationId, active, searchText)
       .then((response: any) => {
         this.setState({
           allTags: response.tags,
@@ -355,9 +355,9 @@ class EditClient extends React.Component<any, PropsFromRedux> {
   }
 
   componentDidUpdate(prevProps: any, prevState: any) {
-    const prevFirmId = prevProps.params.firmId;
-    const currFirmId = (this.props as any).params.firmId;
-    if (prevFirmId !== currFirmId) {
+    const prevOrganisationId = prevProps.params.organisationId;
+    const currOrganisationId = (this.props as any).params.organisationId;
+    if (prevOrganisationId !== currOrganisationId) {
       this.getUsersList();
       this.getCustomField();
       this.getPersonsList();
@@ -366,7 +366,7 @@ class EditClient extends React.Component<any, PropsFromRedux> {
   }
 
   editClient = () => {
-    const workSpaceId = (this.props as any).params?.firmId;
+    const organisationId = (this.props as any).params?.organisationId;
     const clientId = (this.props as any)?.editClient?._id;
     const {
       taxesApplicable,
@@ -479,14 +479,14 @@ class EditClient extends React.Component<any, PropsFromRedux> {
       checkPAN &&
       checkFiledITreturns
     ) {
-      agent.Clients.editClient(workSpaceId, data, clientId)
+      agent.Clients.editClient(organisationId, data, clientId)
         .then((response: any) => {
           (this.props as any).onNotify(
             "Client Edited Successfully",
             "Client Edited Successfully",
             "success"
           );
-          (this.props as any).navigate(`/${workSpaceId}/clients/list`);
+          (this.props as any).navigate(`/${organisationId}/clients/list`);
         })
         .catch((err: any) => {
           (this.props as any).onNotify(
@@ -615,8 +615,8 @@ class EditClient extends React.Component<any, PropsFromRedux> {
   };
 
   cancelHandler = () => {
-    const firmId = (this.props as any).params?.firmId;
-    (this.props as any).navigate(`/${firmId}/clients/list`);
+    const organisationId = (this.props as any).params?.organisationId;
+    (this.props as any).navigate(`/${organisationId}/clients/list`);
   };
 
   updateState = (field: string) => (ev: any) => {
@@ -927,9 +927,9 @@ class EditClient extends React.Component<any, PropsFromRedux> {
   };
 
   getQRMPData = () => {
-    const workSpaceId = (this.props as any).params.firmId;
+    const organisationId = (this.props as any).params.organisationId;
     const { gstin } = this.state;
-    agent.Clients.getQRMPDetails(workSpaceId, gstin)
+    agent.Clients.getQRMPDetails(organisationId, gstin)
       .then((response: any) => {
         this.setState({ qrmpPreferance: response.reverse() });
       })
@@ -1247,7 +1247,9 @@ class EditClient extends React.Component<any, PropsFromRedux> {
                               <option value={"Artificial Juridical Person"}>
                                 Artificial Juridical Person
                               </option>
-                              <option value={"Firm"}>Firm</option>
+                              <option value={"Organisation"}>
+                                Organisation
+                              </option>
                               <option value={"Limited Liability Partnership"}>
                                 Limited Liability Partnership
                               </option>

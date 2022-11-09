@@ -122,7 +122,7 @@ class EditPersonModal extends React.Component<Props, PropsFromRedux> {
 
   editPerson = () => {
     const contactPersonId = (this.props as any).state.selectedRow._id;
-    const workSpaceId = (this.props as any).currentFirm._id;
+    const organisationId = (this.props as any).currentOrganisation._id;
     const name = this.state.name;
     const email = this.state.email.filter((item: any) => item.emailId !== "");
     const isEmailValid = this.checkEmail(email);
@@ -146,7 +146,7 @@ class EditPersonModal extends React.Component<Props, PropsFromRedux> {
       this.setState({ logging: true });
       agent.ContactPerson.editPerson(
         contactPersonId,
-        workSpaceId,
+        organisationId,
         name,
         email,
         mobile,
@@ -198,14 +198,14 @@ class EditPersonModal extends React.Component<Props, PropsFromRedux> {
   };
 
   getCustomField = () => {
-    const workSpaceId = (this.props as any).currentFirm?._id;
+    const organisationId = (this.props as any).currentOrganisation?._id;
     const active = true;
     const searchText = "";
     const skip = 0;
     const limit = 20;
     this.setState({ loading: true });
     agent.CustomField.getCustomFieldList(
-      workSpaceId,
+      organisationId,
       active,
       searchText,
       limit,

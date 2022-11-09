@@ -67,7 +67,7 @@ class Clients extends React.Component<any, PropsFromRedux> {
     totalRecords: number;
     displayCustomFieldsDetails: any;
     selectedGstId: string;
-    selectedFirm: any;
+    selectedOrganisation: any;
     modalOpen: boolean;
     typingTimeout: number;
     selectedRow: any;
@@ -93,7 +93,7 @@ class Clients extends React.Component<any, PropsFromRedux> {
       totalRecords: 0,
       displayCustomFieldsDetails: [],
       selectedGstId: "",
-      selectedFirm: undefined,
+      selectedOrganisation: undefined,
       modalOpen: false,
       typingTimeout: 0,
       selectedRow: undefined,
@@ -112,17 +112,17 @@ class Clients extends React.Component<any, PropsFromRedux> {
   // Selected pagination value
   currPage = 0;
 
-  //Get Firm Data
+  //Get Organisation Data
 
   getCustomFieldList = (forSearch: boolean) => {
-    const workSpaceId = (this.props as any).params?.firmId;
+    const organisationId = (this.props as any).params?.organisationId;
     const searchText = forSearch ? this.state.searchText : "";
     const active = this.state.active;
     const skip = 0;
     const limit = 20;
     this.setState({ loading: true });
     agent.CustomField.getCustomFieldList(
-      workSpaceId,
+      organisationId,
       active,
       searchText,
       limit,
@@ -155,10 +155,10 @@ class Clients extends React.Component<any, PropsFromRedux> {
   }
 
   componentDidUpdate(prevProps: any, prevState: any) {
-    const prevFirmId = prevProps.params.firmId;
-    const currFirmId = (this.props as any).params.firmId;
+    const prevOrganisationId = prevProps.params.organisationId;
+    const currOrganisationId = (this.props as any).params.organisationId;
 
-    if (prevFirmId !== currFirmId) {
+    if (prevOrganisationId !== currOrganisationId) {
       this.setState({ searchText: "" });
       this.getCustomFieldList(false);
     }
@@ -194,8 +194,8 @@ class Clients extends React.Component<any, PropsFromRedux> {
     this.setState({ requireFetch: true });
   };
 
-  onFirmChange = (item: any) => {
-    this.setState({ selectedFirm: item });
+  onOrganisationChange = (item: any) => {
+    this.setState({ selectedOrganisation: item });
   };
 
   onActionClick = (e: any) => {
@@ -390,7 +390,7 @@ class Clients extends React.Component<any, PropsFromRedux> {
           {!this.state.loading && this.state.displayCustomFieldsDetails ? (
             this.state.totalRecords > 0 || this.state.searchText.length > 0 ? (
               <div className={"max-w-7xl mx-auto px-4 sm:px-6 md:px-8"}>
-                {/* Firm List Table */}
+                {/* Organisation List Table */}
                 <div className="mt-4 flex flex-col max-h-screen">
                   <div
                     id="table-scroll"

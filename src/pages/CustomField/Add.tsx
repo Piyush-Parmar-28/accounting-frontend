@@ -73,7 +73,7 @@ class AddCustomField extends React.Component<Props, PropsFromRedux> {
   }
 
   addCustomField = () => {
-    const workSpaceId = (this.props as any).currentFirm._id;
+    const organisationId = (this.props as any).currentOrganisation._id;
     const name = this.state.name;
     const applicableFor = this.state.applicableFor;
     const type = this.state.type;
@@ -85,7 +85,7 @@ class AddCustomField extends React.Component<Props, PropsFromRedux> {
         description,
         type,
         applicableFor,
-        workSpaceId
+        organisationId
       )
         .then((response: any) => {
           this.setState({ logging: false });

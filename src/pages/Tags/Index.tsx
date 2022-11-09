@@ -66,7 +66,7 @@ class Clients extends React.Component<PropsFromRedux> {
     totalRecords: number;
     displayTagDetails: any;
     selectedGstId: string;
-    selectedFirm: any;
+    selectedOrganisation: any;
     modalOpen: boolean;
     typingTimeout: number;
     selectedRow: any;
@@ -92,7 +92,7 @@ class Clients extends React.Component<PropsFromRedux> {
       totalRecords: 0,
       displayTagDetails: [],
       selectedGstId: "",
-      selectedFirm: undefined,
+      selectedOrganisation: undefined,
       modalOpen: false,
       typingTimeout: 0,
       selectedRow: undefined,
@@ -111,14 +111,14 @@ class Clients extends React.Component<PropsFromRedux> {
   // Selected pagination value
   currPage = 0;
 
-  //Get Firm Data
+  //Get Organisation Data
 
   getTagsList = (forSearch: boolean) => {
-    const workSpaceId = (this.props as any).params?.firmId;
+    const organisationId = (this.props as any).params?.organisationId;
     const searchText = forSearch ? this.state.searchText : "";
     const active = this.state.active;
     this.setState({ loading: true });
-    agent.Tag.getTagList(workSpaceId, active, searchText)
+    agent.Tag.getTagList(organisationId, active, searchText)
       .then((response: any) => {
         this.setState({
           tags: response.tags,
@@ -133,7 +133,7 @@ class Clients extends React.Component<PropsFromRedux> {
       .catch((err: any) => {
         this.setState({ loading: false });
         (this.props as any).onNotify(
-          "Could not load Firm Details",
+          "Could not load Organisation Details",
           err?.response?.data?.message || err?.message || err,
           "danger"
         );
@@ -146,9 +146,9 @@ class Clients extends React.Component<PropsFromRedux> {
   }
 
   componentDidUpdate(prevProps: any, prevState: any) {
-    const prevFirmId = prevProps.params.firmId;
-    const currFirmId = (this.props as any).params.firmId;
-    if (prevFirmId !== currFirmId) {
+    const prevOrganisationId = prevProps.params.organisationId;
+    const currOrganisationId = (this.props as any).params.organisationId;
+    if (prevOrganisationId !== currOrganisationId) {
       this.setState({ searchText: "" });
       this.getTagsList(false);
     }
@@ -183,8 +183,8 @@ class Clients extends React.Component<PropsFromRedux> {
     this.setState({ requireFetch: true });
   };
 
-  onFirmChange = (item: any) => {
-    this.setState({ selectedFirm: item });
+  onOrganisationChange = (item: any) => {
+    this.setState({ selectedOrganisation: item });
   };
 
   onActionClick = (e: any) => {
@@ -413,7 +413,7 @@ class Clients extends React.Component<PropsFromRedux> {
           {!this.state.loading && this.state.displayTagDetails ? (
             this.state.totalRecords > 0 || this.state.searchText.length > 0 ? (
               <div className={"max-w-7xl mx-auto px-4 sm:px-6 md:px-8"}>
-                {/* Firm List Table */}
+                {/* Organisation List Table */}
                 <div className="mt-6 flex flex-col max-h-screen">
                   <div
                     id="table-scroll"

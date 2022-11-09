@@ -113,7 +113,7 @@ class AddPerson extends React.Component<Props, PropsFromRedux> {
   }
 
   addPerson = () => {
-    const workSpaceId = (this.props as any).currentFirm._id;
+    const organisationId = (this.props as any).currentOrganisation._id;
     const name = this.state.name;
     const email = this.state.email.filter((item: any) => item.emailId !== "");
     const isEmailValid = this.checkEmail(email);
@@ -145,7 +145,7 @@ class AddPerson extends React.Component<Props, PropsFromRedux> {
     ) {
       this.setState({ logging: true });
       agent.ContactPerson.addPerson(
-        workSpaceId,
+        organisationId,
         name,
         email,
         mobile,
@@ -219,14 +219,14 @@ class AddPerson extends React.Component<Props, PropsFromRedux> {
   };
 
   getCustomFieldList = () => {
-    const workSpaceId = (this.props as any).currentFirm?._id;
+    const organisationId = (this.props as any).currentOrganisation?._id;
     const active = true;
     const searchText = "";
     const skip = 0;
     const limit = 20;
     this.setState({ loading: true });
     agent.CustomField.getCustomFieldList(
-      workSpaceId,
+      organisationId,
       active,
       searchText,
       limit,

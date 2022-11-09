@@ -68,13 +68,13 @@ class EditTagModal extends React.Component<Props, PropsFromRedux> {
   }
 
   editTag = () => {
-    const workSpaceId = (this.props as any).currentFirm._id;
+    const organisationId = (this.props as any).currentOrganisation._id;
     const tagId = this.props.state.selectedRow._id;
     const name = this.state.name;
     const description = this.state.description;
     if (name !== "") {
       this.setState({ logging: true });
-      agent.Tag.editTag(name, description, tagId, workSpaceId)
+      agent.Tag.editTag(name, description, tagId, organisationId)
         .then((response: any) => {
           this.setState({ logging: false });
           (this.props as any).addNotification(

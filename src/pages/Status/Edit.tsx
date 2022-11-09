@@ -88,8 +88,8 @@ class EditStatusModal extends React.Component<Props, PropsFromRedux> {
   }
 
   getStatusTaskList = () => {
-    const workSpaceId = (this.props as any)?.currentFirm._id;
-    agent.Status.statusTaskList(workSpaceId)
+    const organisationId = (this.props as any)?.currentOrganisation._id;
+    agent.Status.statusTaskList(organisationId)
       .then((response: any) => {
         const tasks = response.filter((item: any) => item !== "ALL");
         tasks.unshift("ALL");
@@ -118,7 +118,7 @@ class EditStatusModal extends React.Component<Props, PropsFromRedux> {
   };
 
   editStatus = () => {
-    const workSpaceId = (this.props as any).currentFirm._id;
+    const organisationId = (this.props as any).currentOrganisation._id;
     const statusId = this.props.state.selectedRow._id;
     const name = this.state.name;
     const description = this.state.description;
@@ -138,7 +138,7 @@ class EditStatusModal extends React.Component<Props, PropsFromRedux> {
         name,
         color,
         description,
-        workSpaceId,
+        organisationId,
         tasks
       )
         .then((response: any) => {

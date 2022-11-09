@@ -91,7 +91,7 @@ class AddClient extends React.Component<any, PropsFromRedux> {
   addUser = () => {
     const { email, userRole, managerRights, employeeRights } = this.state;
     const isEmailValid = validEmail.test(email);
-    const workSpace = (this.props as any).currentFirm._id;
+    const organisation = (this.props as any).currentOrganisation._id;
     const role = userRole;
     const userRightsList =
       role === "manager"
@@ -101,7 +101,7 @@ class AddClient extends React.Component<any, PropsFromRedux> {
         : adminRights;
     if (email !== "" && isEmailValid) {
       this.setState({ logging: true });
-      agent.User.addUser(workSpace, email, role, userRightsList)
+      agent.User.addUser(organisation, email, role, userRightsList)
         .then((response: any) => {
           console.log({ response });
           this.setState({ logging: false });
@@ -110,7 +110,7 @@ class AddClient extends React.Component<any, PropsFromRedux> {
             "Successfully sent an invitation.",
             "success"
           );
-          this.props.navigate(`/${workSpace}/user/list`);
+          this.props.navigate(`/${organisation}/user/list`);
         })
         .catch((err: any) => {
           this.setState({ logging: false });
@@ -139,9 +139,10 @@ class AddClient extends React.Component<any, PropsFromRedux> {
   };
 
   cancelHandler = () => {
-    const firmId =
-      (this.props as any).params.firmId || (this.props as any).currentFirm._id;
-    this.props.navigate(`/${firmId}/user/list`);
+    const organisationId =
+      (this.props as any).params.organisationId ||
+      (this.props as any).currentOrganisation._id;
+    this.props.navigate(`/${organisationId}/user/list`);
   };
 
   updateState = (field: string) => (ev: any) => {
