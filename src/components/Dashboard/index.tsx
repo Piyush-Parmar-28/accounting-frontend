@@ -5,6 +5,7 @@ import { connect, ConnectedProps } from "react-redux";
 import { Link } from "react-router-dom";
 import { compose } from "redux";
 import agent from "../../agent";
+import SelectMenu from "../SelectMenu";
 import { adminRights } from "../../constants/defaultUserRights";
 import { withRouter } from "../../helpers/withRouter";
 import {
@@ -18,6 +19,17 @@ import MultiSelect from "../MultiSelect";
 import SearchNavigation from "../SearchNavigation";
 
 import { todoList } from "../../pages/Todo/Index";
+
+const getCurrentFinYear = () => {
+  const todayDate5 = new Date();
+  todayDate5.setMonth(todayDate5.getMonth());
+  const currentYear = todayDate5.getFullYear();
+  const month = todayDate5.toLocaleString("default", { month: "long" });
+  if (month === "January" || month === "February" || month === "March") {
+    return currentYear - 1 + "-" + (currentYear - 2000);
+  }
+  return currentYear + "-" + (currentYear + 1 - 2000);
+};
 
 const menuItems = (organisationId: string) => {
   const list = todoList.map((item) => {
@@ -199,6 +211,36 @@ class Dashboard extends React.Component<DashboardProps, PropsFromRedux> {
         });
       }
     }
+    (this.props as any).updateCommon({
+      currentYear: getCurrentFinYear(),
+    });
+  };
+
+  getAllYears = () => {
+    const years = [
+      "2021-22",
+      "2022-23",
+      "2023-24",
+      "2024-25",
+      "2025-26",
+      "2026-27",
+      "2027-28",
+      "2028-29",
+      "2029-30",
+    ];
+    let yearsToShow = [];
+    const currentOrganisationStartingYear = (this.props as any)
+      .currentOrganisation?.startingYear;
+    const indexOfCurrentYear = years.indexOf(getCurrentFinYear());
+    for (const year of years) {
+      if (
+        years.indexOf(year) >= years.indexOf(currentOrganisationStartingYear) &&
+        years.indexOf(year) <= indexOfCurrentYear
+      ) {
+        yearsToShow.push(year);
+      }
+    }
+    return yearsToShow;
   };
 
   getUserRights = () => {
@@ -522,6 +564,11 @@ class Dashboard extends React.Component<DashboardProps, PropsFromRedux> {
     );
   };
 
+  onYearChange = (year: any) => {
+    (this.props as any).updateCommon({ currentYear: year.name });
+    this.updatePathName();
+  };
+
   render() {
     return (
       <div className="h-screen flex overflow-hidden bg-gray-100">
@@ -774,219 +821,6 @@ class Dashboard extends React.Component<DashboardProps, PropsFromRedux> {
           </Dialog>
         </Transition.Root>
 
-        {/* <div
-          className="fixed inset-0 flex z-40 md:hidden"
-          role="dialog"
-          aria-modal="true"
-        >
-          <Transition
-            show={this.state.menuShow}
-            enter="transition-opacity ease-linear duration-300"
-            enterFrom="opacity-0"
-            enterTo="opacity-100"
-            leave="transition-opacity ease-linear duration-300"
-            leaveFrom="opacity-100"
-            leaveTo="opacity-0"
-          >
-            <div
-              className="fixed inset-0 bg-gray-600 bg-opacity-75"
-              aria-hidden="true"
-            ></div>
-          </Transition>
-
-          <Transition
-            show={this.state.menuShow}
-            enter="transition ease-in-out duration-300 transform"
-            enterFrom="-translate-x-full"
-            enterTo="translate-x-0"
-            leave="transition ease-in-out duration-300 transform"
-            leaveFrom="translate-x-0"
-            leaveTo="-translate-x-full"
-          >
-            <div className="relative flex-1 flex flex-col max-w-xs w-full pt-5 pb-4 bg-gray-800">
-              <Transition
-                show={this.state.menuShow}
-                enter="ease-in-out duration-300"
-                enterFrom="opacity-0"
-                enterTo="opacity-100"
-                leave="ease-in-out duration-300"
-                leaveFrom="opacity-100"
-                leaveTo="opacity-0"
-              >
-                <div className="absolute top-0 right-0 -mr-12 pt-2">
-                  <button
-                    className="ml-1 flex items-center justify-center h-10 w-10 rounded-full focus:outline-none"
-                    onClick={this.toggleMenu}
-                  >
-                    <span className="sr-only">Close sidebar</span>
-                    <Icon name="outline/x" className="h-6 w-6 text-white" />
-                  </button>
-                </div>
-              </Transition>
-
-              <div className="flex-shrink-0 flex items-center px-4">
-                <img
-                  className="h-8 w-auto"
-                  src="/images/Logo.png"
-                  alt="Workflow"
-                />
-              </div>
-              <div className="mt-5 flex-1 h-0 overflow-y-auto">
-                <nav className="px-2 space-y-1">
-                  {menuItems((this.props as any).currentOrganisation?._id).map(
-                    (menuItem: any) =>
-                      !menuItem.children ? (
-                        <div key={menuItem.name}>
-                          <Link
-                            to={menuItem.route}
-                            key={menuItem.name}
-                            className={
-                              this.props.match.path === menuItem.route
-                                ? "bg-gray-900 text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md"
-                                : "text-gray-300 hover:bg-gray-700 hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md"
-                            }
-                          >
-                            <Icon
-                              name={menuItem.iconName}
-                              className={
-                                this.state.menuState[menuItem.name]
-                                  ? "text-gray-500 mr-3 flex-shrink-0 h-6 w-6"
-                                  : "text-gray-400 group-hover:text-gray-500 mr-3 flex-shrink-0 h-6 w-6"
-                              }
-                              aria-hidden="true"
-                            />
-                            {menuItem.name}
-                          </Link>
-                        </div>
-                      ) : (
-                        <div key={menuItem.name}>
-                          <Disclosure
-                            as="div"
-                            key={menuItem.name}
-                            className="space-y-1"
-                          >
-                            {({ open }) => (
-                              <div
-                                onClick={() =>
-                                  this.toggleDropdown(menuItem.name)
-                                }
-                              >
-                                <Disclosure.Button className="text-gray-300 w-full justify-between hover:bg-gray-700 hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md">
-                                  <span className="flex items-center">
-                                    <Icon
-                                      name={menuItem.iconName}
-                                      className="mr-3 flex-shrink-0 h-6 w-6 text-gray-400 group-hover:text-gray-500"
-                                      aria-hidden="true"
-                                    />
-                                    {menuItem.name}
-                                  </span>
-                                  <ChevronDownIcon
-                                    className={
-                                      !this.state.menuState[menuItem.name]
-                                        ? "text-gray-400 -rotate-90 ml-3 h-5 w-5 transform group-hover:text-gray-400 transition-colors ease-in-out duration-150"
-                                        : "text-gray-300 ml-3 h-5 w-5 transform group-hover:text-gray-400 transition-colors ease-in-out duration-150"
-                                    }
-                                  />
-                                </Disclosure.Button>
-                                {this.state.menuState[menuItem.name] ? (
-                                  <Disclosure.Panel
-                                    className="space-y-1 ml-11 border-l border-gray-500"
-                                    static
-                                  >
-                                    {menuItem.children.map((subItem: any) =>
-                                      !subItem.children ? (
-                                        <div key={subItem.name}>
-                                          <Link
-                                            to={subItem.route}
-                                            key={subItem.name}
-                                            className={
-                                              this.props.match.path ===
-                                              subItem.route
-                                                ? "bg-gray-900 text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md"
-                                                : "text-gray-300 hover:bg-gray-700 hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md"
-                                            }
-                                          >
-                                            {subItem.name}
-                                          </Link>
-                                        </div>
-                                      ) : (
-                                        <div key={subItem.name}>
-                                          <Disclosure
-                                            as="div"
-                                            key={subItem.name}
-                                            className="space-y-1"
-                                          >
-                                            {({ open }) => (
-                                              <div
-                                                onClick={() =>
-                                                  this.toggleSubItemDropdown(
-                                                    subItem.name
-                                                  )
-                                                }
-                                              >
-                                                <Disclosure.Button className="text-gray-300 w-full justify-between hover:bg-gray-700 hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md">
-                                                  <span className="flex items-center">
-                                                    {subItem.name}
-                                                  </span>
-                                                  <ChevronDownIcon
-                                                    className={
-                                                      !this.state.subMenuState[
-                                                        subItem.name
-                                                      ]
-                                                        ? "text-gray-400 -rotate-90 ml-3 h-5 w-5 transform group-hover:text-gray-400 transition-colors ease-in-out duration-150"
-                                                        : "text-gray-300 ml-3 h-5 w-5 transform group-hover:text-gray-400 transition-colors ease-in-out duration-150"
-                                                    }
-                                                  />
-                                                </Disclosure.Button>
-                                                {this.state.subMenuState[
-                                                  subItem.name
-                                                ] ? (
-                                                  <Disclosure.Panel
-                                                    className="space-y-1 ml-6 border-l border-gray-500"
-                                                    static
-                                                  >
-                                                    {subItem.children.map(
-                                                      (subSubItem: any) => (
-                                                        <Link
-                                                          to={subSubItem.route}
-                                                          key={subSubItem.name}
-                                                          className={
-                                                            this.props.match
-                                                              .path ===
-                                                            subSubItem.route
-                                                              ? "bg-gray-900 text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md"
-                                                              : "text-gray-300 hover:bg-gray-700 hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md"
-                                                          }
-                                                        >
-                                                          {subSubItem.name}
-                                                        </Link>
-                                                      )
-                                                    )}
-                                                  </Disclosure.Panel>
-                                                ) : null}
-                                              </div>
-                                            )}
-                                          </Disclosure>
-                                        </div>
-                                      )
-                                    )}
-                                  </Disclosure.Panel>
-                                ) : null}
-                              </div>
-                            )}
-                          </Disclosure>
-                        </div>
-                      )
-                  )}
-                </nav>
-              </div>
-            </div>
-          </Transition>
-          <div className="flex-shrink-0 w-14" aria-hidden="true">
-            <!-- Dummy element to force sidebar to shrink to fit close icon -->
-          </div>
-        </div> */}
-
         {/* <!-- Static sidebar for desktop --> */}
         <div className="hidden md:flex md:flex-shrink-0">
           <div className="flex flex-col w-64">
@@ -1201,7 +1035,7 @@ class Dashboard extends React.Component<DashboardProps, PropsFromRedux> {
                 {((this.props as any).params.organisationId ||
                   (this.props as any).location.pathname === "/organisations") &&
                   (this.props as any).organisations?.length > 0 && (
-                    <div className="ml-4 mr-4 w-72 grow">
+                    <div className="ml-4 w-72 grow">
                       <MultiSelect
                         items={(this.props as any).organisations?.map(
                           (organisation: any) => {
@@ -1221,96 +1055,19 @@ class Dashboard extends React.Component<DashboardProps, PropsFromRedux> {
                     </div>
                   )}
 
-                {/* <div>
-                    <Menu as="div" className="relative">
-                      <Menu.Button>
-                        <Icon
-                          name="add"
-                          className="text-blue-700 h-6 w-6 mt-2.5"
-                          aria-hidden="true"
-                        />
-                      </Menu.Button>
+                <div className="ml-4 mr-4 flex">
+                  <SelectMenu
+                    items={this.getAllYears()?.map((year: any) => {
+                      return {
+                        ...year,
+                        name: year,
+                      };
+                    })}
+                    selected={{ name: (this.props as any).currentYear }}
+                    onChange={this.onYearChange}
+                  />
+                </div>
 
-                      <Transition
-                        as={Fragment}
-                        enter="transition ease-out duration-200"
-                        enterFrom="opacity-0 translate-y-1"
-                        enterTo="opacity-100 translate-y-0"
-                        leave="transition ease-in duration-150"
-                        leaveFrom="opacity-100 translate-y-0"
-                        leaveTo="opacity-0 translate-y-1"
-                      >
-                        <div>
-                          <Menu.Items className="absolute bg-white z-10 left-1/2 rounded-lg transform -translate-x-1/2 mt-8 px-2 w-60 sm:px-0">
-                            <span className="absolute -top-2.5 left-1/2 bg-white w-5 h-5 border border-b-0 border-r-0 transform -translate-x-1/2 rotate-45"></span>
-                            <div className="py-3 rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 overflow-hidden">
-                              <Menu.Item>
-                                <Link
-                                  to={`/${
-                                    (this.props as any).currentOrganisation?._id
-                                  }/tags/add`}
-                                  className="flex items-center w-full p-1 text-gray-700 border-b block px-4 py-2 text-sm text-gray-900"
-                                >
-                                  <Icon
-                                    name="outline/document-text"
-                                    className="h-5 w-5 mr-2"
-                                  />
-                                  <span className="text-blue-700">Tag</span>
-                                </Link>
-                              </Menu.Item>
-                              <Menu.Item>
-                                <Link
-                                  to={`/${
-                                    (this.props as any).currentOrganisation?._id
-                                  }/status/add`}
-                                  className="flex items-center w-full p-1 border-b text-gray-700 block px-4 py-2 text-sm text-gray-900"
-                                >
-                                  <Icon
-                                    name="outline/settings"
-                                    className="h-5 w-5 mr-2"
-                                  />
-                                  <span className="text-blue-700">Status</span>
-                                </Link>
-                              </Menu.Item>
-                            </div>
-                          </Menu.Items>
-                        </div>
-                      </Transition>
-                    </Menu>
-                  </div> */}
-                {/* <Popover className="relative">
-                    <>
-                      <Popover.Button>
-                        <Icon
-                          name="add"
-                          className="text-blue-700 h-6 w-6 mt-2.5"
-                          aria-hidden="true"
-                        />
-                      </Popover.Button>
-
-                      <Transition
-                        as={Fragment}
-                        enter="transition ease-out duration-200"
-                        enterFrom="opacity-0 translate-y-1"
-                        enterTo="opacity-100 translate-y-0"
-                        leave="transition ease-in duration-150"
-                        leaveFrom="opacity-100 translate-y-0"
-                        leaveTo="opacity-0 translate-y-1"
-                      >
-                        <Popover.Panel className="absolute z-10 left-1/2 transform -translate-x-1/2 mt-6 px-2 w-screen max-w-xs sm:px-0">
-                          <div className="rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 overflow-hidden">
-                            <div className="relative grid gap-6 bg-white px-5 py-6 sm:gap-8 sm:p-8">
-                              <div className="-m-3 p-3 block rounded-md hover:bg-gray-50 transition ease-in-out duration-150">
-                                <Link to="/62cd52e58003c725e4cbbfe2/tags/list">
-                                  SKSSL
-                                </Link>
-                              </div>
-                            </div>
-                          </div>
-                        </Popover.Panel>
-                      </Transition>
-                    </>
-                  </Popover> */}
                 <div>
                   <SearchNavigation openModalHandler={this.openModalHandler} />
                 </div>
