@@ -70,7 +70,17 @@ class AddOrganisation extends React.Component<Props, PropsFromRedux> {
     const name = this.state.name;
     if (name !== "") {
       this.setState({ logging: true });
-      agent.Organisation.addOrganisation(name)
+      agent.Organisation.addOrganisation(
+        name,
+        "gstin",
+        true,
+        "gstRegType",
+        "startingYear",
+        "gstRegStatus",
+        false,
+        "address",
+        "mainlyDealing"
+      )
         .then((response: any) => {
           this.setState({ logging: false });
           (this.props as any).addNotification(

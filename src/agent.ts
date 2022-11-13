@@ -70,8 +70,28 @@ const Auth = {
 
 const Organisation = {
   getOrganisations: () => requests.get("/organisation/list"),
-  addOrganisation: (name: string) =>
-    requests.post("/organisation/add", { name }),
+  addOrganisation: (
+    name: string,
+    gstin: string,
+    gstRegistered: boolean,
+    gstRegType: string,
+    startingYear: string,
+    gstRegistrationStatus: string,
+    manageInventory: boolean,
+    billingAddress: string,
+    mainlyDealsIn: string
+  ) =>
+    requests.post("/organisation/add", {
+      name,
+      gstin,
+      gstRegistered,
+      gstRegType,
+      startingYear,
+      gstRegistrationStatus,
+      manageInventory,
+      billingAddress,
+      mainlyDealsIn,
+    }),
   editOrganisation: (organisationId: string, name: string) =>
     requests.patch("/organisation/updatename", { organisationId, name }),
   makeOrganisationInactive: (organisationId: string) =>
@@ -182,6 +202,57 @@ const Status = {
   makeStatusActive: (id: string, organisationId: string) =>
     requests.put("/status/active", { id, organisationId }),
   statusTaskList: (organisationId: string) =>
+    requests.get(
+      `/status/listoftaskforstatus?organisationId=${organisationId}`
+    ),
+  deleteStatus: (id: string, organisationId: string) =>
+    requests.delete("/status/delete", { id, organisationId }),
+};
+
+const Account = {
+  getAccountList: (
+    organisationId: string,
+    active: boolean,
+    searchText: string
+  ) =>
+    requests.get(
+      `/status/list?organisationId=${organisationId}&active=${active}&skip=0&limit=10&searchText=${searchText}`
+    ),
+  addAccount: (
+    name: string,
+    color: string,
+    description: string,
+    organisationId: string,
+    tasks: string[]
+  ) =>
+    requests.post("/status/add", {
+      name,
+      color,
+      description,
+      organisationId,
+      tasks,
+    }),
+  editStatus: (
+    statusId: string,
+    name: string,
+    color: string,
+    description: string,
+    organisationId: string,
+    tasks: string[]
+  ) =>
+    requests.put("/status/edit", {
+      statusId,
+      name,
+      color,
+      description,
+      organisationId,
+      tasks,
+    }),
+  makeStatusInactive: (id: string, organisationId: string) =>
+    requests.put("/status/inactive", { id, organisationId }),
+  makeStatusActive: (id: string, organisationId: string) =>
+    requests.put("/status/active", { id, organisationId }),
+  accountTaskList: (organisationId: string) =>
     requests.get(
       `/status/listoftaskforstatus?organisationId=${organisationId}`
     ),
@@ -432,7 +503,7 @@ const Clients = {
 const Gst = {
   addGst: (gstin: string) => requests.post("/gsts", { gstin }),
   getAll: () => requests.get("/gsts"),
-  getGst: (gstin: string) => requests.get(`/gsts/${gstin}`),
+  getGst: (gstin: string) => requests.get(`/gst/?gstin=${gstin}`),
   changeName: (body: { id: string; name: string }) =>
     requests.put("/gsts/changeName", body),
 };
@@ -491,6 +562,7 @@ let agent = {
   Organisation,
   Tag,
   Status,
+  Account,
   User,
   ContactPerson,
   CustomField,

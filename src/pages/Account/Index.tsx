@@ -20,7 +20,7 @@ import { Menu, Transition } from "@headlessui/react";
 import InActiveModal from "../../components/InActiveModal";
 import ActiveModal from "../../components/ActiveModal";
 import DeleteModal from "../../components/DeleteModal";
-import EditStatusModal from "./Edit";
+import EditAccountModal from "./Edit";
 import { withRouter } from "../../helpers/withRouter";
 import { compose } from "redux";
 // import InactiveTagModal from "./InactiveTagModal";
@@ -71,7 +71,7 @@ class Clients extends React.Component<PropsFromRedux> {
     searchText: string;
     status: any;
     totalRecords: number;
-    displayStatusDetails: any;
+    displayAccountDetails: any;
     selectedGstId: string;
     modalOpen: boolean;
     typingTimeout: number;
@@ -96,7 +96,7 @@ class Clients extends React.Component<PropsFromRedux> {
       searchText: "",
       status: [],
       totalRecords: 0,
-      displayStatusDetails: [],
+      displayAccountDetails: [],
       selectedGstId: "",
       modalOpen: false,
       typingTimeout: 0,
@@ -116,18 +116,18 @@ class Clients extends React.Component<PropsFromRedux> {
 
   //Get Organisation Data
 
-  getStatusList = (forSearch: boolean) => {
+  getAccountList = (forSearch: boolean) => {
     const organisationId = (this.props as any).params?.organisationId;
     const searchText = forSearch ? this.state.searchText : "";
     const active = this.state.active;
     this.setState({ loading: true });
-    agent.Status.getStatusList(organisationId, active, searchText)
+    agent.Account.getAccountList(organisationId, active, searchText)
       .then((response: any) => {
         this.setState({
           status: response.status,
           loading: false,
           totalRecords: response.status.length,
-          displayStatusDetails: response.status.slice(
+          displayAccountDetails: response.status.slice(
             this.currPage * this.chunkSize,
             this.currPage * this.chunkSize + this.chunkSize
           ),
@@ -147,7 +147,7 @@ class Clients extends React.Component<PropsFromRedux> {
 
   // onMount Load data
   componentDidMount() {
-    this.getStatusList(false);
+    this.getAccountList(false);
   }
 
   componentDidUpdate(prevProps: any, prevState: any) {
@@ -156,30 +156,30 @@ class Clients extends React.Component<PropsFromRedux> {
 
     if (prevOrganisationId !== currOrganisationId) {
       this.setState({ searchText: "" });
-      this.getStatusList(false);
+      this.getAccountList(false);
     }
 
     const prevModal = prevProps.currentModal;
     const currentModal = (this.props as any)?.currentModal;
 
     if (
-      prevModal?.modalName === "ADD_STATUS_MODAL" &&
+      prevModal?.modalName === "ADD_ACCOUNT_MODAL" &&
       prevModal?.modalName !== currentModal?.modalName &&
       currentModal?.modalName === "" &&
       currentModal?.fetchAgain
     ) {
-      this.getStatusList(false);
+      this.getAccountList(false);
     }
 
     if (prevState.active !== this.state.active) {
-      this.getStatusList(false);
+      this.getAccountList(false);
     }
   }
 
   handlePageClick = (data: any) => {
     this.currPage = data.selected;
     this.setState({
-      displayStatusDetails: this.state.status.slice(
+      displayAccountDetails: this.state.status.slice(
         this.currPage * this.chunkSize,
         this.currPage * this.chunkSize + this.chunkSize
       ),
@@ -217,7 +217,7 @@ class Clients extends React.Component<PropsFromRedux> {
     this.setState({
       searchText: ev.target.value,
       typingTimeout: setTimeout(() => {
-        this.getStatusList(true);
+        this.getAccountList(true);
       }, 700),
     });
   };
@@ -226,12 +226,12 @@ class Clients extends React.Component<PropsFromRedux> {
     this.setState({ active: !this.state.active });
   };
 
-  openAddStatusModal = () => {
+  openAddAccountModal = () => {
     const statusRights = (this.props as any)?.rights?.statusRights;
     const createRight = statusRights.create;
     if (createRight) {
       (this.props as any).updateCommon({
-        currentModal: { modalName: "ADD_STATUS_MODAL", fetchAgain: false },
+        currentModal: { modalName: "ADD_ACCOUNT_MODAL", fetchAgain: false },
       });
     } else {
       (this.props as any).onNotify(
@@ -308,9 +308,9 @@ class Clients extends React.Component<PropsFromRedux> {
       <Dashboard>
         <div className="gsts">
           {this.state.showEditModal && (
-            <EditStatusModal
+            <EditAccountModal
               state={this.state}
-              onLoad={this.getStatusList}
+              onLoad={this.getAccountList}
               editModalSetOpen={this.editModalSetOpen}
             />
           )}
@@ -319,7 +319,7 @@ class Clients extends React.Component<PropsFromRedux> {
             <InActiveModal
               type={"status"}
               state={this.state}
-              onLoad={this.getStatusList}
+              onLoad={this.getAccountList}
               inActiveModalSetOpen={this.inActiveModalSetOpen}
             />
           )}
@@ -328,7 +328,7 @@ class Clients extends React.Component<PropsFromRedux> {
             <ActiveModal
               type={"status"}
               state={this.state}
-              onLoad={this.getStatusList}
+              onLoad={this.getAccountList}
               activeModalSetOpen={this.activeModalSetOpen}
             />
           )}
@@ -336,27 +336,27 @@ class Clients extends React.Component<PropsFromRedux> {
             <DeleteModal
               type={"status"}
               state={this.state}
-              onLoad={this.getStatusList}
+              onLoad={this.getAccountList}
               deleteModalSetOpen={this.deleteModalSetOpen}
             />
           )}
 
           <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
-            <h1 className="text-2xl font-semibold text-gray-900">Status</h1>
+            <h1 className="text-2xl font-semibold text-gray-900">Account</h1>
           </div>
           <div className="px-4 sm:px-6 md:px-8 grid grid-cols-3 gap-4 mt-6">
             <div className="w-fit">
               <button
                 type="button"
                 className="relative inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none"
-                onClick={this.openAddStatusModal}
+                onClick={this.openAddAccountModal}
               >
                 {(this.props as any)?.rights?.statusRights.create ? (
                   <Icon name="add" className="h-4 w-4 mr-2" />
                 ) : (
                   <Icon name="outline/lock-closed" className="h-4 w-4 mr-2" />
                 )}
-                Add Status
+                Add Account
               </button>
             </div>
 
@@ -368,7 +368,7 @@ class Clients extends React.Component<PropsFromRedux> {
                   name="name"
                   type="text"
                   value={this.state.searchText}
-                  placeholder="Search by Status Name or Status Description"
+                  placeholder="Search by Account Name or Account Description"
                   className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:border-indigo-500 text-sm"
                   onChange={this.handleSearchTextChange}
                 />
@@ -393,7 +393,7 @@ class Clients extends React.Component<PropsFromRedux> {
                 htmlFor="comments"
                 className="font-medium cursor-pointer text-gray-700"
               >
-                Show Inactive Status
+                Show Inactive Account
               </label>
             </div>
           </div>
@@ -430,7 +430,7 @@ class Clients extends React.Component<PropsFromRedux> {
             </button>
           </div> */}
 
-          {!this.state.loading && this.state.displayStatusDetails ? (
+          {!this.state.loading && this.state.displayAccountDetails ? (
             this.state.totalRecords > 0 || this.state.searchText.length > 0 ? (
               <div className={"max-w-7xl mx-auto px-4 sm:px-6 md:px-8"}>
                 {/* Organisation List Table */}
@@ -452,7 +452,7 @@ class Clients extends React.Component<PropsFromRedux> {
                                 scope="col"
                                 className="sticky top-0 border-b border-gray-300 bg-gray-50 px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider sm:pl-6"
                               >
-                                STATUS NAME
+                                ACCOUNT NAME
                               </th>
                               <th
                                 style={{ zIndex: 6 }}
@@ -473,7 +473,7 @@ class Clients extends React.Component<PropsFromRedux> {
                                 scope="col"
                                 className="sticky top-0 border-b border-gray-300 bg-gray-50 px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider sm:pl-6"
                               >
-                                STATUS
+                                ACCOUNT
                               </th>
 
                               <th
@@ -491,7 +491,7 @@ class Clients extends React.Component<PropsFromRedux> {
                             </div>
                           ) : (
                             <tbody className="bg-white">
-                              {this.state.displayStatusDetails?.map(
+                              {this.state.displayAccountDetails?.map(
                                 (status: any, index: any) => (
                                   <tr
                                     key={status._id}
@@ -675,16 +675,16 @@ class Clients extends React.Component<PropsFromRedux> {
                   strokeWidth="1"
                 />
                 <h3 className="mt-2 text-sm font-medium text-gray-900">
-                  No Status Entry
+                  No Account Entry
                 </h3>
                 <p className="mt-1 text-sm text-gray-500">
-                  Get started by adding a new Status.
+                  Get started by adding a new Account.
                 </p>
                 <div className="mt-6">
                   <button
                     type="button"
                     className="relative inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none"
-                    onClick={this.openAddStatusModal}
+                    onClick={this.openAddAccountModal}
                   >
                     {(this.props as any)?.rights?.statusRights.create ? (
                       <Icon name="add" className="h-4 w-4 mr-2" />
@@ -694,7 +694,7 @@ class Clients extends React.Component<PropsFromRedux> {
                         className="h-4 w-4 mr-2"
                       />
                     )}
-                    Add Status
+                    Add Account
                   </button>
                 </div>
               </div>
@@ -713,7 +713,7 @@ class Clients extends React.Component<PropsFromRedux> {
                                 scope="col"
                                 className="w-2/12 px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider"
                               >
-                                STATUS NAME
+                                ACCOUNT NAME
                               </th>
                               <th
                                 scope="col"
@@ -731,7 +731,7 @@ class Clients extends React.Component<PropsFromRedux> {
                                 scope="col"
                                 className="w-2/12 px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider"
                               >
-                                STATUS
+                                ACCOUNT
                               </th>
                               <th
                                 scope="col"
@@ -764,7 +764,7 @@ class Clients extends React.Component<PropsFromRedux> {
               </div>
             </div>
           )}
-          {this.state.displayStatusDetails.length > 0 ? (
+          {this.state.displayAccountDetails.length > 0 ? (
             <div className="bg-white px-4 py-3 my-4 lg:mx-8 flex items-center justify-between border-t border-gray-200 sm:px-6">
               <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
                 <div>

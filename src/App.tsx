@@ -10,14 +10,15 @@ import Notification from "./components/Notification";
 
 // Page Imports
 import GSTs from "./pages/GSTs/Index";
+import AddOrganisation from "./pages/GSTs/AddNew";
 
 // Tag Import
 import Tags from "./pages/Tags/Index";
 import AddTag from "./pages/Tags/Add";
 
-//  Status Import
-import Status from "./pages/Status/Index";
-import AddStatus from "./pages/Status/Add";
+//  Account Import
+import Account from "./pages/Account/Index";
+import AddAccount from "./pages/Account/Add";
 
 //  Person Import
 import ContactPerson from "./pages/ContactPerson/Index";
@@ -140,7 +141,7 @@ class App extends React.Component<PropsFromRedux> {
           <AddTag closeModal={this.closeModal} />
         )}
         {(this.props as any)?.currentModal?.modalName ===
-          "ADD_STATUS_MODAL" && <AddStatus closeModal={this.closeModal} />}
+          "ADD_ACCOUNT_MODAL" && <AddAccount closeModal={this.closeModal} />}
 
         {(this.props as any)?.currentModal?.modalName ===
           "ADD_PERSON_MODAL" && <AddPerson closeModal={this.closeModal} />}
@@ -220,6 +221,15 @@ class App extends React.Component<PropsFromRedux> {
                   </this.PrivateRoute>
                 }
               />
+              {/* Add Organisation Page */}
+              <Route
+                path="/add-organisation"
+                element={
+                  <this.PrivateRoute>
+                    <AddOrganisation />
+                  </this.PrivateRoute>
+                }
+              />
               {/* Tag Page */}
               <Route
                 path="/:organisationId/tags/list"
@@ -231,10 +241,10 @@ class App extends React.Component<PropsFromRedux> {
               />
               {/* Status Page */}
               <Route
-                path="/:organisationId/status/list"
+                path="/:organisationId/account/list"
                 element={
                   <this.PrivateRoute>
-                    <Status />
+                    <Account />
                   </this.PrivateRoute>
                 }
               />

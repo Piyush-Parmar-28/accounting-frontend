@@ -561,7 +561,8 @@ class Organisations extends React.Component<any, PropsFromRedux> {
                                     {organisation.owner}
                                   </td>
                                   <td className="w-2/10 px-6 py-3 whitespace-nowrap text-sm font-bold text-gray-900">
-                                    {organisation.type.toUpperCase()}
+                                    {/* {organisation.gstRegType &&
+                                      organisation.gstRegType.toUpperCase()} */}
                                   </td>
                                   <td className="w-2/10 px-6 py-3 whitespace-nowrap text-sm text-gray-500">
                                     {organisation.active
