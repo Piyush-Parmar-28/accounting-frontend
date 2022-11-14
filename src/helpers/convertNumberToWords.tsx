@@ -108,7 +108,6 @@ function convert_paise(num: string) {
 export default function convertNumberToWords(num: number) {
   if (num == 0) return "Zero";
   let number = num.toString().split(".");
-  console.log("number", number);
 
   if (number[1]) {
     let paise = convert_paise(number[1]);

@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import agent from "../../agent";
 import validGSTIN from "../../helpers/gstValidate";
+import TitleCaseRestLowercase from "../../helpers/TitleCaseRestLowercase";
 import { useNavigate } from "react-router";
 import { ADD_NOTIFICATION, LOGIN } from "../../store/types";
 import { connect, ConnectedProps } from "react-redux";
@@ -51,6 +52,9 @@ const connector = connect(mapStateToProps, mapDispatchToProps);
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
 function AddOrganisation(props: PropsFromRedux) {
+  useEffect(() => {
+    document.title = "Add Organisation - RapidBooks";
+  }, []);
   const navigate = useNavigate();
 
   const initialState = {
@@ -99,9 +103,9 @@ function AddOrganisation(props: PropsFromRedux) {
     ) {
       agent.Gst.getGst(e.target.value).then((res: any) => {
         if (res.data.name) {
-          setName(res.data.name);
+          setName(TitleCaseRestLowercase(res.data.name));
         } else {
-          setName(res.data.lgnm);
+          setName(TitleCaseRestLowercase(res.data.lgnm));
         }
         setGstRegType(res.data.gstRegType.toLowerCase());
         setGstRegState(res.data.gstRegState);
@@ -280,6 +284,10 @@ function AddOrganisation(props: PropsFromRedux) {
                     onChange={gstinHandler}
                     className="block w-full max-w-lg rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:max-w-xs sm:text-sm"
                   />
+                  <div className="text-gray-500 text-sm">
+                    Enter GSTIN and name, GST registration type and address will
+                    be filled automaticallly.
+                  </div>
                 </div>
               </div>
             ) : null}

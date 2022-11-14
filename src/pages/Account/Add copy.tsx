@@ -19,33 +19,33 @@ function classNames(...classes: any) {
 }
 
 const accounts = [
-  { id: 1, name: "Bank", default: "dr" },
-  { id: 2, name: "Bank OD/CC A/c", default: "dr" },
-  { id: 3, name: "Capital", default: "cr" },
-  { id: 4, name: "Cash", default: "dr" },
-  { id: 5, name: "Creditors", default: "cr" },
-  { id: 6, name: "Current Assets", default: "dr" },
-  { id: 7, name: "Current Liabilities", default: "cr" },
-  { id: 8, name: "Debtors", default: "dr" },
-  { id: 9, name: "Deposits - Assets", default: "dr" },
-  { id: 10, name: "Direct Expenses", default: "dr" },
-  { id: 11, name: "Direct Income", default: "cr" },
-  { id: 12, name: "Duties & Taxes", default: "cr" },
-  { id: 13, name: "Fixed Asset", default: "dr" },
-  { id: 14, name: "Indirect Expense", default: "dr" },
-  { id: 15, name: "Indirect Income", default: "cr" },
-  { id: 16, name: "Investments", default: "dr" },
-  { id: 17, name: "Loans and Advances - Asset", default: "dr" },
-  { id: 18, name: "Miscellaneous Assets", default: "dr" },
-  { id: 19, name: "Miscellaneous Liabilities", default: "cr" },
-  { id: 20, name: "Provisions", default: "cr" },
-  { id: 21, name: "Purchases", default: "dr" },
-  { id: 22, name: "Reserves", default: "cr" },
-  { id: 23, name: "Sales", default: "cr" },
-  { id: 24, name: "Secured Loan", default: "cr" },
-  { id: 25, name: "Stock", default: "dr" },
-  { id: 26, name: "Suspense", default: "dr" },
-  { id: 27, name: "Unsecured Loan", default: "cr" },
+  { id: 1, name: "Bank" },
+  { id: 2, name: "Bank OD/CC A/c" },
+  { id: 3, name: "Capital" },
+  { id: 4, name: "Cash" },
+  { id: 5, name: "Creditors" },
+  { id: 6, name: "Current Assets" },
+  { id: 7, name: "Current Liabilities" },
+  { id: 8, name: "Debtors" },
+  { id: 9, name: "Deposits - Assets" },
+  { id: 10, name: "Direct Expenses" },
+  { id: 11, name: "Direct Income" },
+  { id: 12, name: "Duties & Taxes" },
+  { id: 13, name: "Fixed Asset" },
+  { id: 14, name: "Indirect Expense" },
+  { id: 15, name: "Indirect Income" },
+  { id: 16, name: "Investments" },
+  { id: 17, name: "Loans and Advances - Asset" },
+  { id: 18, name: "Miscellaneous Assets" },
+  { id: 19, name: "Miscellaneous Liabilities" },
+  { id: 20, name: "Provisions" },
+  { id: 21, name: "Purchases" },
+  { id: 22, name: "Reservers" },
+  { id: 23, name: "Sales" },
+  { id: 24, name: "Secured Loan" },
+  { id: 25, name: "Stock" },
+  { id: 26, name: "Suspense" },
+  { id: 27, name: "Unsecured Loan" },
 ];
 
 //Redux mapping
@@ -91,13 +91,11 @@ function AddAccount(props: Props & PropsFromRedux) {
 
   const [selectedAccount, setSelectedAccount] = useState(null);
   const [openingBalance, setOpeningBalance] = useState(0);
-  const [openingBalanceInWords, setOpeningBalanceInWords] = useState("dr");
-  const [openingBalanceType, setOpeningBalanceType] = useState("dr");
+  const [openingBalanceInWords, setOpeningBalanceInWords] = useState("");
+
   const [state, setState] = useState<state>(initialState);
   const [name, setName] = useState("");
   const [gstin, setGstin] = useState("");
-  const [defaultDrOrCr, setDefaultDrOrCr] = useState("");
-  const [accountNature, setAccountNature] = useState("");
 
   // const onKeyUpFunction(event: any)
   // if (event.keyCode === 27) {
@@ -118,6 +116,7 @@ function AddAccount(props: Props & PropsFromRedux) {
   // }
 
   const addAccount = () => {
+    console.log("name from add account function", name);
     const organisationId = (props as any).currentOrganisation._id;
 
     // const name = state.name;
@@ -187,18 +186,8 @@ function AddAccount(props: Props & PropsFromRedux) {
     console.log(value);
   };
 
-  const openingBalanceTypeHandler = (e: any) => {
-    setOpeningBalanceType(e.target.id);
-  };
-
-  const natureSelectHandler = (account: any) => {
-    setAccountNature(account);
-
-    let accountDetails = accounts.find((acc) => acc.id === account.id);
-    if (accountDetails) {
-      let defaultSide = accountDetails.default;
-      setDefaultDrOrCr(defaultSide);
-    }
+  const accountSelectHandler = (account: any) => {
+    console.log(account);
   };
 
   const nameSelectHandler = (name: any) => {
@@ -267,201 +256,119 @@ function AddAccount(props: Props & PropsFromRedux) {
                     Add Account
                   </h3>
                 </div>
-                <form className="space-y-8 divide-y">
-                  <div className="space-y-8 divide-y sm:space-y-5">
-                    <div className=" sm:space-y-5">
-                      <div className="space-y-6 sm:space-y-5">
-                        {/* name */}
-
-                        <div className="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:border-gray-200 sm:pt-5">
-                          <label
-                            htmlFor="first-name"
-                            className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2"
-                          >
-                            Name*
-                          </label>
-                          <div className="mt-1 sm:col-span-2 sm:mt-0">
-                            <TextBox
-                              onTyping={nameSelectHandler}
-                              value={name}
-                            />
-                          </div>
-                        </div>
-
-                        {/* nature of account */}
-
-                        <div className="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:border-gray-200">
-                          <label
-                            htmlFor="last-name"
-                            className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2"
-                          >
-                            Nature of Account*
-                          </label>
-                          <div className="mt-1 sm:col-span-2 sm:mt-0">
-                            <ComboBox
-                              values={accounts}
-                              onSelection={natureSelectHandler}
-                            />
-                          </div>
-                        </div>
-
-                        {/* opening Balance */}
-
-                        <div className="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:border-gray-200">
-                          <label
-                            htmlFor="last-name"
-                            className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2"
-                          >
-                            Opening Balance
-                          </label>
-                          <div className="mt-1 sm:col-span-2 sm:mt-0">
-                            <AmountBox onChange={openingBalanceHandler} />
-                          </div>
-                        </div>
-
-                        {/* opening Balance in words */}
-                        {openingBalance > 0 ? (
-                          <div className="sm:grid sm:grid-cols-3 sm:items-start sm:border-gray-200">
-                            <label
-                              htmlFor="last-name"
-                              className="block text-sm font-medium text-gray-700 sm:mt-px"
-                            ></label>
-                            <div className="mt-1 sm:col-span-2 sm:mt-0 text-gray-400 text-sm px-2 text-left">
-                              {openingBalanceInWords &&
-                                `${openingBalanceInWords} `}
-                            </div>
-                          </div>
-                        ) : null}
-
-                        {/* opening Balance type */}
-                        {openingBalance > 0 ? (
-                          <div className="sm:grid sm:grid-cols-3 sm:items-start sm:border-gray-200">
-                            <label
-                              htmlFor="last-name"
-                              className="block text-sm font-medium text-gray-700 sm:mt-px"
-                            >
-                              Opening Balance Type
-                            </label>
-                            <div className="mt-1 sm:col-span-2 sm:mt-0 text-gray-400 text-xs px-2 text-left">
-                              <div className="sm:grid sm:items-start sm:gap-4 sm:border-gray-200">
-                                <div
-                                  role="group"
-                                  aria-labelledby="label-notifications"
-                                >
-                                  <div className="sm:grid sm:grid-cols-3 sm:items-baseline sm:gap-4">
-                                    <div className="sm:col-span-2">
-                                      <div className="max-w-lg">
-                                        <div className="space-y-4">
-                                          <div className="flex items-center">
-                                            <input
-                                              id="debit"
-                                              name="push-notifications"
-                                              type="radio"
-                                              // checked={
-                                              //   defaultDrOrCr === "dr"
-                                              //     ? true
-                                              //     : false
-                                              // }
-                                              onChange={
-                                                openingBalanceTypeHandler
-                                              }
-                                              className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                                            />
-                                            <label
-                                              htmlFor="push-everything"
-                                              className="ml-3 block text-sm font-medium text-gray-700 pr-8"
-                                            >
-                                              Debit
-                                            </label>
-                                            <input
-                                              id="credit"
-                                              name="push-notifications"
-                                              type="radio"
-                                              // checked={
-                                              //   defaultDrOrCr === "cr"
-                                              //     ? true
-                                              //     : false
-                                              // }
-                                              onChange={
-                                                openingBalanceTypeHandler
-                                              }
-                                              className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                                            />
-                                            <label
-                                              htmlFor="push-email"
-                                              className="ml-3 block text-sm font-medium text-gray-700"
-                                            >
-                                              Credit
-                                            </label>
-                                          </div>
-                                          <div className="flex items-center"></div>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        ) : null}
-
-                        {/* if accountnature is debtors or creditors */}
-                        {accountNature === "Debtors" ||
-                        accountNature === "Creditors" ? (
-                          <div className="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:border-gray-200">
-                            <label
-                              htmlFor="last-name"
-                              className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2"
-                            >
-                              GSTIN
-                            </label>
-                            <div className="mt-1 sm:col-span-2 sm:mt-0">
-                              <GSTINBox
-                                onTyping={gstinSelectHandler}
-                                value={gstin}
-                                gstinDetails={gstinDetails}
-                                onFocus={gstinFocusHandler}
-                              />
-                              <div className="text-sm px-1">
-                                <p>
-                                  {" "}
-                                  Enter GSTIN and all GST details will be filled
-                                  automatically.
-                                </p>
-                              </div>
-                            </div>
-                          </div>
-                        ) : null}
+                <form onSubmit={(e) => e.preventDefault()}>
+                  <div className="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4  sm:pt-5 align-baseline">
+                    <div className="mt-1 sm:col-span-1 sm:mt-0">
+                      <label
+                        htmlFor="first-name"
+                        className="block text-sm font-medium text-gray-700 sm:mt-px "
+                      >
+                        Name*
+                      </label>
+                    </div>
+                    <div className="mt-1 sm:col-span-2 sm:mt-0">
+                      <TextBox onTyping={nameSelectHandler} value={name} />
+                    </div>
+                    <div className="mt-1 sm:col-span-1 sm:mt-0"></div>
+                    <label
+                      htmlFor="first-name"
+                      className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2"
+                    >
+                      Nature of Account*
+                    </label>
+                  </div>
+                  <div className="mt-1 sm:col-span-2 sm:mt-0">
+                    <ComboBox
+                      values={accounts}
+                      onSelection={accountSelectHandler}
+                    />
+                  </div>
+                  <div className="mt-1 sm:col-span-1 sm:mt-0">
+                    <label
+                      htmlFor="first-name"
+                      className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2"
+                    >
+                      Opening Balance*
+                    </label>
+                  </div>
+                  <div className="mt-1 sm:col-span-2 sm:mt-0">
+                    <AmountBox onChange={openingBalanceHandler} />
+                    <div className="px-2 py-2 text-left text-gray-400 text-xs">
+                      {openingBalanceInWords && `${openingBalanceInWords} `}
+                    </div>
+                  </div>
+                  {openingBalance ? (
+                    <div>
+                      <div className="mt-1 sm:col-span-1 sm:mt-0">
+                        <label
+                          htmlFor="first-name"
+                          className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2"
+                        >
+                          First name
+                        </label>
+                      </div>
+                      <div className="mt-1 sm:col-span-2 sm:mt-0">
+                        <input
+                          type="text"
+                          name="first-name"
+                          id="first-name"
+                          autoComplete="given-name"
+                          className="block w-full max-w-lg rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:max-w-xs sm:text-sm"
+                        />
                       </div>
                     </div>
-                    <div className="mt-5 sm:mt-4 sm:flex sm:justify-end py-4">
-                      <button
-                        type="button"
-                        className="w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm py-2  text-base bg-white font-medium text-gray-700 hover:bg-gray-50 focus:outline-none sm:w-32 sm:text-sm"
-                        onClick={() => closeAccountModal(false)}
-                      >
-                        Cancel
-                      </button>
-                      <button
-                        type="button"
-                        disabled={state.logging}
-                        className={
-                          "mt-3 sm:ml-4 w-full inline-flex items-center justify-center rounded-md border border-transparent border-gray-300 shadow-sm py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none sm:mt-0 sm:w-32 sm:text-sm"
-                        }
-                        onClick={addAccount}
-                      >
-                        <span className="w-full flex justify-end">
-                          {state.logging ? (
-                            <Icon name="loading" className="mr-2" />
-                          ) : null}
-                        </span>
-                        <span>Save</span>
-                        <span className="w-full"></span>
-                      </button>
-                    </div>
+                  ) : null}
+
+                  <div className="mt-1 sm:col-span-1 sm:mt-0">
+                    <label
+                      htmlFor="first-name"
+                      className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2"
+                    >
+                      GSTIN
+                    </label>
+                  </div>
+                  <div className="mt-1 sm:col-span-2 sm:mt-0">
+                    <GSTINBox
+                      onTyping={gstinSelectHandler}
+                      value={gstin}
+                      gstinDetails={gstinDetails}
+                      onFocus={gstinFocusHandler}
+                    />
+                    {gstinMessageShow && (
+                      <p>
+                        {" "}
+                        Enter GSTIN and all GST details will be filled
+                        automatically.
+                      </p>
+                    )}
                   </div>
                 </form>
 
+                <div className="mt-5 sm:mt-4 sm:flex sm:justify-end py-4">
+                  <button
+                    type="button"
+                    className="w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm py-2  text-base bg-white font-medium text-gray-700 hover:bg-gray-50 focus:outline-none sm:w-32 sm:text-sm"
+                    onClick={() => closeAccountModal(false)}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    disabled={state.logging}
+                    className={
+                      "mt-3 sm:ml-4 w-full inline-flex items-center justify-center rounded-md border border-transparent border-gray-300 shadow-sm py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none sm:mt-0 sm:w-32 sm:text-sm"
+                    }
+                    onClick={addAccount}
+                  >
+                    <span className="w-full flex justify-end">
+                      {state.logging ? (
+                        <Icon name="loading" className="mr-2" />
+                      ) : null}
+                    </span>
+                    <span>Save</span>
+                    <span className="w-full"></span>
+                  </button>
+                </div>
                 {/* </div> */}
               </div>
               {
