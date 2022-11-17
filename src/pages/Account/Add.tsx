@@ -13,6 +13,7 @@ import AmountBox from "../../components/AmountBox";
 import convertNumberToWords from "../../helpers/convertNumberToWords";
 import TextBox from "../../components/TextBox";
 import GSTINBox from "../../components/GSTINBox";
+import GstRateBox from "../../components/GstRateBox";
 
 function classNames(...classes: any) {
   return classes.filter(Boolean).join(" ");
@@ -28,7 +29,7 @@ const accounts = [
   { id: 7, name: "Current Liabilities", default: "cr" },
   { id: 8, name: "Debtors", default: "dr" },
   { id: 9, name: "Deposits - Assets", default: "dr" },
-  { id: 10, name: "Direct Expenses", default: "dr" },
+  { id: 10, name: "Direct Expense", default: "dr" },
   { id: 11, name: "Direct Income", default: "cr" },
   { id: 12, name: "Duties & Taxes", default: "cr" },
   { id: 13, name: "Fixed Asset", default: "dr" },
@@ -74,30 +75,22 @@ const connector = connect(mapStateToProps, mapDispatchToProps);
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
 function AddAccount(props: Props & PropsFromRedux) {
-  interface state {
-    logging: boolean;
-    name: string;
-    description: string;
-    color: { name: string; value: string };
-  }
-
-  // onKeyUpFunction = onKeyUpFunction.bind(this);
-  const initialState = {
-    logging: false,
-    name: "",
-    description: "",
-    color: { name: "", value: "" },
-  };
-
-  const [selectedAccount, setSelectedAccount] = useState(null);
-  const [openingBalance, setOpeningBalance] = useState(0);
-  const [openingBalanceInWords, setOpeningBalanceInWords] = useState("dr");
-  const [openingBalanceType, setOpeningBalanceType] = useState("dr");
-  const [state, setState] = useState<state>(initialState);
   const [name, setName] = useState("");
-  const [gstin, setGstin] = useState("");
-  const [defaultDrOrCr, setDefaultDrOrCr] = useState("");
   const [accountNature, setAccountNature] = useState("");
+  const [openingBalance, setOpeningBalance] = useState(0);
+  const [openingBalanceInWords, setOpeningBalanceInWords] = useState("");
+  const [openingBalanceType, setOpeningBalanceType] = useState("dr");
+  const [gstin, setGstin] = useState("");
+  const [gstRate, setGstRate] = useState(0);
+  const [billingAddress, setBillingAddress] = useState("");
+  const [shippingAddress, setShippingAddress] = useState("");
+  const [mobileNo, setMobileNo] = useState("");
+  const [email, setEmail] = useState("");
+  const [pan, setPan] = useState("");
+  const [tan, setTan] = useState("");
+  const [logging, setLogging] = useState(false);
+
+  const [defaultDrOrCr, setDefaultDrOrCr] = useState("");
 
   // const onKeyUpFunction(event: any)
   // if (event.keyCode === 27) {
@@ -121,19 +114,27 @@ function AddAccount(props: Props & PropsFromRedux) {
     const organisationId = (props as any).currentOrganisation._id;
 
     // const name = state.name;
-    const description = state.description;
-    const color = state.color.name;
 
-    if (name !== "" && color !== "") {
-      setState({ ...state, logging: true });
+    if (name !== "" && accountNature !== "") {
+      setLogging(true);
 
-      agent.Account.addAccount(name, color, description, organisationId, [])
+      agent.Account.addAccount(
+        name,
+        accountNature,
+        openingBalance,
+        openingBalanceType,
+        organisationId,
+        gstin,
+        gstRate,
+        billingAddress,
+        shippingAddress,
+        mobileNo,
+        email,
+        pan,
+        tan
+      )
         .then((response: any) => {
-          setState((prevState) => ({
-            ...prevState,
-            logging: false,
-          }));
-
+          setLogging(false);
           (props as any).addNotification(
             "Account Added",
             "Successfully added a new account.",
@@ -143,10 +144,7 @@ function AddAccount(props: Props & PropsFromRedux) {
         })
         .catch((err: any) => {
           console.log({ err });
-          setState((prevState) => ({
-            ...prevState,
-            logging: false,
-          }));
+          setLogging(false);
 
           (props as any).addNotification(
             "Could not add the account",
@@ -161,10 +159,10 @@ function AddAccount(props: Props & PropsFromRedux) {
           "Account Name Field is Required!.",
           "danger"
         );
-      } else if (!color) {
+      } else if (!accountNature) {
         (props as any).addNotification(
-          "Empty Account Color Field",
-          "Account Color Field is Required!.",
+          "Empty Nature of Account Field",
+          "Nature of Account is Required!.",
           "danger"
         );
       }
@@ -184,7 +182,6 @@ function AddAccount(props: Props & PropsFromRedux) {
     if ((value = 0 || value === "")) {
       setOpeningBalanceInWords("");
     }
-    console.log(value);
   };
 
   const openingBalanceTypeHandler = (e: any) => {
@@ -202,7 +199,6 @@ function AddAccount(props: Props & PropsFromRedux) {
   };
 
   const nameSelectHandler = (name: any) => {
-    console.log(name);
     setName(name);
   };
 
@@ -214,9 +210,27 @@ function AddAccount(props: Props & PropsFromRedux) {
     console.log("gstindetails", gstinDetails);
     setName(gstinDetails.gstinname);
   };
-  const [gstinMessageShow, setGstinMessageShow] = useState(false);
-  const gstinFocusHandler = (value: boolean) => {
-    setGstinMessageShow(value);
+
+  const gstRateSelectHandler = (gstRate: any) => {
+    setGstRate(gstRate);
+  };
+  const billingAddressHandler = (billingAddress: any) => {
+    setBillingAddress(billingAddress);
+  };
+  const shippingAddressHandler = (shippingAddress: any) => {
+    setShippingAddress(shippingAddress);
+  };
+  const mobileNoHandler = (mobileNo: any) => {
+    setMobileNo(mobileNo);
+  };
+  const emailHandler = (email: any) => {
+    setEmail(email);
+  };
+  const panHandler = (pan: any) => {
+    setPan(pan);
+  };
+  const tanHandler = (tan: any) => {
+    setTan(tan);
   };
 
   return (
@@ -284,6 +298,7 @@ function AddAccount(props: Props & PropsFromRedux) {
                             <TextBox
                               onTyping={nameSelectHandler}
                               value={name}
+                              maximumCharacters={50}
                             />
                           </div>
                         </div>
@@ -408,27 +423,136 @@ function AddAccount(props: Props & PropsFromRedux) {
                         {/* if accountnature is debtors or creditors */}
                         {accountNature === "Debtors" ||
                         accountNature === "Creditors" ? (
-                          <div className="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:border-gray-200">
+                          <div>
+                            {/* gstin box */}
+                            <div className="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:border-gray-200">
+                              <label
+                                htmlFor="last-name"
+                                className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2"
+                              >
+                                GSTIN
+                              </label>
+                              <div className="mt-1 sm:col-span-2 sm:mt-0">
+                                <GSTINBox
+                                  onTyping={gstinSelectHandler}
+                                  value={gstin}
+                                  gstinDetails={gstinDetails}
+                                />
+                                <div className="text-sm px-1">
+                                  <p>
+                                    {" "}
+                                    Enter GSTIN and all GST details will be
+                                    filled automatically.
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* gstin box */}
+
+                            <div className="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:border-gray-200 sm:pt-5">
+                              <label
+                                htmlFor="first-name"
+                                className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2"
+                              >
+                                Billing Address
+                              </label>
+                              <div className="mt-1 sm:col-span-2 sm:mt-0">
+                                <TextBox
+                                  onTyping={billingAddressHandler}
+                                  value={billingAddress}
+                                  maximumCharacters={100}
+                                />
+                              </div>
+                            </div>
+
+                            {/* contact number  */}
+
+                            <div className="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:border-gray-200 sm:pt-5">
+                              <label
+                                htmlFor="first-name"
+                                className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2"
+                              >
+                                Mobile Number
+                              </label>
+                              <div className="mt-1 sm:col-span-2 sm:mt-0">
+                                <TextBox
+                                  onTyping={mobileNoHandler}
+                                  value={mobileNo}
+                                  maximumCharacters={10}
+                                />
+                              </div>
+                            </div>
+
+                            {/* email */}
+
+                            <div className="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:border-gray-200 sm:pt-5">
+                              <label
+                                htmlFor="first-name"
+                                className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2"
+                              >
+                                Email
+                              </label>
+                              <div className="mt-1 sm:col-span-2 sm:mt-0">
+                                <TextBox
+                                  onTyping={emailHandler}
+                                  value={email}
+                                  maximumCharacters={50}
+                                />
+                              </div>
+                            </div>
+
+                            {/* PAN */}
+
+                            <div className="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:border-gray-200 sm:pt-5">
+                              <label
+                                htmlFor="first-name"
+                                className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2"
+                              >
+                                PAN
+                              </label>
+                              <div className="mt-1 sm:col-span-2 sm:mt-0">
+                                <TextBox
+                                  onTyping={panHandler}
+                                  value={pan}
+                                  maximumCharacters={10}
+                                />
+                              </div>
+                            </div>
+
+                            {/* TAN */}
+
+                            <div className="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:border-gray-200 sm:pt-5">
+                              <label
+                                htmlFor="first-name"
+                                className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2"
+                              >
+                                TAN
+                              </label>
+                              <div className="mt-1 sm:col-span-2 sm:mt-0">
+                                <TextBox
+                                  onTyping={tanHandler}
+                                  value={tan}
+                                  maximumCharacters={11}
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        ) : null}
+
+                        {/* if account is direct/indirect expense */}
+
+                        {accountNature === "Direct Expense" ||
+                        accountNature === "Indirect Expense" ? (
+                          <div className="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:border-gray-200 pb-32">
                             <label
-                              htmlFor="last-name"
+                              htmlFor="first-name"
                               className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2"
                             >
-                              GSTIN
+                              GST Rate
                             </label>
                             <div className="mt-1 sm:col-span-2 sm:mt-0">
-                              <GSTINBox
-                                onTyping={gstinSelectHandler}
-                                value={gstin}
-                                gstinDetails={gstinDetails}
-                                onFocus={gstinFocusHandler}
-                              />
-                              <div className="text-sm px-1">
-                                <p>
-                                  {" "}
-                                  Enter GSTIN and all GST details will be filled
-                                  automatically.
-                                </p>
-                              </div>
+                              <GstRateBox onSelection={gstRateSelectHandler} />
                             </div>
                           </div>
                         ) : null}
@@ -444,14 +568,14 @@ function AddAccount(props: Props & PropsFromRedux) {
                       </button>
                       <button
                         type="button"
-                        disabled={state.logging}
+                        disabled={logging}
                         className={
                           "mt-3 sm:ml-4 w-full inline-flex items-center justify-center rounded-md border border-transparent border-gray-300 shadow-sm py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none sm:mt-0 sm:w-32 sm:text-sm"
                         }
                         onClick={addAccount}
                       >
                         <span className="w-full flex justify-end">
-                          {state.logging ? (
+                          {logging ? (
                             <Icon name="loading" className="mr-2" />
                           ) : null}
                         </span>
@@ -464,131 +588,6 @@ function AddAccount(props: Props & PropsFromRedux) {
 
                 {/* </div> */}
               </div>
-              {
-                /* <div className="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
-                  <div>
-                    <div>
-                      <h3 className="text-lg font-medium leading-6 text-gray-900">
-                        Add Account
-                      </h3>
-                    </div>
-                    <div>
-                      <form onSubmit={(e) => e.preventDefault()}>
-                        <div className="mt-4">
-                          <div className="mb-4">
-                            <label
-                              htmlFor="company_website"
-                              className="block text-sm font-medium text-gray-700"
-                            >
-                              Name <span className="text-red-600">*</span>
-                            </label>
-                            <div className="mt-1 flex rounded-md shadow-sm">
-                              <input
-                                type="text"
-                                name="company_website"
-                                value={state.name}
-                                onChange={updateState("name")}
-                                id="company_website"
-                                className="focus:ring-indigo-500 focus:border-indigo-500 flex-1 block w-full rounded-md sm:text-sm border-gray-300"
-                                placeholder="Name"
-                              />
-                            </div>
-                          </div>
-                          <div className="mb-4">
-                            <label
-                              htmlFor="company_website"
-                              className="block text-sm font-medium text-gray-700"
-                            >
-                              Color <span className="text-red-600">*</span>
-                            </label>
-                            <MultiSelect
-                              items={colorsList?.map((color: any) => {
-                                return {
-                                  ...color,
-                                  _id: color.name,
-                                  name: color.name,
-                                };
-                              })}
-                              selected={{
-                                name: state.color.name,
-                              }}
-                              type="colors"
-                              onChange={onColorChange}
-                              placeholder="Select Color"
-                            />
-                          </div>
-                          <div className="mb-4">
-                            <label
-                              htmlFor="company_website"
-                              className="block text-sm font-medium text-gray-700"
-                            >
-                              Tasks
-                            </label>
-                            <MultiSelectCheckbox
-                              items={state.tasks?.map((task: any) => {
-                                return {
-                                  _id: task,
-                                  name: task,
-                                };
-                              })}
-                              selected={state.selectedTasks}
-                              type="Tasks"
-                              onChange={onTaskChange}
-                              placeholder="Select Tasks"
-                            />
-                          </div>
-                          <div>
-                            <label
-                              htmlFor="comment"
-                              className="block text-sm font-medium text-gray-700"
-                            >
-                              Description
-                            </label>
-                            <div className="mt-1">
-                              <textarea
-                                rows={4}
-                                name="comment"
-                                id="comment"
-                                className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
-                                value={state.description}
-                                onChange={updateState("description")}
-                                placeholder="Add Description..."
-                              />
-                            </div>
-                          </div>
-                        </div>
-                              */
-                // <div className="mt-5 sm:mt-4 sm:flex sm:justify-end">
-                //   <button
-                //     type="button"
-                //     className="w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm py-2  text-base bg-white font-medium text-gray-700 hover:bg-gray-50 focus:outline-none sm:w-32 sm:text-sm"
-                //     onClick={() => closeAccountModal(false)}
-                //   >
-                //     Cancel
-                //   </button>
-                //   <button
-                //     type="button"
-                //     disabled={state.logging}
-                //     className={
-                //       "mt-3 sm:ml-4 w-full inline-flex items-center justify-center rounded-md border border-transparent border-gray-300 shadow-sm py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none sm:mt-0 sm:w-32 sm:text-sm"
-                //     }
-                //     onClick={addAccount}
-                //   >
-                //     <span className="w-full flex justify-end">
-                //       {state.logging ? (
-                //         <Icon name="loading" className="mr-2" />
-                //       ) : null}
-                //     </span>
-                //     <span>Save</span>
-                //     <span className="w-full"></span>
-                //   </button>
-                // </div>
-                /*
-                      </form>
-                    </div>
-                  </div>
-                </div> */
-              }
             </Transition.Child>
           </div>
         </Dialog>

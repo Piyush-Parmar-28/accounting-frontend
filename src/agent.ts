@@ -216,21 +216,37 @@ const Account = {
     searchText: string
   ) =>
     requests.get(
-      `/status/list?organisationId=${organisationId}&active=${active}&skip=0&limit=10&searchText=${searchText}`
+      `/account/accountslist?organisationId=${organisationId}&active=${active}&skip=0&limit=10&searchText=${searchText}`
     ),
   addAccount: (
     name: string,
-    color: string,
-    description: string,
+    nature: string,
+    openingBalance: number,
+    openingBalanceType: string,
     organisationId: string,
-    tasks: string[]
+    gstin: string,
+    gstRate: number,
+    billingAddress: string,
+    shippingAddress: string,
+    mobileNo: string,
+    email: string,
+    pan: string,
+    tan: string
   ) =>
-    requests.post("/status/add", {
+    requests.post("/account/add", {
       name,
-      color,
-      description,
+      nature,
+      openingBalance,
+      openingBalanceType,
       organisationId,
-      tasks,
+      gstin,
+      gstRate,
+      billingAddress,
+      shippingAddress,
+      mobileNo,
+      email,
+      pan,
+      tan,
     }),
   editStatus: (
     statusId: string,

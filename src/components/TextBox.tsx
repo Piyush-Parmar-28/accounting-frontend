@@ -12,8 +12,10 @@ export default function TextBox(props: any) {
   const handleChange = (event: any) => {
     let value = TitleCase(event.target.value);
 
-    if (value.length > 50) {
-      setError("Maximum permitted length is 50 characters");
+    if (value.length > props.maximumCharacters) {
+      setError(
+        `Maximum permitted length is ${props.maximumCharacters} characters`
+      );
       //   value = value.substring(0, 50);
     } else {
       setError("");
@@ -36,7 +38,9 @@ export default function TextBox(props: any) {
           className="block w-full min-w-0 flex-1 rounded-none rounded-l-md border-gray-300 px-3 py-2 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
         />
         <span className="inline-flex items-center rounded-r-md border border-l-0 border-gray-300 bg-gray-50 px-2 text-gray-500 sm:text-sm">
-          {value.length === 0 ? `0 / 50` : `${value.length} / 50`}
+          {value.length === 0
+            ? `0 / ${props.maximumCharacters}`
+            : `${value.length} / ${props.maximumCharacters}`}
         </span>
       </div>
 

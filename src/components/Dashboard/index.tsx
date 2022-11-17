@@ -86,6 +86,23 @@ const menuItems = (organisationId: string) => {
           route: `/${organisationId}/todo/list/starred`,
         },
     {
+      name: "Accounts",
+      iconName: "outline/settings",
+      route: "/settings",
+      children: [
+        {
+          name: "Balances",
+          iconName: "outline/document-add",
+          route: `/${organisationId}/account/list1`,
+        },
+        {
+          name: "Add/Edit",
+          iconName: "outline/group",
+          route: `/${organisationId}/account/list`,
+        },
+      ],
+    },
+    {
       name: "Settings",
       iconName: "outline/settings",
       route: "/settings",
