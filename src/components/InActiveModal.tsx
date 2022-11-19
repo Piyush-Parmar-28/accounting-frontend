@@ -284,6 +284,33 @@ class InActiveModal extends React.Component<Props, PropsFromRedux> {
     }
   };
 
+  makeAccountInactive = () => {
+    const organisationId = (this.props as any)?.currentOrganisation._id;
+    const accountId = this.props.state.selectedRow._id;
+    if (accountId !== undefined) {
+      this.setState({ logging: true });
+      agent.Account.makeAccountInactive(organisationId, accountId)
+        .then((response: any) => {
+          (this.props as any).addNotification(
+            "Account Inactive",
+            "Successfully Inactivated an Account.",
+            "success"
+          );
+          this.setState({ logging: false });
+          this.setOpen(false);
+          this.onLoad();
+        })
+        .catch((err: any) => {
+          this.setState({ logging: false });
+          (this.props as any).addNotification(
+            "Error",
+            err?.response?.data?.message || err?.message || err,
+            "danger"
+          );
+        });
+    }
+  };
+
   inActiveRow = () => {
     switch (this.props.type) {
       case "tag":
@@ -302,6 +329,8 @@ class InActiveModal extends React.Component<Props, PropsFromRedux> {
         return this.makeClientInactive();
       case "user":
         return this.makeUserInactive();
+      case "account":
+        return this.makeAccountInactive();
       default:
         return;
     }

@@ -264,10 +264,10 @@ const Account = {
       organisationId,
       tasks,
     }),
-  makeStatusInactive: (id: string, organisationId: string) =>
-    requests.put("/status/inactive", { id, organisationId }),
-  makeStatusActive: (id: string, organisationId: string) =>
-    requests.put("/status/active", { id, organisationId }),
+  makeAccountInactive: (organisationId: string, accountId: string) =>
+    requests.put("/account/inactive", { organisationId, accountId }),
+  makeAccountActive: (organisationId: string, accountId: string) =>
+    requests.put("/account/active", { organisationId, accountId }),
   accountTaskList: (organisationId: string) =>
     requests.get(
       `/status/listoftaskforstatus?organisationId=${organisationId}`

@@ -71,9 +71,9 @@ export default function GSTINBox(props: any) {
     }
   };
 
-  const focusHandler = (e: any) => {
-    props.onFocus(true);
-  };
+  // const focusHandler = (e: any) => {
+  //   props.onFocus(true);
+  // };
 
   return (
     <div className="">
@@ -85,7 +85,7 @@ export default function GSTINBox(props: any) {
           autoComplete="given-name"
           value={props.value}
           onChange={handleChange}
-          onFocus={focusHandler}
+          // onFocus={focusHandler}
           className="block w-full min-w-0 flex-1 rounded-none rounded-l-md rounded-r-md border-gray-300 px-3 py-2 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
         />
       </div>

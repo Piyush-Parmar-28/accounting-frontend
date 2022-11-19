@@ -3,10 +3,6 @@ import React, { Fragment, useEffect, useState } from "react";
 import { connect, ConnectedProps } from "react-redux";
 import agent from "../../agent";
 import Icon from "../../components/Icon";
-import MultiSelect from "../../components/MultiSelect";
-import MultiSelectCheckbox from "../../components/MultiSelectCheckbox";
-import { colorsList } from "../../constants/colors";
-import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
 import ComboBox from "../../components/ComboBox";
 import { ADD_NOTIFICATION } from "../../store/types";
 import AmountBox from "../../components/AmountBox";
@@ -14,40 +10,11 @@ import convertNumberToWords from "../../helpers/convertNumberToWords";
 import TextBox from "../../components/TextBox";
 import GSTINBox from "../../components/GSTINBox";
 import GstRateBox from "../../components/GstRateBox";
+import { accounts } from "../../constants/accountnature";
 
 function classNames(...classes: any) {
   return classes.filter(Boolean).join(" ");
 }
-
-const accounts = [
-  { id: 1, name: "Bank", default: "dr" },
-  { id: 2, name: "Bank OD/CC A/c", default: "dr" },
-  { id: 3, name: "Capital", default: "cr" },
-  { id: 4, name: "Cash", default: "dr" },
-  { id: 5, name: "Creditors", default: "cr" },
-  { id: 6, name: "Current Assets", default: "dr" },
-  { id: 7, name: "Current Liabilities", default: "cr" },
-  { id: 8, name: "Debtors", default: "dr" },
-  { id: 9, name: "Deposits - Assets", default: "dr" },
-  { id: 10, name: "Direct Expense", default: "dr" },
-  { id: 11, name: "Direct Income", default: "cr" },
-  { id: 12, name: "Duties & Taxes", default: "cr" },
-  { id: 13, name: "Fixed Asset", default: "dr" },
-  { id: 14, name: "Indirect Expense", default: "dr" },
-  { id: 15, name: "Indirect Income", default: "cr" },
-  { id: 16, name: "Investments", default: "dr" },
-  { id: 17, name: "Loans and Advances - Asset", default: "dr" },
-  { id: 18, name: "Miscellaneous Assets", default: "dr" },
-  { id: 19, name: "Miscellaneous Liabilities", default: "cr" },
-  { id: 20, name: "Provisions", default: "cr" },
-  { id: 21, name: "Purchases", default: "dr" },
-  { id: 22, name: "Reserves", default: "cr" },
-  { id: 23, name: "Sales", default: "cr" },
-  { id: 24, name: "Secured Loan", default: "cr" },
-  { id: 25, name: "Stock", default: "dr" },
-  { id: 26, name: "Suspense", default: "dr" },
-  { id: 27, name: "Unsecured Loan", default: "cr" },
-];
 
 //Redux mapping
 const mapStateToProps = (state: any) => ({
@@ -148,7 +115,7 @@ function AddAccount(props: Props & PropsFromRedux) {
 
           (props as any).addNotification(
             "Could not add the account",
-            err?.response?.data?.message || err?.message || err,
+            err?.message || err,
             "danger"
           );
         });
@@ -191,7 +158,21 @@ function AddAccount(props: Props & PropsFromRedux) {
   const natureSelectHandler = (account: any) => {
     setAccountNature(account);
 
-    let accountDetails = accounts.find((acc) => acc.id === account.id);
+    // reset state for debtors/creditors field if first debtor/creditor is selected and then otehr nature is selected. Otherwise error like wrong pan will be shown
+    if (account !== "Debtors" && account !== "Creditors") {
+      setGstin("");
+      setGstRate(0);
+      setBillingAddress("");
+      setShippingAddress("");
+      setMobileNo("");
+      setEmail("");
+      setPan("");
+      setTan("");
+    }
+    if (account !== "Direct Expense" && account !== "Indirect Expense") {
+      setGstRate(0);
+    }
+    let accountDetails = accounts.find((acc: any) => acc.id === account.id);
     if (accountDetails) {
       let defaultSide = accountDetails.default;
       setDefaultDrOrCr(defaultSide);
@@ -208,7 +189,9 @@ function AddAccount(props: Props & PropsFromRedux) {
 
   const gstinDetails = (gstinDetails: any) => {
     console.log("gstindetails", gstinDetails);
-    setName(gstinDetails.gstinname);
+    if (!name) {
+      setName(gstinDetails.gstinname);
+    }
   };
 
   const gstRateSelectHandler = (gstRate: any) => {
@@ -299,6 +282,7 @@ function AddAccount(props: Props & PropsFromRedux) {
                               onTyping={nameSelectHandler}
                               value={name}
                               maximumCharacters={50}
+                              case="title"
                             />
                           </div>
                         </div>
@@ -462,6 +446,7 @@ function AddAccount(props: Props & PropsFromRedux) {
                                   onTyping={billingAddressHandler}
                                   value={billingAddress}
                                   maximumCharacters={100}
+                                  case="title"
                                 />
                               </div>
                             </div>
@@ -480,6 +465,7 @@ function AddAccount(props: Props & PropsFromRedux) {
                                   onTyping={mobileNoHandler}
                                   value={mobileNo}
                                   maximumCharacters={10}
+                                  case="same"
                                 />
                               </div>
                             </div>
@@ -498,6 +484,7 @@ function AddAccount(props: Props & PropsFromRedux) {
                                   onTyping={emailHandler}
                                   value={email}
                                   maximumCharacters={50}
+                                  case="same"
                                 />
                               </div>
                             </div>
@@ -516,6 +503,7 @@ function AddAccount(props: Props & PropsFromRedux) {
                                   onTyping={panHandler}
                                   value={pan}
                                   maximumCharacters={10}
+                                  case="capital"
                                 />
                               </div>
                             </div>
@@ -534,6 +522,7 @@ function AddAccount(props: Props & PropsFromRedux) {
                                   onTyping={tanHandler}
                                   value={tan}
                                   maximumCharacters={11}
+                                  case="capital"
                                 />
                               </div>
                             </div>

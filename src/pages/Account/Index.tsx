@@ -23,6 +23,7 @@ import DeleteModal from "../../components/DeleteModal";
 import EditAccountModal from "./Edit";
 import { withRouter } from "../../helpers/withRouter";
 import { compose } from "redux";
+import AddAccount from "./Add";
 // import InactiveTagModal from "./InactiveTagModal";
 // import ActiveTagModal from "./ActiveTagModal";
 // import EditTag from "./Edit";
@@ -60,7 +61,8 @@ const connector = connect(mapStateToProps, mapDispatchToProps);
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
-function Clients(props: PropsFromRedux) {
+function Accounts(props: PropsFromRedux) {
+  console.log(4);
   interface state {
     loading: boolean;
     posX: any;
@@ -69,12 +71,12 @@ function Clients(props: PropsFromRedux) {
     hoverY: any;
     showBackDrop: boolean;
     searchText: string;
-    status: any;
+    accounts: any;
     totalRecords: number;
     displayAccountDetails: any;
     selectedGstId: string;
     modalOpen: boolean;
-    typingTimeout: number;
+    typingTimeout: any;
     selectedRow: any;
     showDeleteModal: boolean;
     showActiveModal: boolean;
@@ -91,7 +93,7 @@ function Clients(props: PropsFromRedux) {
     hoverY: null,
     showBackDrop: false,
     searchText: "",
-    status: [],
+    accounts: [],
     totalRecords: 0,
     displayAccountDetails: [],
     selectedGstId: "",
@@ -114,6 +116,7 @@ function Clients(props: PropsFromRedux) {
   //Get Organisation Data
 
   const getAccountList = (forSearch: boolean) => {
+    console.log("getaccountlist");
     const organisationId = (props as any).params?.organisationId;
     const searchText = forSearch ? state.searchText : "";
     const active = state.active;
@@ -121,7 +124,7 @@ function Clients(props: PropsFromRedux) {
       ...prevState,
       loading: true,
     }));
-
+    console.log("accountlistsearchtext", searchText);
     agent.Account.getAccountList(organisationId, active, searchText)
       .then((response: any) => {
         setState((prevState) => ({
@@ -129,10 +132,8 @@ function Clients(props: PropsFromRedux) {
           loading: false,
           displayAccountDetails: response.accounts,
           totalRecords: response.count,
-          status: response.status,
+          accounts: response.accounts,
         }));
-
-        (props as any).updateCommon({ status: response.status });
       })
       .catch((err: any) => {
         console.log("TAG ERROR", { err });
@@ -156,9 +157,10 @@ function Clients(props: PropsFromRedux) {
 
   useEffect(() => {
     getAccountList(false);
-  }, []);
+  }, [(props as any).currentModal]);
 
   useEffect(() => {
+    console.log("useeffect1");
     setState((prevState) => ({
       ...prevState,
       searchText: "",
@@ -168,18 +170,19 @@ function Clients(props: PropsFromRedux) {
   }, [(props as any).params?.organisationId]);
 
   useEffect(() => {
-    // if (
-    //   (props as any)?.modalName === "ADD_ACCOUNT_MODAL" &&
-    //   (props as any)?.modalName === "" &&
-    //   (props as any)?.fetchAgain
-    // ) {
-    getAccountList(false);
-    // }
+    console.log("useeffect2");
+    if (
+      (props as any)?.modalName === "ADD_ACCOUNT_MODAL" &&
+      (props as any)?.modalName === "" &&
+      (props as any)?.fetchAgain
+    ) {
+      getAccountList(false);
+    }
   }, [(props as any).currentModal]);
 
-  useEffect(() => {
-    getAccountList(false);
-  }, [state.active]);
+  // useEffect(() => {
+  //   getAccountList(false);
+  // }, [state.active]);
 
   // componentDidUpdate(prevProps: any, prevState: any) {
   //   const prevOrganisationId = prevProps.params?.organisationId;
@@ -211,7 +214,7 @@ function Clients(props: PropsFromRedux) {
     currPage = data.selected;
     setState((prevState) => ({
       ...prevState,
-      displayAccountDetails: state.status,
+      displayAccountDetails: state.accounts,
     }));
   };
 
@@ -250,18 +253,23 @@ function Clients(props: PropsFromRedux) {
   };
 
   const handleSearchTextChange = (ev: any) => {
+    console.log("searchtextchange", ev.target.value);
     if (state.typingTimeout) {
       clearTimeout(state.typingTimeout);
     }
-
-    // setState({
-    //   searchText: ev.target.value,
-
-    //   typingTimeout: setTimeout(() => {
-    //     getAccountList(true);
-    //   }, 700),
-    // });
+    setState((prevState) => ({
+      ...prevState,
+      searchText: ev.target.value,
+      // typingTimeout: setTimeout(() => {
+      //   getAccountList(true);
+      // }, 700),
+    }));
+    // getAccountList(true);
   };
+  useEffect(() => {
+    console.log("useeffect3");
+    getAccountList(true);
+  }, [state.searchText]);
 
   const updateActive = () => {
     setState((prevState) => ({
@@ -292,10 +300,10 @@ function Clients(props: PropsFromRedux) {
     });
   };
 
-  const openActiveModal = (status: any) => {
+  const openActiveModal = (account: any) => {
     setState((prevState) => ({
       ...prevState,
-      selectedRow: status,
+      selectedRow: account,
       showBackDrop: false,
     }));
 
@@ -309,10 +317,10 @@ function Clients(props: PropsFromRedux) {
     }));
   };
 
-  const openInActiveModal = (status: any) => {
+  const openInActiveModal = (account: any) => {
     setState((prevState) => ({
       ...prevState,
-      selectedRow: status,
+      selectedRow: account,
       showBackDrop: false,
     }));
 
@@ -326,10 +334,10 @@ function Clients(props: PropsFromRedux) {
     }));
   };
 
-  const openDeleteModal = (status: any) => {
+  const openDeleteModal = (account: any) => {
     setState((prevState) => ({
       ...prevState,
-      selectedRow: status,
+      selectedRow: account,
       showBackDrop: false,
     }));
 
@@ -343,24 +351,24 @@ function Clients(props: PropsFromRedux) {
     }));
   };
 
-  const openEditModal = (status: any) => {
-    const statusRights = (props as any)?.rights?.statusRights;
-    const editRight = statusRights.edit;
-    if (editRight) {
-      setState((prevState) => ({
-        ...prevState,
-        selectedRow: status,
-        showBackDrop: false,
-      }));
-
-      editModalSetOpen(true);
-    } else {
-      (props as any).onNotify(
-        "Rights Not Avilable",
-        "Ask Admin to change your user rights.",
-        "danger"
-      );
-    }
+  const openEditModal = (account: any) => {
+    // const statusRights = (props as any)?.rights?.statusRights;
+    // const editRight = statusRights.edit;
+    // if (editRight) {
+    setState((prevState) => ({
+      ...prevState,
+      selectedRow: account,
+      showBackDrop: false,
+    }));
+    console.log(account);
+    editModalSetOpen(true);
+    // } else {
+    //   (props as any).onNotify(
+    //     "Rights Not Avilable",
+    //     "Ask Admin to change your user rights.",
+    //     "danger"
+    //   );
+    // }
   };
 
   const editModalSetOpen = (open: boolean) => {
@@ -369,7 +377,9 @@ function Clients(props: PropsFromRedux) {
       showEditModal: open,
     }));
   };
-
+  useEffect(() => {
+    console.log("useeffect4");
+  }, [state.showEditModal]);
   // TagManager.dataLayer(tagManagerArgs);
   return (
     <Dashboard>
@@ -384,7 +394,7 @@ function Clients(props: PropsFromRedux) {
 
         {state.showInActiveModal && (
           <InActiveModal
-            type={"status"}
+            type={"account"}
             state={state}
             onLoad={getAccountList}
             inActiveModalSetOpen={inActiveModalSetOpen}
@@ -393,7 +403,7 @@ function Clients(props: PropsFromRedux) {
 
         {state.showActiveModal && (
           <ActiveModal
-            type={"status"}
+            type={"account"}
             state={state}
             onLoad={getAccountList}
             activeModalSetOpen={activeModalSetOpen}
@@ -401,7 +411,7 @@ function Clients(props: PropsFromRedux) {
         )}
         {state.showDeleteModal && (
           <DeleteModal
-            type={"status"}
+            type={"account"}
             state={state}
             onLoad={getAccountList}
             deleteModalSetOpen={deleteModalSetOpen}
@@ -409,7 +419,10 @@ function Clients(props: PropsFromRedux) {
         )}
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
-          <h1 className="text-2xl font-semibold text-gray-900">Account</h1>
+          <h1 className="text-2xl font-semibold text-gray-900">
+            Accounts List
+          </h1>
+          <h2 className="text-sm text-gray-900">with Opening Balances</h2>
         </div>
         <div className="px-4 sm:px-6 md:px-8 grid grid-cols-3 gap-4 mt-6">
           <div className="w-fit">
@@ -434,7 +447,7 @@ function Clients(props: PropsFromRedux) {
                 name="name"
                 type="text"
                 value={state.searchText}
-                placeholder="Search by Account Name or Account Description"
+                placeholder="Search by Account Name, Amount or Nature"
                 className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:border-indigo-500 text-sm"
                 onChange={handleSearchTextChange}
               />
@@ -516,38 +529,60 @@ function Clients(props: PropsFromRedux) {
                             <th
                               style={{ zIndex: 6 }}
                               scope="col"
-                              className="sticky top-0 border-b border-gray-300 bg-gray-50 px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider sm:pl-6"
+                              rowSpan={2}
+                              className="sticky top-0 border-b border-gray-300 bg-gray-50 px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider sm:pl-6 align-bottom"
                             >
                               ACCOUNT NAME
                             </th>
                             <th
                               style={{ zIndex: 6 }}
                               scope="col"
-                              className="sticky top-0 border-b border-gray-300 bg-gray-50 px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider sm:pl-6"
+                              rowSpan={2}
+                              className="sticky top-0 border-b border-gray-300 bg-gray-50 px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider sm:pl-6 align-bottom"
                             >
                               NATURE OF ACCOUNT
                             </th>
                             <th
                               style={{ zIndex: 6 }}
                               scope="col"
-                              className="sticky top-0 border-b border-gray-300 bg-gray-50 px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider sm:pl-6"
+                              colSpan={2}
+                              className="sticky top-0 border-b border-gray-300 bg-gray-50 px-4 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider sm:pl-6 align-bottom"
                             >
-                              COLOR
+                              Opening Balance
                             </th>
                             <th
                               style={{ zIndex: 6 }}
                               scope="col"
-                              className="sticky top-0 border-b border-gray-300 bg-gray-50 px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider sm:pl-6"
+                              rowSpan={2}
+                              className="sticky top-0 border-b border-gray-300 bg-gray-50 px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider sm:pl-6 align-bottom"
                             >
-                              ACCOUNT
+                              ACTIVE/INACTIVE
                             </th>
 
                             <th
                               style={{ zIndex: 6 }}
                               scope="col"
-                              className="sticky top-0 border-b border-gray-300 bg-gray-50 px-4 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider sm:pl-6"
+                              rowSpan={2}
+                              className="sticky top-0 border-b border-gray-300 bg-gray-50 px-4 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider sm:pl-6 align-bottom"
                             >
                               ACTIONS
+                            </th>
+                          </tr>
+
+                          <tr>
+                            <th
+                              style={{ zIndex: 6 }}
+                              scope="col"
+                              className="sticky top-0 border-b border-gray-300 bg-gray-50 px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider sm:pl-6"
+                            >
+                              DEBIT
+                            </th>
+                            <th
+                              style={{ zIndex: 6 }}
+                              scope="col"
+                              className="sticky top-0 border-b border-gray-300 bg-gray-50 px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider sm:pl-6"
+                            >
+                              CREDIT
                             </th>
                           </tr>
                         </thead>
@@ -558,9 +593,9 @@ function Clients(props: PropsFromRedux) {
                         ) : (
                           <tbody className="bg-white">
                             {state.displayAccountDetails?.map(
-                              (status: any, index: any) => (
+                              (account: any, index: any) => (
                                 <tr
-                                  key={status._id}
+                                  key={account._id}
                                   className={
                                     index % 2 === 0 ? undefined : "bg-gray-100"
                                   }
@@ -569,23 +604,23 @@ function Clients(props: PropsFromRedux) {
                                     <button
                                       title="Edit"
                                       className="hover:underline font-bold"
-                                      onClick={() => openEditModal(status)}
+                                      onClick={() => openEditModal(account)}
                                     >
-                                      {status.name}
+                                      {account.name}
                                     </button>
                                   </td>
 
                                   <td
                                     id="description"
-                                    className="w-4/12 px-6 py-3 text-sm text-gray-500 relative"
+                                    className="w-3/12 px-6 py-3 text-sm text-gray-500 relative"
                                   >
                                     <div
                                       id="hover-description"
-                                      title={status.nature}
+                                      title={account.nature}
                                       // onMouseEnter={onDescriptionHover}
                                     >
                                       <p className="truncate">
-                                        {status.nature ? status.nature : "-"}
+                                        {account.nature ? account.nature : "-"}
                                       </p>
                                       {/* {status.description && (
                                           <span
@@ -598,13 +633,22 @@ function Clients(props: PropsFromRedux) {
                                     </div>
                                   </td>
 
-                                  <td className="w-3/10 px-6 py-3 whitespace-nowrap text-sm text-gray-900 font-bold">
-                                    {status.color}
+                                  <td className="w-4/10 px-6 py-3 whitespace-nowrap text-sm text-gray-900 font-bold text-right">
+                                    {account.openingBalanceType === "dr" &&
+                                    account.openingBalance !== 0
+                                      ? account.openingBalance
+                                      : "-"}
                                   </td>
-                                  <td className="w-3/10 px-6 py-3 whitespace-nowrap text-sm text-gray-500">
-                                    {status.active ? "Active" : "Inactive"}
+                                  <td className="w-4/10 px-6 py-3 whitespace-nowrap text-sm text-gray-900 font-bold text-right">
+                                    {account.openingBalanceType === "cr" &&
+                                    account.openingBalance !== 0
+                                      ? account.openingBalance
+                                      : "-"}
                                   </td>
-                                  <td className="w-3/10 px-6 py-3 mx-4 text-center whitespace-nowrap text-sm text-gray-500">
+                                  <td className="w-4/10 px-6 py-3 whitespace-nowrap text-sm text-gray-500">
+                                    {account.active ? "Active" : "Inactive"}
+                                  </td>
+                                  <td className="w-4/10 px-6 py-3 mx-4 text-center whitespace-nowrap text-sm text-gray-500">
                                     <Menu as="div" className="inline-block">
                                       <Menu.Button onClick={onActionClick}>
                                         <span className="sr-only">
@@ -647,7 +691,7 @@ function Clients(props: PropsFromRedux) {
                                                 <button
                                                   className="flex items-center w-full p-1 px-4 py-2 text-sm hover:bg-gray-100 text-gray-900"
                                                   onClick={() =>
-                                                    openEditModal(status)
+                                                    openEditModal(account)
                                                   }
                                                 >
                                                   <Icon
@@ -658,11 +702,11 @@ function Clients(props: PropsFromRedux) {
                                                 </button>
                                               </Menu.Item>
                                               <Menu.Item>
-                                                {status.active ? (
+                                                {account.active ? (
                                                   <button
                                                     className="flex items-center w-full p-1 px-4 py-2 text-sm hover:bg-gray-100 text-gray-900"
                                                     onClick={() =>
-                                                      openInActiveModal(status)
+                                                      openInActiveModal(account)
                                                     }
                                                   >
                                                     <Icon
@@ -675,7 +719,7 @@ function Clients(props: PropsFromRedux) {
                                                   <button
                                                     className="flex items-center w-full p-1 px-4 py-2 text-sm hover:bg-gray-100 text-gray-900"
                                                     onClick={() =>
-                                                      openActiveModal(status)
+                                                      openActiveModal(account)
                                                     }
                                                   >
                                                     <Icon
@@ -690,7 +734,7 @@ function Clients(props: PropsFromRedux) {
                                                 <button
                                                   className="flex items-center w-full p-1 px-4 py-2 text-sm hover:bg-gray-100 text-gray-900"
                                                   onClick={() =>
-                                                    openDeleteModal(status)
+                                                    openDeleteModal(account)
                                                   }
                                                 >
                                                   <Icon
@@ -764,15 +808,15 @@ function Clients(props: PropsFromRedux) {
                             </th>
                             <th
                               scope="col"
-                              className="w-4/12 px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider"
+                              className="w-2/12 px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider"
                             >
                               Nature of Account
                             </th>
                             <th
                               scope="col"
-                              className="w-2/12 px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider"
+                              className="w-4/12 px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider"
                             >
-                              COLOR
+                              OPENING BALANCE
                             </th>
                             <th
                               scope="col"
@@ -852,4 +896,4 @@ function Clients(props: PropsFromRedux) {
   );
 }
 
-export default compose(connector, withRouter)(Clients) as React.ComponentType;
+export default compose(connector, withRouter)(Accounts) as React.ComponentType;

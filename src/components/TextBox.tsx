@@ -10,7 +10,19 @@ export default function TextBox(props: any) {
   const [error, setError] = useState("");
 
   const handleChange = (event: any) => {
-    let value = TitleCase(event.target.value);
+    let value;
+    if (props.case === "title") {
+      value = TitleCase(event.target.value);
+    }
+    if (props.case === "capital") {
+      value = event.target.value.toUpperCase();
+    }
+    if (props.case === "same") {
+      value = event.target.value;
+    }
+    if (props.case === "lower") {
+      value = event.target.value.toLowerCase();
+    }
 
     if (value.length > props.maximumCharacters) {
       setError(
