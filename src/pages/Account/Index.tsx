@@ -278,16 +278,19 @@ function Accounts(props: PropsFromRedux) {
     }));
   };
 
-  const openAddAccountModal = () => {
+  const openAddAccountModal = (account: any) => {
     const statusRights = (props as any)?.rights?.statusRights;
     const createRight = statusRights.create;
     if (createRight) {
+      (props as any).updateCommon({
+        selectedRow: account,
+      });
       (props as any).updateCommon({
         currentModal: { modalName: "ADD_ACCOUNT_MODAL", fetchAgain: false },
       });
     } else {
       (props as any).onNotify(
-        "Rights Not Avilable",
+        "Rights Not Available",
         "Ask Admin to change your user rights.",
         "danger"
       );
@@ -604,7 +607,9 @@ function Accounts(props: PropsFromRedux) {
                                     <button
                                       title="Edit"
                                       className="hover:underline font-bold"
-                                      onClick={() => openEditModal(account)}
+                                      onClick={() =>
+                                        openAddAccountModal(account)
+                                      }
                                     >
                                       {account.name}
                                     </button>
@@ -691,7 +696,7 @@ function Accounts(props: PropsFromRedux) {
                                                 <button
                                                   className="flex items-center w-full p-1 px-4 py-2 text-sm hover:bg-gray-100 text-gray-900"
                                                   onClick={() =>
-                                                    openEditModal(account)
+                                                    openAddAccountModal(account)
                                                   }
                                                 >
                                                   <Icon

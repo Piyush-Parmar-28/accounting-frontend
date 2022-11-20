@@ -9,11 +9,17 @@ function classNames(...classes: any) {
 
 type Props = {
   onChange: (item: any) => void;
+  defaultValue: any;
 };
 
 export default function AmountBox(props: Props) {
-  const [amount, setAmount] = useState("");
+  console.log("propsvalue", props.defaultValue);
+  const [amount, setAmount] = useState(0);
 
+  useEffect(() => {
+    setAmount(props.defaultValue);
+  }, []);
+  console.log("amount", amount);
   const handleChange = (e: any) => {
     e.preventDefault();
 

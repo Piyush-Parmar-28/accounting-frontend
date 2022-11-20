@@ -3,8 +3,8 @@ import React, { Fragment, useEffect, useState } from "react";
 import { connect, ConnectedProps } from "react-redux";
 import agent from "../../agent";
 import Icon from "../../components/Icon";
+import { ADD_NOTIFICATION, UPDATE_COMMON } from "../../store/types";
 import ComboBox from "../../components/ComboBox";
-import { ADD_NOTIFICATION } from "../../store/types";
 import AmountBox from "../../components/AmountBox";
 import convertNumberToWords from "../../helpers/convertNumberToWords";
 import TextBox from "../../components/TextBox";
@@ -22,6 +22,7 @@ const mapStateToProps = (state: any) => ({
 });
 
 const mapDispatchToProps = (dispatch: any) => ({
+  updateCommon: (payload: any) => dispatch({ type: UPDATE_COMMON, payload }),
   addNotification: (title: string, message: string, type: string) =>
     dispatch({
       type: ADD_NOTIFICATION,
@@ -42,6 +43,8 @@ const connector = connect(mapStateToProps, mapDispatchToProps);
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
 function AddAccount(props: Props & PropsFromRedux) {
+  console.log("selectedRow", (props as any).selectedRow);
+
   const [name, setName] = useState("");
   const [accountNature, setAccountNature] = useState("");
   const [openingBalance, setOpeningBalance] = useState(0);
@@ -58,6 +61,34 @@ function AddAccount(props: Props & PropsFromRedux) {
   const [logging, setLogging] = useState(false);
 
   const [defaultDrOrCr, setDefaultDrOrCr] = useState("");
+
+  useEffect(() => {
+    if (
+      (props as any).selectedRow &&
+      (props as any).selectedRow !== null &&
+      (props as any).selectedRow !== undefined &&
+      (props as any).selectedRow.name
+    ) {
+      setName((props as any).selectedRow.name);
+      setAccountNature((props as any).selectedRow.accountNature);
+      setOpeningBalance((props as any).selectedRow.openingBalance);
+      setOpeningBalanceInWords(
+        (props as any).selectedRow.openingBalanceInWords
+      );
+      setOpeningBalanceType((props as any).selectedRow.openingBalanceType);
+      setGstin((props as any).selectedRow.gstin);
+      setGstRate((props as any).selectedRow.gstRate);
+      setBillingAddress((props as any).selectedRow.billingAddress);
+      setShippingAddress((props as any).selectedRow.shippingAddress);
+      setMobileNo((props as any).selectedRow.mobileNo);
+      setEmail((props as any).selectedRow.email);
+      setPan((props as any).selectedRow.pan);
+      setTan((props as any).selectedRow.tan);
+      (props as any).updateCommon({
+        selectedRow: {},
+      });
+    }
+  }, [(props as any).selectedRow]);
 
   // const onKeyUpFunction(event: any)
   // if (event.keyCode === 27) {
@@ -314,7 +345,10 @@ function AddAccount(props: Props & PropsFromRedux) {
                             Opening Balance
                           </label>
                           <div className="mt-1 sm:col-span-2 sm:mt-0">
-                            <AmountBox onChange={openingBalanceHandler} />
+                            <AmountBox
+                              defaultValue={openingBalance}
+                              onChange={openingBalanceHandler}
+                            />
                           </div>
                         </div>
 

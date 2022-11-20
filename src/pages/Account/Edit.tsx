@@ -410,7 +410,10 @@ function EditStatusModal(props: Props & PropsFromRedux) {
                             Opening Balance
                           </label>
                           <div className="mt-1 sm:col-span-2 sm:mt-0">
-                            <AmountBox onChange={openingBalanceHandler} />
+                            <AmountBox
+                              defaultValue={state.openingBalance}
+                              onChange={openingBalanceHandler}
+                            />
                           </div>
                         </div>
 
