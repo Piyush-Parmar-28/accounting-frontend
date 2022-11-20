@@ -24,6 +24,7 @@ import EditAccountModal from "./Edit";
 import { withRouter } from "../../helpers/withRouter";
 import { compose } from "redux";
 import AddAccount from "./Add";
+import useEffectAfterInitialRender from "../../helpers/useEffectAfterInitialRender";
 // import InactiveTagModal from "./InactiveTagModal";
 // import ActiveTagModal from "./ActiveTagModal";
 // import EditTag from "./Edit";
@@ -108,6 +109,7 @@ function Accounts(props: PropsFromRedux) {
   };
 
   const [state, setState] = React.useState<state>(inititalState);
+
   // Chunk Size for number of table data displayed in each page during pagination
   let chunkSize = 12;
   // Selected pagination value
@@ -120,11 +122,11 @@ function Accounts(props: PropsFromRedux) {
     const organisationId = (props as any).params?.organisationId;
     const searchText = forSearch ? state.searchText : "";
     const active = state.active;
-    setState((prevState) => ({
-      ...prevState,
-      loading: true,
-    }));
-    console.log("accountlistsearchtext", searchText);
+    // setState((prevState) => ({
+    //   ...prevState,
+    //   loading: true,
+    // }));
+    console.log("searchtext", searchText);
     agent.Account.getAccountList(organisationId, active, searchText)
       .then((response: any) => {
         setState((prevState) => ({
@@ -150,39 +152,80 @@ function Accounts(props: PropsFromRedux) {
       });
   };
 
-  // onMount Load data
-  // componentDidMount() {
-  //   getAccountList(false);
-  // }
+  useEffectAfterInitialRender(
+    () => {
+      console.log("useeffect intial render");
 
-  useEffect(() => {
-    getAccountList(false);
-  }, [(props as any).currentModal]);
-
-  useEffect(() => {
-    console.log("useeffect1");
-    setState((prevState) => ({
-      ...prevState,
-      searchText: "",
-    }));
-
-    getAccountList(false);
-  }, [(props as any).params?.organisationId]);
-
-  useEffect(() => {
-    console.log("useeffect2");
-    if (
-      (props as any)?.modalName === "ADD_ACCOUNT_MODAL" &&
-      (props as any)?.modalName === "" &&
-      (props as any)?.fetchAgain
-    ) {
       getAccountList(false);
-    }
-  }, [(props as any).currentModal]);
+    },
+    [],
+    0
+  );
 
-  // useEffect(() => {
-  //   getAccountList(false);
-  // }, [state.active]);
+  useEffectAfterInitialRender(
+    () => {
+      console.log("useeffect current modal");
+      getAccountList(false);
+    },
+    [(props as any).currentModal],
+    1
+  );
+
+  useEffectAfterInitialRender(
+    () => {
+      console.log("useeffect organisation id");
+      setState((prevState) => ({
+        ...prevState,
+        searchText: "",
+      }));
+
+      getAccountList(false);
+    },
+    [(props as any).params?.organisationId],
+    1
+  );
+
+  useEffectAfterInitialRender(
+    () => {
+      console.log("useeffect current modal 2");
+      if (
+        (props as any)?.modalName === "ADD_ACCOUNT_MODAL" &&
+        (props as any)?.modalName === "" &&
+        (props as any)?.fetchAgain
+      ) {
+        getAccountList(false);
+      }
+    },
+    [(props as any).currentModal],
+    1
+  );
+
+  useEffectAfterInitialRender(
+    () => {
+      console.log("useeffect state active change");
+      getAccountList(true);
+    },
+    [state.active],
+    1
+  );
+
+  // useEffectAfterInitialRender(
+  //   () => {
+  //     console.log("useeffect search text");
+  //     getAccountList(true);
+  //   },
+  //   [state.searchText],
+  //   1
+  // );
+
+  useEffectAfterInitialRender(
+    () => {
+      console.log("useeffect show edit modal");
+    },
+    [state.showEditModal],
+    1
+  );
+  // TagManager.dataLayer(tagManagerArgs);
 
   // componentDidUpdate(prevProps: any, prevState: any) {
   //   const prevOrganisationId = prevProps.params?.organisationId;
@@ -260,16 +303,12 @@ function Accounts(props: PropsFromRedux) {
     setState((prevState) => ({
       ...prevState,
       searchText: ev.target.value,
-      // typingTimeout: setTimeout(() => {
-      //   getAccountList(true);
-      // }, 700),
+      typingTimeout: setTimeout(() => {
+        getAccountList(true);
+      }, 700),
     }));
     // getAccountList(true);
   };
-  useEffect(() => {
-    console.log("useeffect3");
-    getAccountList(true);
-  }, [state.searchText]);
 
   const updateActive = () => {
     setState((prevState) => ({
@@ -380,10 +419,7 @@ function Accounts(props: PropsFromRedux) {
       showEditModal: open,
     }));
   };
-  useEffect(() => {
-    console.log("useeffect4");
-  }, [state.showEditModal]);
-  // TagManager.dataLayer(tagManagerArgs);
+
   return (
     <Dashboard>
       <div className="gsts">
