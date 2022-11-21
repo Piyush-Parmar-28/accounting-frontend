@@ -7,8 +7,12 @@ function classNames(...classes: any) {
 }
 
 export default function ComboBox(props: any) {
+  const valueSelected = props.values.find(
+    (a: any) => a.name === props.selectedValue
+  );
   const [query, setQuery] = useState("");
-  const [selectedValue, setSelectedValue] = useState(null);
+  const [selectedValue, setSelectedValue] = useState(valueSelected);
+
   let filteredValues =
     query === ""
       ? props.values

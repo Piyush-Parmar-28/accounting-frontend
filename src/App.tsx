@@ -141,7 +141,13 @@ class App extends React.Component<PropsFromRedux> {
           <AddTag closeModal={this.closeModal} />
         )}
         {(this.props as any)?.currentModal?.modalName ===
-          "ADD_ACCOUNT_MODAL" && <AddAccount closeModal={this.closeModal} />}
+          "ADD_ACCOUNT_MODAL" && (
+          <AddAccount
+            closeModal={this.closeModal}
+            type={(this.props as any)?.currentModal?.type}
+            data={(this.props as any)?.currentModal?.data}
+          />
+        )}
 
         {(this.props as any)?.currentModal?.modalName ===
           "ADD_PERSON_MODAL" && <AddPerson closeModal={this.closeModal} />}

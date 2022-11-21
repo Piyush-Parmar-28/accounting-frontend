@@ -20,7 +20,6 @@ import { Menu, Transition } from "@headlessui/react";
 import InActiveModal from "../../components/InActiveModal";
 import ActiveModal from "../../components/ActiveModal";
 import DeleteModal from "../../components/DeleteModal";
-import EditAccountModal from "./Edit";
 import { withRouter } from "../../helpers/withRouter";
 import { compose } from "redux";
 import AddAccount from "./Add";
@@ -227,32 +226,6 @@ function Accounts(props: PropsFromRedux) {
   );
   // TagManager.dataLayer(tagManagerArgs);
 
-  // componentDidUpdate(prevProps: any, prevState: any) {
-  //   const prevOrganisationId = prevProps.params?.organisationId;
-  //   const currOrganisationId = (props as any).params?.organisationId;
-
-  //   if (prevOrganisationId !== currOrganisationId) {
-  //     setState({ searchText: "" });
-  //     getAccountList(false);
-  //   }
-
-  //   const prevModal = prevProps.currentModal;
-  //   const currentModal = (props as any)?.currentModal;
-
-  //   if (
-  //     prevModal?.modalName === "ADD_ACCOUNT_MODAL" &&
-  //     prevModal?.modalName !== currentModal?.modalName &&
-  //     currentModal?.modalName === "" &&
-  //     currentModal?.fetchAgain
-  //   ) {
-  //     getAccountList(false);
-  //   }
-
-  //   if (prevState.active !== state.active) {
-  //     getAccountList(false);
-  //   }
-  // }
-
   const handlePageClick = (data: any) => {
     currPage = data.selected;
     setState((prevState) => ({
@@ -317,15 +290,17 @@ function Accounts(props: PropsFromRedux) {
     }));
   };
 
-  const openAddAccountModal = (account: any) => {
+  const openAddAccountModal = () => {
     const statusRights = (props as any)?.rights?.statusRights;
     const createRight = statusRights.create;
     if (createRight) {
       (props as any).updateCommon({
-        selectedRow: account,
-      });
-      (props as any).updateCommon({
-        currentModal: { modalName: "ADD_ACCOUNT_MODAL", fetchAgain: false },
+        currentModal: {
+          modalName: "ADD_ACCOUNT_MODAL",
+          fetchAgain: false,
+          type: "add",
+          data: "",
+        },
       });
     } else {
       (props as any).onNotify(
@@ -336,10 +311,25 @@ function Accounts(props: PropsFromRedux) {
     }
   };
 
-  const closeModal = (fetchAgain: boolean) => {
-    (props as any).updateCommon({
-      currentModal: { modalName: "", fetchAgain },
-    });
+  const openEditAccountModal = (account: any) => {
+    const statusRights = (props as any)?.rights?.statusRights;
+    const createRight = statusRights.create;
+    if (createRight) {
+      (props as any).updateCommon({
+        currentModal: {
+          modalName: "ADD_ACCOUNT_MODAL",
+          fetchAgain: false,
+          type: "edit",
+          data: account,
+        },
+      });
+    } else {
+      (props as any).onNotify(
+        "Rights Not Available",
+        "Ask Admin to change your user rights.",
+        "danger"
+      );
+    }
   };
 
   const openActiveModal = (account: any) => {
@@ -393,44 +383,9 @@ function Accounts(props: PropsFromRedux) {
     }));
   };
 
-  const openEditModal = (account: any) => {
-    // const statusRights = (props as any)?.rights?.statusRights;
-    // const editRight = statusRights.edit;
-    // if (editRight) {
-    setState((prevState) => ({
-      ...prevState,
-      selectedRow: account,
-      showBackDrop: false,
-    }));
-    console.log(account);
-    editModalSetOpen(true);
-    // } else {
-    //   (props as any).onNotify(
-    //     "Rights Not Avilable",
-    //     "Ask Admin to change your user rights.",
-    //     "danger"
-    //   );
-    // }
-  };
-
-  const editModalSetOpen = (open: boolean) => {
-    setState((prevState) => ({
-      ...prevState,
-      showEditModal: open,
-    }));
-  };
-
   return (
     <Dashboard>
       <div className="gsts">
-        {state.showEditModal && (
-          <EditAccountModal
-            state={state}
-            onLoad={getAccountList}
-            editModalSetOpen={editModalSetOpen}
-          />
-        )}
-
         {state.showInActiveModal && (
           <InActiveModal
             type={"account"}
@@ -644,7 +599,7 @@ function Accounts(props: PropsFromRedux) {
                                       title="Edit"
                                       className="hover:underline font-bold"
                                       onClick={() =>
-                                        openAddAccountModal(account)
+                                        openEditAccountModal(account)
                                       }
                                     >
                                       {account.name}
@@ -732,7 +687,9 @@ function Accounts(props: PropsFromRedux) {
                                                 <button
                                                   className="flex items-center w-full p-1 px-4 py-2 text-sm hover:bg-gray-100 text-gray-900"
                                                   onClick={() =>
-                                                    openAddAccountModal(account)
+                                                    openEditAccountModal(
+                                                      account
+                                                    )
                                                   }
                                                 >
                                                   <Icon

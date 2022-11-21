@@ -11,6 +11,7 @@ import TextBox from "../../components/TextBox";
 import GSTINBox from "../../components/GSTINBox";
 import GstRateBox from "../../components/GstRateBox";
 import { accounts } from "../../constants/accountnature";
+import useEffectAfterInitialRender from "../../helpers/useEffectAfterInitialRender";
 
 function classNames(...classes: any) {
   return classes.filter(Boolean).join(" ");
@@ -36,6 +37,8 @@ const mapDispatchToProps = (dispatch: any) => ({
 
 type Props = {
   closeModal: (fetchAgain: boolean) => void;
+  type: string;
+  data: any;
 };
 
 const connector = connect(mapStateToProps, mapDispatchToProps);
@@ -43,52 +46,115 @@ const connector = connect(mapStateToProps, mapDispatchToProps);
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
 function AddAccount(props: Props & PropsFromRedux) {
-  console.log("selectedRow", (props as any).selectedRow);
+  console.log("type", props.type);
+  console.log("data", props.data);
 
-  const [name, setName] = useState("");
-  const [accountNature, setAccountNature] = useState("");
-  const [openingBalance, setOpeningBalance] = useState(0);
-  const [openingBalanceInWords, setOpeningBalanceInWords] = useState("");
-  const [openingBalanceType, setOpeningBalanceType] = useState("dr");
-  const [gstin, setGstin] = useState("");
-  const [gstRate, setGstRate] = useState(0);
-  const [billingAddress, setBillingAddress] = useState("");
-  const [shippingAddress, setShippingAddress] = useState("");
-  const [mobileNo, setMobileNo] = useState("");
-  const [email, setEmail] = useState("");
-  const [pan, setPan] = useState("");
-  const [tan, setTan] = useState("");
-  const [logging, setLogging] = useState(false);
+  interface state {
+    accountId: string;
+    logging: boolean;
+    name: string;
+    accountNature: string;
+    openingBalance: number;
+    openingBalanceType: string;
+    openingBalanceInWords: string;
+    gstin: string;
+    gstRate: number;
+    billingAddress: string;
+    shippingAddress: string;
+    mobileNo: string;
+    email: string;
+    pan: string;
+    tan: string;
+  }
+  let intitialState: state;
+  if (props.type === "edit") {
+    intitialState = {
+      accountId: props.data._id,
+      logging: false,
+      name: props.data.name,
+      accountNature: props.data.nature,
+      openingBalance: props.data.openingBalance,
+      openingBalanceType: props.data.openingBalanceType,
+      gstin: props.data.gstin,
+      gstRate: props.data.gstRate,
+      billingAddress: props.data.billingAddress,
+      shippingAddress: props.data.shippingAddress,
+      mobileNo: props.data.mobileNo,
+      email: props.data.email,
+      pan: props.data.pan,
+      tan: props.data.tan,
+      openingBalanceInWords: "",
+    };
+  } else {
+    intitialState = {
+      accountId: "",
+      logging: false,
+      name: "",
+      accountNature: "",
+      openingBalance: 0,
+      openingBalanceType: "",
+      gstin: "",
+      gstRate: 0,
+      billingAddress: "",
+      shippingAddress: "",
+      mobileNo: "",
+      email: "",
+      pan: "",
+      tan: "",
+      openingBalanceInWords: "",
+    };
+  }
 
-  const [defaultDrOrCr, setDefaultDrOrCr] = useState("");
+  const [state, setState] = useState<state>(intitialState);
 
-  useEffect(() => {
-    if (
-      (props as any).selectedRow &&
-      (props as any).selectedRow !== null &&
-      (props as any).selectedRow !== undefined &&
-      (props as any).selectedRow.name
-    ) {
-      setName((props as any).selectedRow.name);
-      setAccountNature((props as any).selectedRow.accountNature);
-      setOpeningBalance((props as any).selectedRow.openingBalance);
-      setOpeningBalanceInWords(
-        (props as any).selectedRow.openingBalanceInWords
-      );
-      setOpeningBalanceType((props as any).selectedRow.openingBalanceType);
-      setGstin((props as any).selectedRow.gstin);
-      setGstRate((props as any).selectedRow.gstRate);
-      setBillingAddress((props as any).selectedRow.billingAddress);
-      setShippingAddress((props as any).selectedRow.shippingAddress);
-      setMobileNo((props as any).selectedRow.mobileNo);
-      setEmail((props as any).selectedRow.email);
-      setPan((props as any).selectedRow.pan);
-      setTan((props as any).selectedRow.tan);
-      (props as any).updateCommon({
-        selectedRow: {},
-      });
-    }
-  }, [(props as any).selectedRow]);
+  // const [name, setName] = useState("");
+  // const [accountNature, setAccountNature] = useState("");
+  // const [openingBalance, setOpeningBalance] = useState(0);
+  // const [openingBalanceInWords, setOpeningBalanceInWords] = useState("");
+  // const [openingBalanceType, setOpeningBalanceType] = useState("dr");
+  // const [gstin, setGstin] = useState("");
+  // const [gstRate, setGstRate] = useState(0);
+  // const [billingAddress, setBillingAddress] = useState("");
+  // const [shippingAddress, setShippingAddress] = useState("");
+  // const [mobileNo, setMobileNo] = useState("");
+  // const [email, setEmail] = useState("");
+  // const [pan, setPan] = useState("");
+  // const [tan, setTan] = useState("");
+  // const [logging, setLogging] = useState(false);
+
+  // const [defaultDrOrCr, setDefaultDrOrCr] = useState("");
+
+  // useEffectAfterInitialRender(
+  //   () => {
+  //     if (
+  //       (props as any).selectedRow &&
+  //       (props as any).selectedRow !== null &&
+  //       (props as any).selectedRow !== undefined &&
+  //       (props as any).selectedRow.name
+  //     ) {
+  //       setName((props as any).selectedRow.name);
+  //       setAccountNature((props as any).selectedRow.nature);
+  //       setOpeningBalance((props as any).selectedRow.openingBalance);
+  //       setOpeningBalanceInWords(
+  //         (props as any).selectedRow.openingBalanceInWords
+  //       );
+  //       setOpeningBalanceType((props as any).selectedRow.openingBalanceType);
+  //       setGstin((props as any).selectedRow.gstin);
+  //       setGstRate((props as any).selectedRow.gstRate);
+  //       setBillingAddress((props as any).selectedRow.billingAddress);
+  //       setShippingAddress((props as any).selectedRow.shippingAddress);
+  //       setMobileNo((props as any).selectedRow.mobileNo);
+  //       setEmail((props as any).selectedRow.email);
+  //       setPan((props as any).selectedRow.pan);
+  //       setTan((props as any).selectedRow.tan);
+  //       (props as any).updateCommon({
+  //         selectedRow: {},
+  //       });
+  //     }
+  //   },
+  //   [(props as any).selectedRow],
+  //   0
+  // );
 
   // const onKeyUpFunction(event: any)
   // if (event.keyCode === 27) {
@@ -113,26 +179,27 @@ function AddAccount(props: Props & PropsFromRedux) {
 
     // const name = state.name;
 
-    if (name !== "" && accountNature !== "") {
-      setLogging(true);
+    if (state.name !== "" && state.accountNature !== "") {
+      setState((prevState) => ({ ...prevState, logging: true }));
 
       agent.Account.addAccount(
-        name,
-        accountNature,
-        openingBalance,
-        openingBalanceType,
+        state.name,
+        state.accountNature,
+        state.openingBalance,
+        state.openingBalanceType,
         organisationId,
-        gstin,
-        gstRate,
-        billingAddress,
-        shippingAddress,
-        mobileNo,
-        email,
-        pan,
-        tan
+        state.gstin,
+        state.gstRate,
+        state.billingAddress,
+        state.shippingAddress,
+        state.mobileNo,
+        state.email,
+        state.pan,
+        state.tan
       )
         .then((response: any) => {
-          setLogging(false);
+          setState((prevState) => ({ ...prevState, logging: false }));
+
           (props as any).addNotification(
             "Account Added",
             "Successfully added a new account.",
@@ -142,22 +209,22 @@ function AddAccount(props: Props & PropsFromRedux) {
         })
         .catch((err: any) => {
           console.log({ err });
-          setLogging(false);
+          setState((prevState) => ({ ...prevState, logging: false }));
 
           (props as any).addNotification(
             "Could not add the account",
-            err?.message || err,
+            err?.response.data.message || err,
             "danger"
           );
         });
     } else {
-      if (!name) {
+      if (!state.name) {
         (props as any).addNotification(
           "Empty Account Name Field",
           "Account Name Field is Required!.",
           "danger"
         );
-      } else if (!accountNature) {
+      } else if (!state.accountNature) {
         (props as any).addNotification(
           "Empty Nature of Account Field",
           "Nature of Account is Required!.",
@@ -172,79 +239,99 @@ function AddAccount(props: Props & PropsFromRedux) {
   };
 
   const openingBalanceHandler = (value: any) => {
-    setOpeningBalance(value);
+    setState((prevState) => ({ ...prevState, openingBalance: value }));
+
     if (value > 0) {
       const words = convertNumberToWords(value);
-      setOpeningBalanceInWords(words);
+      setState((prevState) => ({ ...prevState, openingBalanceInWords: words }));
     }
     if ((value = 0 || value === "")) {
-      setOpeningBalanceInWords("");
+      setState((prevState) => ({ ...prevState, openingBalanceInWords: "" }));
     }
   };
 
   const openingBalanceTypeHandler = (e: any) => {
-    setOpeningBalanceType(e.target.id);
+    setState((prevState) => ({
+      ...prevState,
+      openingBalanceType: e.target.id,
+    }));
   };
 
   const natureSelectHandler = (account: any) => {
-    setAccountNature(account);
+    setState((prevState) => ({ ...prevState, accountNature: account }));
 
     // reset state for debtors/creditors field if first debtor/creditor is selected and then otehr nature is selected. Otherwise error like wrong pan will be shown
     if (account !== "Debtors" && account !== "Creditors") {
-      setGstin("");
-      setGstRate(0);
-      setBillingAddress("");
-      setShippingAddress("");
-      setMobileNo("");
-      setEmail("");
-      setPan("");
-      setTan("");
+      setState((prevState) => ({
+        ...prevState,
+        pan: "",
+        tan: "",
+        gstin: "",
+        gstRate: 0,
+        billingAddress: "",
+        shippingAddress: "",
+        mobileNo: "",
+        email: "",
+      }));
     }
     if (account !== "Direct Expense" && account !== "Indirect Expense") {
-      setGstRate(0);
+      setState((prevState) => ({
+        ...prevState,
+        gstRate: 0,
+      }));
     }
     let accountDetails = accounts.find((acc: any) => acc.id === account.id);
     if (accountDetails) {
       let defaultSide = accountDetails.default;
-      setDefaultDrOrCr(defaultSide);
+      setState((prevState) => ({
+        ...prevState,
+        defaultDrOrCr: defaultSide,
+      }));
     }
   };
 
   const nameSelectHandler = (name: any) => {
-    setName(name);
+    setState((prevState) => ({ ...prevState, name: name }));
   };
 
   const gstinSelectHandler = (gstin: string) => {
-    setGstin(gstin);
+    setState((prevState) => ({ ...prevState, gstin: gstin }));
   };
 
   const gstinDetails = (gstinDetails: any) => {
     console.log("gstindetails", gstinDetails);
-    if (!name) {
-      setName(gstinDetails.gstinname);
+    if (!state.name) {
+      setState((prevState) => ({ ...prevState, name: gstinDetails.name }));
     }
   };
 
   const gstRateSelectHandler = (gstRate: any) => {
-    setGstRate(gstRate);
+    setState((prevState) => ({ ...prevState, gstRate: gstRate }));
   };
   const billingAddressHandler = (billingAddress: any) => {
-    setBillingAddress(billingAddress);
+    setState((prevState) => ({ ...prevState, billingAddress: billingAddress }));
   };
   const shippingAddressHandler = (shippingAddress: any) => {
-    setShippingAddress(shippingAddress);
+    setState((prevState) => ({
+      ...prevState,
+      shippingAddress: shippingAddress,
+    }));
   };
   const mobileNoHandler = (mobileNo: any) => {
-    setMobileNo(mobileNo);
+    setState((prevState) => ({ ...prevState, mobileNo: mobileNo }));
   };
   const emailHandler = (email: any) => {
-    setEmail(email);
+    setState((prevState) => ({ ...prevState, email: email }));
   };
   const panHandler = (pan: any) => {
-    setPan(pan);
+    setState((prevState) => ({ ...prevState, pan: pan }));
   };
   const tanHandler = (tan: any) => {
-    setTan(tan);
+    setState((prevState) => ({ ...prevState, tan: tan }));
+  };
+
+  const editAccount = () => {
+    console.log("update");
   };
 
   return (
@@ -292,7 +379,7 @@ function AddAccount(props: Props & PropsFromRedux) {
                 {/* <div className="space-y-8 divide-y divide-gray-200 sm:space-y-5"> */}
                 <div>
                   <h3 className="text-lg font-medium leading-6 text-gray-900">
-                    Add Account
+                    {props.type === "add" ? "Add Account" : "Edit Account"}
                   </h3>
                 </div>
                 <form className="space-y-8 divide-y">
@@ -311,7 +398,7 @@ function AddAccount(props: Props & PropsFromRedux) {
                           <div className="mt-1 sm:col-span-2 sm:mt-0">
                             <TextBox
                               onTyping={nameSelectHandler}
-                              value={name}
+                              value={state.name}
                               maximumCharacters={50}
                               case="title"
                             />
@@ -331,6 +418,7 @@ function AddAccount(props: Props & PropsFromRedux) {
                             <ComboBox
                               values={accounts}
                               onSelection={natureSelectHandler}
+                              selectedValue={state.accountNature}
                             />
                           </div>
                         </div>
@@ -346,28 +434,28 @@ function AddAccount(props: Props & PropsFromRedux) {
                           </label>
                           <div className="mt-1 sm:col-span-2 sm:mt-0">
                             <AmountBox
-                              defaultValue={openingBalance}
+                              defaultValue={state.openingBalance}
                               onChange={openingBalanceHandler}
                             />
                           </div>
                         </div>
 
                         {/* opening Balance in words */}
-                        {openingBalance > 0 ? (
+                        {state.openingBalance > 0 ? (
                           <div className="sm:grid sm:grid-cols-3 sm:items-start sm:border-gray-200">
                             <label
                               htmlFor="last-name"
                               className="block text-sm font-medium text-gray-700 sm:mt-px"
                             ></label>
                             <div className="mt-1 sm:col-span-2 sm:mt-0 text-gray-400 text-sm px-2 text-left">
-                              {openingBalanceInWords &&
-                                `${openingBalanceInWords} `}
+                              {state.openingBalanceInWords &&
+                                `${state.openingBalanceInWords}`}
                             </div>
                           </div>
                         ) : null}
 
                         {/* opening Balance type */}
-                        {openingBalance > 0 ? (
+                        {state.openingBalance > 0 ? (
                           <div className="sm:grid sm:grid-cols-3 sm:items-start sm:border-gray-200">
                             <label
                               htmlFor="last-name"
@@ -390,11 +478,12 @@ function AddAccount(props: Props & PropsFromRedux) {
                                               id="debit"
                                               name="push-notifications"
                                               type="radio"
-                                              // checked={
-                                              //   defaultDrOrCr === "dr"
-                                              //     ? true
-                                              //     : false
-                                              // }
+                                              checked={
+                                                state.openingBalanceType ===
+                                                "dr"
+                                                  ? true
+                                                  : false
+                                              }
                                               onChange={
                                                 openingBalanceTypeHandler
                                               }
@@ -410,11 +499,12 @@ function AddAccount(props: Props & PropsFromRedux) {
                                               id="credit"
                                               name="push-notifications"
                                               type="radio"
-                                              // checked={
-                                              //   defaultDrOrCr === "cr"
-                                              //     ? true
-                                              //     : false
-                                              // }
+                                              checked={
+                                                state.openingBalanceType ===
+                                                "cr"
+                                                  ? true
+                                                  : false
+                                              }
                                               onChange={
                                                 openingBalanceTypeHandler
                                               }
@@ -439,8 +529,8 @@ function AddAccount(props: Props & PropsFromRedux) {
                         ) : null}
 
                         {/* if accountnature is debtors or creditors */}
-                        {accountNature === "Debtors" ||
-                        accountNature === "Creditors" ? (
+                        {state.accountNature === "Debtors" ||
+                        state.accountNature === "Creditors" ? (
                           <div>
                             {/* gstin box */}
                             <div className="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:border-gray-200">
@@ -453,7 +543,7 @@ function AddAccount(props: Props & PropsFromRedux) {
                               <div className="mt-1 sm:col-span-2 sm:mt-0">
                                 <GSTINBox
                                   onTyping={gstinSelectHandler}
-                                  value={gstin}
+                                  value={state.gstin}
                                   gstinDetails={gstinDetails}
                                 />
                                 <div className="text-sm px-1">
@@ -478,7 +568,7 @@ function AddAccount(props: Props & PropsFromRedux) {
                               <div className="mt-1 sm:col-span-2 sm:mt-0">
                                 <TextBox
                                   onTyping={billingAddressHandler}
-                                  value={billingAddress}
+                                  value={state.billingAddress}
                                   maximumCharacters={100}
                                   case="title"
                                 />
@@ -497,7 +587,7 @@ function AddAccount(props: Props & PropsFromRedux) {
                               <div className="mt-1 sm:col-span-2 sm:mt-0">
                                 <TextBox
                                   onTyping={mobileNoHandler}
-                                  value={mobileNo}
+                                  value={state.mobileNo}
                                   maximumCharacters={10}
                                   case="same"
                                 />
@@ -516,7 +606,7 @@ function AddAccount(props: Props & PropsFromRedux) {
                               <div className="mt-1 sm:col-span-2 sm:mt-0">
                                 <TextBox
                                   onTyping={emailHandler}
-                                  value={email}
+                                  value={state.email}
                                   maximumCharacters={50}
                                   case="same"
                                 />
@@ -535,7 +625,7 @@ function AddAccount(props: Props & PropsFromRedux) {
                               <div className="mt-1 sm:col-span-2 sm:mt-0">
                                 <TextBox
                                   onTyping={panHandler}
-                                  value={pan}
+                                  value={state.pan}
                                   maximumCharacters={10}
                                   case="capital"
                                 />
@@ -554,7 +644,7 @@ function AddAccount(props: Props & PropsFromRedux) {
                               <div className="mt-1 sm:col-span-2 sm:mt-0">
                                 <TextBox
                                   onTyping={tanHandler}
-                                  value={tan}
+                                  value={state.tan}
                                   maximumCharacters={11}
                                   case="capital"
                                 />
@@ -565,8 +655,8 @@ function AddAccount(props: Props & PropsFromRedux) {
 
                         {/* if account is direct/indirect expense */}
 
-                        {accountNature === "Direct Expense" ||
-                        accountNature === "Indirect Expense" ? (
+                        {state.accountNature === "Direct Expense" ||
+                        state.accountNature === "Indirect Expense" ? (
                           <div className="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:border-gray-200 pb-32">
                             <label
                               htmlFor="first-name"
@@ -575,7 +665,10 @@ function AddAccount(props: Props & PropsFromRedux) {
                               GST Rate
                             </label>
                             <div className="mt-1 sm:col-span-2 sm:mt-0">
-                              <GstRateBox onSelection={gstRateSelectHandler} />
+                              <GstRateBox
+                                onSelection={gstRateSelectHandler}
+                                selectedValue={state.gstRate}
+                              />
                             </div>
                           </div>
                         ) : null}
@@ -589,22 +682,43 @@ function AddAccount(props: Props & PropsFromRedux) {
                       >
                         Cancel
                       </button>
-                      <button
-                        type="button"
-                        disabled={logging}
-                        className={
-                          "mt-3 sm:ml-4 w-full inline-flex items-center justify-center rounded-md border border-transparent border-gray-300 shadow-sm py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none sm:mt-0 sm:w-32 sm:text-sm"
-                        }
-                        onClick={addAccount}
-                      >
-                        <span className="w-full flex justify-end">
-                          {logging ? (
-                            <Icon name="loading" className="mr-2" />
-                          ) : null}
-                        </span>
-                        <span>Save</span>
-                        <span className="w-full"></span>
-                      </button>
+                      {props.type === "add" && (
+                        <button
+                          type="button"
+                          disabled={state.logging}
+                          className={
+                            "mt-3 sm:ml-4 w-full inline-flex items-center justify-center rounded-md border border-transparent border-gray-300 shadow-sm py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none sm:mt-0 sm:w-32 sm:text-sm"
+                          }
+                          onClick={addAccount}
+                        >
+                          <span className="w-full flex justify-end">
+                            {state.logging ? (
+                              <Icon name="loading" className="mr-2" />
+                            ) : null}
+                          </span>
+                          <span>Save</span>
+                          <span className="w-full"></span>
+                        </button>
+                      )}
+
+                      {props.type === "edit" && (
+                        <button
+                          type="button"
+                          disabled={state.logging}
+                          className={
+                            "mt-3 sm:ml-4 w-full inline-flex items-center justify-center rounded-md border border-transparent border-gray-300 shadow-sm py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none sm:mt-0 sm:w-32 sm:text-sm"
+                          }
+                          onClick={editAccount}
+                        >
+                          <span className="w-full flex justify-end">
+                            {state.logging ? (
+                              <Icon name="loading" className="mr-2" />
+                            ) : null}
+                          </span>
+                          <span>Update</span>
+                          <span className="w-full"></span>
+                        </button>
+                      )}
                     </div>
                   </div>
                 </form>
