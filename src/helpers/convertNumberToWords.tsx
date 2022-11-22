@@ -109,7 +109,7 @@ export default function convertNumberToWords(num: number) {
   if (num == 0) return "Zero";
   let number = num.toString().split(".");
 
-  if (number[1]) {
+  if (number[1] && number[1] !== "00") {
     let paise = convert_paise(number[1]);
     return `${convert_crores(parseInt(number[0]))} Rupees & ${paise} Paise`;
   }

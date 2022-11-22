@@ -333,6 +333,32 @@ class DeleteModal extends React.Component<Props, PropsFromRedux> {
       });
   };
 
+  deleteAccount = () => {
+    const organisationId = (this.props as any)?.currentOrganisation._id;
+    const accountId = this.props.state.selectedRow._id;
+
+    this.setState({ logging: true });
+    agent.Account.delete(accountId, organisationId)
+      .then(() => {
+        (this.props as any).addNotification(
+          "Success!",
+          "Account Deleted Successfully.",
+          "success"
+        );
+        this.setState({ logging: false });
+        this.setOpen(false);
+        this.onLoad();
+      })
+      .catch((err: any) => {
+        this.setState({ logging: false });
+        (this.props as any).addNotification(
+          "Error",
+          err?.response?.data?.message || err?.message || err,
+          "danger"
+        );
+      });
+  };
+
   deleteIdRow = () => {
     switch (this.props.type) {
       case "tag":
@@ -355,6 +381,8 @@ class DeleteModal extends React.Component<Props, PropsFromRedux> {
         return this.deleteOrganisation();
       case "user":
         return this.deleteUser();
+      case "account":
+        return this.deleteAccount();
       default:
         return;
     }

@@ -46,9 +46,7 @@ const connector = connect(mapStateToProps, mapDispatchToProps);
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
 function AddAccount(props: Props & PropsFromRedux) {
-  console.log("type", props.type);
-  console.log("data", props.data);
-
+  console.log(props);
   interface state {
     accountId: string;
     logging: boolean;
@@ -106,55 +104,6 @@ function AddAccount(props: Props & PropsFromRedux) {
   }
 
   const [state, setState] = useState<state>(intitialState);
-
-  // const [name, setName] = useState("");
-  // const [accountNature, setAccountNature] = useState("");
-  // const [openingBalance, setOpeningBalance] = useState(0);
-  // const [openingBalanceInWords, setOpeningBalanceInWords] = useState("");
-  // const [openingBalanceType, setOpeningBalanceType] = useState("dr");
-  // const [gstin, setGstin] = useState("");
-  // const [gstRate, setGstRate] = useState(0);
-  // const [billingAddress, setBillingAddress] = useState("");
-  // const [shippingAddress, setShippingAddress] = useState("");
-  // const [mobileNo, setMobileNo] = useState("");
-  // const [email, setEmail] = useState("");
-  // const [pan, setPan] = useState("");
-  // const [tan, setTan] = useState("");
-  // const [logging, setLogging] = useState(false);
-
-  // const [defaultDrOrCr, setDefaultDrOrCr] = useState("");
-
-  // useEffectAfterInitialRender(
-  //   () => {
-  //     if (
-  //       (props as any).selectedRow &&
-  //       (props as any).selectedRow !== null &&
-  //       (props as any).selectedRow !== undefined &&
-  //       (props as any).selectedRow.name
-  //     ) {
-  //       setName((props as any).selectedRow.name);
-  //       setAccountNature((props as any).selectedRow.nature);
-  //       setOpeningBalance((props as any).selectedRow.openingBalance);
-  //       setOpeningBalanceInWords(
-  //         (props as any).selectedRow.openingBalanceInWords
-  //       );
-  //       setOpeningBalanceType((props as any).selectedRow.openingBalanceType);
-  //       setGstin((props as any).selectedRow.gstin);
-  //       setGstRate((props as any).selectedRow.gstRate);
-  //       setBillingAddress((props as any).selectedRow.billingAddress);
-  //       setShippingAddress((props as any).selectedRow.shippingAddress);
-  //       setMobileNo((props as any).selectedRow.mobileNo);
-  //       setEmail((props as any).selectedRow.email);
-  //       setPan((props as any).selectedRow.pan);
-  //       setTan((props as any).selectedRow.tan);
-  //       (props as any).updateCommon({
-  //         selectedRow: {},
-  //       });
-  //     }
-  //   },
-  //   [(props as any).selectedRow],
-  //   0
-  // );
 
   // const onKeyUpFunction(event: any)
   // if (event.keyCode === 27) {
@@ -234,6 +183,65 @@ function AddAccount(props: Props & PropsFromRedux) {
     }
   };
 
+  const editAccount = () => {
+    const organisationId = (props as any).currentOrganisation._id;
+
+    if (state.name !== "" && state.accountNature !== "") {
+      setState((prevState) => ({ ...prevState, logging: true }));
+
+      agent.Account.editAccount(
+        state.accountId,
+        state.name,
+        state.accountNature,
+        state.openingBalance,
+        state.openingBalanceType,
+        organisationId,
+        state.gstin,
+        state.gstRate,
+        state.billingAddress,
+        state.shippingAddress,
+        state.mobileNo,
+        state.email,
+        state.pan,
+        state.tan
+      )
+        .then((response: any) => {
+          setState((prevState) => ({ ...prevState, logging: false }));
+
+          (props as any).addNotification(
+            "Account Edited",
+            "Successfully edited account.",
+            "success"
+          );
+          closeAccountModal(true);
+        })
+        .catch((err: any) => {
+          console.log({ err });
+          setState((prevState) => ({ ...prevState, logging: false }));
+
+          (props as any).addNotification(
+            "Could not edit the account",
+            err?.response.data.message || err,
+            "danger"
+          );
+        });
+    } else {
+      if (!state.name) {
+        (props as any).addNotification(
+          "Empty Account Name Field",
+          "Account Name Field is Required!.",
+          "danger"
+        );
+      } else if (!state.accountNature) {
+        (props as any).addNotification(
+          "Empty Nature of Account Field",
+          "Nature of Account is Required!.",
+          "danger"
+        );
+      }
+    }
+  };
+
   const closeAccountModal = (fetchAgain: boolean) => {
     props.closeModal(fetchAgain);
   };
@@ -245,7 +253,8 @@ function AddAccount(props: Props & PropsFromRedux) {
       const words = convertNumberToWords(value);
       setState((prevState) => ({ ...prevState, openingBalanceInWords: words }));
     }
-    if ((value = 0 || value === "")) {
+
+    if (value === 0 || value === "") {
       setState((prevState) => ({ ...prevState, openingBalanceInWords: "" }));
     }
   };
@@ -280,12 +289,15 @@ function AddAccount(props: Props & PropsFromRedux) {
         gstRate: 0,
       }));
     }
-    let accountDetails = accounts.find((acc: any) => acc.id === account.id);
+
+    let accountDetails = accounts.find((acc: any) => acc.name === account);
+    console.log(account);
+    console.log(accountDetails);
     if (accountDetails) {
       let defaultSide = accountDetails.default;
       setState((prevState) => ({
         ...prevState,
-        defaultDrOrCr: defaultSide,
+        openingBalanceType: defaultSide,
       }));
     }
   };
@@ -299,7 +311,6 @@ function AddAccount(props: Props & PropsFromRedux) {
   };
 
   const gstinDetails = (gstinDetails: any) => {
-    console.log("gstindetails", gstinDetails);
     if (!state.name) {
       setState((prevState) => ({ ...prevState, name: gstinDetails.name }));
     }
@@ -328,10 +339,6 @@ function AddAccount(props: Props & PropsFromRedux) {
   };
   const tanHandler = (tan: any) => {
     setState((prevState) => ({ ...prevState, tan: tan }));
-  };
-
-  const editAccount = () => {
-    console.log("update");
   };
 
   return (
@@ -475,7 +482,7 @@ function AddAccount(props: Props & PropsFromRedux) {
                                         <div className="space-y-4">
                                           <div className="flex items-center">
                                             <input
-                                              id="debit"
+                                              id="dr"
                                               name="push-notifications"
                                               type="radio"
                                               checked={
@@ -496,7 +503,7 @@ function AddAccount(props: Props & PropsFromRedux) {
                                               Debit
                                             </label>
                                             <input
-                                              id="credit"
+                                              id="cr"
                                               name="push-notifications"
                                               type="radio"
                                               checked={

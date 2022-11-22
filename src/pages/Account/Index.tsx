@@ -57,12 +57,19 @@ const mapDispatchToProps = (dispatch: any) => ({
     }),
 });
 
+type Props = {
+  closeModal: (fetchAgain: boolean) => void;
+  type: any;
+  data: any;
+};
+
 const connector = connect(mapStateToProps, mapDispatchToProps);
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
-function Accounts(props: PropsFromRedux) {
-  console.log(4);
+function AccountsList(props: Props & PropsFromRedux) {
+  console.log("props", props.data);
+
   interface state {
     loading: boolean;
     posX: any;
@@ -110,14 +117,13 @@ function Accounts(props: PropsFromRedux) {
   const [state, setState] = React.useState<state>(inititalState);
 
   // Chunk Size for number of table data displayed in each page during pagination
-  let chunkSize = 12;
+  let chunkSize = 10000;
   // Selected pagination value
   let currPage = 0;
 
   //Get Organisation Data
 
   const getAccountList = (forSearch: boolean) => {
-    console.log("getaccountlist");
     const organisationId = (props as any).params?.organisationId;
     const searchText = forSearch ? state.searchText : "";
     const active = state.active;
@@ -125,7 +131,7 @@ function Accounts(props: PropsFromRedux) {
     //   ...prevState,
     //   loading: true,
     // }));
-    console.log("searchtext", searchText);
+
     agent.Account.getAccountList(organisationId, active, searchText)
       .then((response: any) => {
         setState((prevState) => ({
@@ -137,7 +143,6 @@ function Accounts(props: PropsFromRedux) {
         }));
       })
       .catch((err: any) => {
-        console.log("TAG ERROR", { err });
         setState((prevState) => ({
           ...prevState,
           loading: false,
@@ -153,8 +158,6 @@ function Accounts(props: PropsFromRedux) {
 
   useEffectAfterInitialRender(
     () => {
-      console.log("useeffect intial render");
-
       getAccountList(false);
     },
     [],
@@ -163,7 +166,6 @@ function Accounts(props: PropsFromRedux) {
 
   useEffectAfterInitialRender(
     () => {
-      console.log("useeffect current modal");
       getAccountList(false);
     },
     [(props as any).currentModal],
@@ -172,7 +174,6 @@ function Accounts(props: PropsFromRedux) {
 
   useEffectAfterInitialRender(
     () => {
-      console.log("useeffect organisation id");
       setState((prevState) => ({
         ...prevState,
         searchText: "",
@@ -186,7 +187,6 @@ function Accounts(props: PropsFromRedux) {
 
   useEffectAfterInitialRender(
     () => {
-      console.log("useeffect current modal 2");
       if (
         (props as any)?.modalName === "ADD_ACCOUNT_MODAL" &&
         (props as any)?.modalName === "" &&
@@ -201,7 +201,6 @@ function Accounts(props: PropsFromRedux) {
 
   useEffectAfterInitialRender(
     () => {
-      console.log("useeffect state active change");
       getAccountList(true);
     },
     [state.active],
@@ -210,20 +209,14 @@ function Accounts(props: PropsFromRedux) {
 
   // useEffectAfterInitialRender(
   //   () => {
-  //     console.log("useeffect search text");
+
   //     getAccountList(true);
   //   },
   //   [state.searchText],
   //   1
   // );
 
-  useEffectAfterInitialRender(
-    () => {
-      console.log("useeffect show edit modal");
-    },
-    [state.showEditModal],
-    1
-  );
+  useEffectAfterInitialRender(() => {}, [state.showEditModal], 1);
   // TagManager.dataLayer(tagManagerArgs);
 
   const handlePageClick = (data: any) => {
@@ -269,7 +262,6 @@ function Accounts(props: PropsFromRedux) {
   };
 
   const handleSearchTextChange = (ev: any) => {
-    console.log("searchtextchange", ev.target.value);
     if (state.typingTimeout) {
       clearTimeout(state.typingTimeout);
     }
@@ -505,7 +497,7 @@ function Accounts(props: PropsFromRedux) {
 
         {!state.loading && state.displayAccountDetails ? (
           state.totalRecords > 0 || state.searchText.length > 0 ? (
-            <div className={"max-w-7xl mx-auto px-4 sm:px-6 md:px-8"}>
+            <div className={"max-w-7xl mx-auto px-4 sm:px-6 md:px-8 pb-12"}>
               {/* Organisation List Table */}
               <div className="mt-4 flex flex-col max-h-screen">
                 <div
@@ -542,7 +534,15 @@ function Accounts(props: PropsFromRedux) {
                               colSpan={2}
                               className="sticky top-0 border-b border-gray-300 bg-gray-50 px-4 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider sm:pl-6 align-bottom"
                             >
-                              Opening Balance
+                              Opening Balances
+                              {` as on 1st April `}
+                              {
+                                (
+                                  props as any
+                                ).currentOrganisation?.startingYear.split(
+                                  "-"
+                                )[0]
+                              }
                             </th>
                             <th
                               style={{ zIndex: 6 }}
@@ -632,13 +632,17 @@ function Accounts(props: PropsFromRedux) {
                                   <td className="w-4/10 px-6 py-3 whitespace-nowrap text-sm text-gray-900 font-bold text-right">
                                     {account.openingBalanceType === "dr" &&
                                     account.openingBalance !== 0
-                                      ? account.openingBalance
+                                      ? new Intl.NumberFormat("en-IN", {
+                                          minimumFractionDigits: 2,
+                                        }).format(account.openingBalance)
                                       : "-"}
                                   </td>
                                   <td className="w-4/10 px-6 py-3 whitespace-nowrap text-sm text-gray-900 font-bold text-right">
                                     {account.openingBalanceType === "cr" &&
                                     account.openingBalance !== 0
-                                      ? account.openingBalance
+                                      ? new Intl.NumberFormat("en-IN", {
+                                          minimumFractionDigits: 2,
+                                        }).format(account.openingBalance)
                                       : "-"}
                                   </td>
                                   <td className="w-4/10 px-6 py-3 whitespace-nowrap text-sm text-gray-500">
@@ -853,7 +857,7 @@ function Accounts(props: PropsFromRedux) {
             </div>
           </div>
         )}
-        {state.displayAccountDetails.length > 0 ? (
+        {/* {state.displayAccountDetails.length > 0 ? (
           <div className="bg-white px-4 py-3 my-4 lg:mx-8 flex items-center justify-between border-t border-gray-200 sm:px-6">
             <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
               <div>
@@ -888,10 +892,13 @@ function Accounts(props: PropsFromRedux) {
               />
             </div>
           </div>
-        ) : null}
+        ) : null} */}
       </div>
     </Dashboard>
   );
 }
 
-export default compose(connector, withRouter)(Accounts) as React.ComponentType;
+export default compose(
+  connector,
+  withRouter
+)(AccountsList) as React.ComponentType;

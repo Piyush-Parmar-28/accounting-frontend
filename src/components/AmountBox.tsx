@@ -9,17 +9,23 @@ function classNames(...classes: any) {
 
 type Props = {
   onChange: (item: any) => void;
-  defaultValue: any;
+  defaultValue: number;
 };
 
 export default function AmountBox(props: Props) {
-  console.log("propsvalue", props.defaultValue);
-  const [amount, setAmount] = useState(0);
+  const [amount, setAmount] = useState("");
+  const [amountToShow, setAmountToShow] = useState("");
 
   useEffect(() => {
-    setAmount(props.defaultValue);
+    setAmount(props.defaultValue.toString());
+    if (props.defaultValue >= 0) {
+      let newValue: any = new Intl.NumberFormat("en-IN", {
+        minimumFractionDigits: 2,
+      }).format(props.defaultValue);
+      setAmountToShow(newValue);
+    }
   }, []);
-  console.log("amount", amount);
+
   const handleChange = (e: any) => {
     e.preventDefault();
 
@@ -41,6 +47,7 @@ export default function AmountBox(props: Props) {
         splitNewValue[0] + "." + splitNewValue[1].toString().slice(0, 2);
     }
     setAmount(newValue);
+    setAmountToShow(newValue);
     props.onChange(newValue);
   };
 
@@ -55,21 +62,21 @@ export default function AmountBox(props: Props) {
         minimumFractionDigits: 2,
       }).format(newValue);
     }
-    setAmount(newValue);
+
+    setAmountToShow(newValue);
   };
 
   const handleFocus = (e: any) => {
     e.preventDefault();
     e.target.select();
     let newValue = e.target.value;
-    if (e.target.value !== "") {
+
+    if (newValue !== "") {
       newValue = e.target.value.replace(/,/g, "");
 
       newValue = Number(newValue).toFixed(2);
-      // do not changeTotal so false is used
+      setAmountToShow(newValue);
     }
-    setAmount(newValue);
-    e.target.select();
   };
 
   return (
@@ -81,7 +88,7 @@ export default function AmountBox(props: Props) {
       onBlur={handleBlur}
       onFocus={handleFocus}
       autoComplete="given-name"
-      value={amount}
+      value={amountToShow}
       className="block w-full max-w-lg rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:max-w-xs sm:text-sm"
     />
   );

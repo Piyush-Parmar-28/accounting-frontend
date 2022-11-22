@@ -248,21 +248,37 @@ const Account = {
       pan,
       tan,
     }),
-  editStatus: (
-    statusId: string,
+  editAccount: (
+    accountId: string,
     name: string,
-    color: string,
-    description: string,
+    nature: string,
+    openingBalance: number,
+    openingBalanceType: string,
     organisationId: string,
-    tasks: string[]
+    gstin: string,
+    gstRate: number,
+    billingAddress: string,
+    shippingAddress: string,
+    mobileNo: string,
+    email: string,
+    pan: string,
+    tan: string
   ) =>
-    requests.put("/status/edit", {
-      statusId,
+    requests.put("/account/edit", {
+      accountId,
       name,
-      color,
-      description,
+      nature,
+      openingBalance,
+      openingBalanceType,
       organisationId,
-      tasks,
+      gstin,
+      gstRate,
+      billingAddress,
+      shippingAddress,
+      mobileNo,
+      email,
+      pan,
+      tan,
     }),
   makeAccountInactive: (organisationId: string, accountId: string) =>
     requests.put("/account/inactive", { organisationId, accountId }),
@@ -270,10 +286,10 @@ const Account = {
     requests.put("/account/active", { organisationId, accountId }),
   accountTaskList: (organisationId: string) =>
     requests.get(
-      `/status/listoftaskforstatus?organisationId=${organisationId}`
+      `/account/listoftaskforstatus?organisationId=${organisationId}`
     ),
-  deleteStatus: (id: string, organisationId: string) =>
-    requests.delete("/status/delete", { id, organisationId }),
+  delete: (accountId: string, organisationId: string) =>
+    requests.delete("/account/delete", { accountId, organisationId }),
 };
 
 const User = {

@@ -17,7 +17,8 @@ import Tags from "./pages/Tags/Index";
 import AddTag from "./pages/Tags/Add";
 
 //  Account Import
-import Account from "./pages/Account/Index";
+import AccountList from "./pages/Account/Index";
+import AccountListWithOpeningBalances from "./pages/Account/WithOpeningBalances";
 import AddAccount from "./pages/Account/Add";
 
 //  Person Import
@@ -245,12 +246,21 @@ class App extends React.Component<PropsFromRedux> {
                   </this.PrivateRoute>
                 }
               />
-              {/* Status Page */}
+              {/* Account list with opening balance Page */}
+              <Route
+                path="/:organisationId/account/opening-balance"
+                element={
+                  <this.PrivateRoute>
+                    <AccountListWithOpeningBalances />
+                  </this.PrivateRoute>
+                }
+              />
+              {/* Account list with current year balance Page */}
               <Route
                 path="/:organisationId/account/list"
                 element={
                   <this.PrivateRoute>
-                    <Account />
+                    <AccountList />
                   </this.PrivateRoute>
                 }
               />
