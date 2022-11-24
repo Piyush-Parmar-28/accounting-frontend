@@ -91,14 +91,14 @@ const menuItems = (organisationId: string) => {
       route: "/settings",
       children: [
         {
-          name: "Balances",
+          name: "Year End Balances",
           iconName: "outline/document-add",
-          route: `/${organisationId}/account/list1`,
+          route: `/${organisationId}/account/list`,
         },
         {
-          name: "Add/Edit",
+          name: "Opening Balances",
           iconName: "outline/group",
-          route: `/${organisationId}/account/list`,
+          route: `/${organisationId}/account/list-with-opening-balances`,
         },
       ],
     },

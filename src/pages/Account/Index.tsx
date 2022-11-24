@@ -24,6 +24,7 @@ import { withRouter } from "../../helpers/withRouter";
 import { compose } from "redux";
 import AddAccount from "./Add";
 import useEffectAfterInitialRender from "../../helpers/useEffectAfterInitialRender";
+import { string } from "prop-types";
 // import InactiveTagModal from "./InactiveTagModal";
 // import ActiveTagModal from "./ActiveTagModal";
 // import EditTag from "./Edit";
@@ -58,9 +59,7 @@ const mapDispatchToProps = (dispatch: any) => ({
 });
 
 type Props = {
-  closeModal: (fetchAgain: boolean) => void;
-  type: any;
-  data: any;
+  type?: any;
 };
 
 const connector = connect(mapStateToProps, mapDispatchToProps);
@@ -68,8 +67,19 @@ const connector = connect(mapStateToProps, mapDispatchToProps);
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
 function AccountsList(props: Props & PropsFromRedux) {
-  console.log("props", props.data);
+  const [pageType, setPageType] = React.useState("");
 
+  const pageURL = (props as any).location.pathname.split("/");
+  useEffect(() => {
+    if (pageURL[3] === "list") {
+      setPageType("list");
+    }
+    if (pageURL[3] === "list-with-opening-balances") {
+      setPageType("opening-balances");
+    }
+  }, []);
+
+  const currentYear = (props as any).currentYear;
   interface state {
     loading: boolean;
     posX: any;
@@ -131,6 +141,14 @@ function AccountsList(props: Props & PropsFromRedux) {
     //   ...prevState,
     //   loading: true,
     // }));
+    if (!organisationId) {
+      (props as any).onNotify(
+        "Could not load Organisation Details",
+        "",
+        "danger"
+      );
+      return;
+    }
 
     agent.Account.getAccountList(organisationId, active, searchText)
       .then((response: any) => {
@@ -408,7 +426,12 @@ function AccountsList(props: Props & PropsFromRedux) {
           <h1 className="text-2xl font-semibold text-gray-900">
             Accounts List
           </h1>
-          <h2 className="text-sm text-gray-900">with Opening Balances</h2>
+
+          {pageType === "list" ? (
+            <h2 className="text-sm text-gray-900">with Year End Balances</h2>
+          ) : (
+            <h2 className="text-sm text-gray-900">with Opening Balances</h2>
+          )}
         </div>
         <div className="px-4 sm:px-6 md:px-8 grid grid-cols-3 gap-4 mt-6">
           <div className="w-fit">
@@ -534,15 +557,19 @@ function AccountsList(props: Props & PropsFromRedux) {
                               colSpan={2}
                               className="sticky top-0 border-b border-gray-300 bg-gray-50 px-4 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider sm:pl-6 align-bottom"
                             >
-                              Opening Balances
-                              {` as on 1st April `}
-                              {
-                                (
-                                  props as any
-                                ).currentOrganisation?.startingYear.split(
-                                  "-"
-                                )[0]
-                              }
+                              {pageType === "list"
+                                ? `Balances as on 31st March 20${
+                                    currentYear.split("-")[1]
+                                  }`
+                                : `Opening Balances
+                                as on 1st April
+                                ${
+                                  (
+                                    props as any
+                                  ).currentOrganisation?.startingYear.split(
+                                    "-"
+                                  )[0]
+                                }`}
                             </th>
                             <th
                               style={{ zIndex: 6 }}
@@ -630,19 +657,47 @@ function AccountsList(props: Props & PropsFromRedux) {
                                   </td>
 
                                   <td className="w-4/10 px-6 py-3 whitespace-nowrap text-sm text-gray-900 font-bold text-right">
-                                    {account.openingBalanceType === "dr" &&
+                                    {pageType === "opening-balances" &&
+                                    account.openingBalanceType === "dr" &&
                                     account.openingBalance !== 0
                                       ? new Intl.NumberFormat("en-IN", {
                                           minimumFractionDigits: 2,
                                         }).format(account.openingBalance)
+                                      : pageType === "list" &&
+                                        account.balances.find(
+                                          (item: any) =>
+                                            item.year === currentYear
+                                        )?.balance > 0
+                                      ? new Intl.NumberFormat("en-IN", {
+                                          minimumFractionDigits: 2,
+                                        }).format(
+                                          account.balances.find(
+                                            (item: any) =>
+                                              item.year === currentYear
+                                          )?.balance
+                                        )
                                       : "-"}
                                   </td>
                                   <td className="w-4/10 px-6 py-3 whitespace-nowrap text-sm text-gray-900 font-bold text-right">
-                                    {account.openingBalanceType === "cr" &&
+                                    {pageType === "opening-balances" &&
+                                    account.openingBalanceType === "cr" &&
                                     account.openingBalance !== 0
                                       ? new Intl.NumberFormat("en-IN", {
                                           minimumFractionDigits: 2,
                                         }).format(account.openingBalance)
+                                      : pageType === "list" &&
+                                        account.balances.find(
+                                          (item: any) =>
+                                            item.year === currentYear
+                                        )?.balance < 0
+                                      ? new Intl.NumberFormat("en-IN", {
+                                          minimumFractionDigits: 2,
+                                        }).format(
+                                          account.balances.find(
+                                            (item: any) =>
+                                              item.year === currentYear
+                                          )?.balance * -1
+                                        )
                                       : "-"}
                                   </td>
                                   <td className="w-4/10 px-6 py-3 whitespace-nowrap text-sm text-gray-500">
@@ -897,6 +952,8 @@ function AccountsList(props: Props & PropsFromRedux) {
     </Dashboard>
   );
 }
+
+// export default AccountsList;
 
 export default compose(
   connector,

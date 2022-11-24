@@ -18,7 +18,7 @@ import AddTag from "./pages/Tags/Add";
 
 //  Account Import
 import AccountList from "./pages/Account/Index";
-import AccountListWithOpeningBalances from "./pages/Account/WithOpeningBalances";
+
 import AddAccount from "./pages/Account/Add";
 
 //  Person Import
@@ -248,10 +248,10 @@ class App extends React.Component<PropsFromRedux> {
               />
               {/* Account list with opening balance Page */}
               <Route
-                path="/:organisationId/account/opening-balance"
+                path="/:organisationId/account/list-with-opening-balances"
                 element={
                   <this.PrivateRoute>
-                    <AccountListWithOpeningBalances />
+                    <AccountList />
                   </this.PrivateRoute>
                 }
               />
