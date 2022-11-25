@@ -100,6 +100,9 @@ function AccountsList(props: Props & PropsFromRedux) {
     showInActiveModal: boolean;
     showEditModal: boolean;
     active: boolean;
+    debitTotal: string;
+    creditTotal: string;
+    debitCreditDiff: string;
   }
 
   let inititalState = {
@@ -122,6 +125,9 @@ function AccountsList(props: Props & PropsFromRedux) {
     showInActiveModal: false,
     showEditModal: false,
     active: true,
+    debitTotal: "",
+    creditTotal: "",
+    debitCreditDiff: "",
   };
 
   const [state, setState] = React.useState<state>(inititalState);
@@ -152,12 +158,16 @@ function AccountsList(props: Props & PropsFromRedux) {
 
     agent.Account.getAccountList(organisationId, active, searchText)
       .then((response: any) => {
+        const total = calculateTotal(response.accounts);
         setState((prevState) => ({
           ...prevState,
           loading: false,
           displayAccountDetails: response.accounts,
           totalRecords: response.count,
           accounts: response.accounts,
+          debitTotal: total.debitTotal,
+          creditTotal: total.creditTotal,
+          debitCreditDiff: total.debitCreditDiff,
         }));
       })
       .catch((err: any) => {
@@ -172,6 +182,58 @@ function AccountsList(props: Props & PropsFromRedux) {
           "danger"
         );
       });
+  };
+
+  const calculateTotal = (accounts: any) => {
+    let debitTotal = 0;
+    let creditTotal = 0;
+    let debitCreditDiff = 0;
+
+    if (
+      (props as any).location.pathname.split("/")[3] ===
+      "list-with-opening-balances"
+    ) {
+      accounts.forEach((account: any) => {
+        if (account.openingBalanceType === "dr") {
+          debitTotal += account.openingBalance;
+        } else {
+          creditTotal += account.openingBalance;
+        }
+      });
+    }
+
+    if ((props as any).location.pathname.split("/")[3] === "list") {
+      accounts.forEach((account: any) => {
+        let balance = account.balances.find(
+          (item: any) => item.year === currentYear
+        )?.balance;
+        if (balance) {
+          if (balance > 0) {
+            debitTotal += balance;
+          } else {
+            creditTotal -= balance;
+          }
+        }
+      });
+    }
+    debitCreditDiff = debitTotal - creditTotal;
+    const debitTotalFormatted = Intl.NumberFormat("en-IN", {
+      minimumFractionDigits: 2,
+    }).format(debitTotal);
+    const creditTotalFormatted = Intl.NumberFormat("en-IN", {
+      minimumFractionDigits: 2,
+    }).format(creditTotal);
+    const debitCreditDiffFormatted = Intl.NumberFormat("en-IN", {
+      minimumFractionDigits: 2,
+    }).format(debitCreditDiff);
+    console.log(debitTotalFormatted, creditTotalFormatted);
+
+    console.log("debitCreditDiff", debitCreditDiffFormatted);
+    return {
+      debitTotal: debitTotalFormatted,
+      creditTotal: creditTotalFormatted,
+      debitCreditDiff: debitCreditDiffFormatted,
+    };
   };
 
   useEffectAfterInitialRender(
@@ -522,7 +584,7 @@ function AccountsList(props: Props & PropsFromRedux) {
           state.totalRecords > 0 || state.searchText.length > 0 ? (
             <div className={"max-w-7xl mx-auto px-4 sm:px-6 md:px-8 pb-12"}>
               {/* Organisation List Table */}
-              <div className="mt-4 flex flex-col max-h-screen">
+              <div className="mt-4 flex flex-col">
                 <div
                   id="table-scroll"
                   className="-my-2 -mx-4 sm:-mx-6 lg:-mx-8 overflow-auto"
@@ -812,6 +874,94 @@ function AccountsList(props: Props & PropsFromRedux) {
                             )}
                           </tbody>
                         )}
+                        <thead className="bg-gray-50">
+                          <tr>
+                            <th
+                              style={{ zIndex: 6 }}
+                              scope="col"
+                              className="sticky top-0 border-b border-gray-300 bg-gray-50 px-4 py-3 text-right text-xs font-bold text-gray-500 uppercase tracking-wider sm:pl-6 align-middle"
+                            ></th>
+                            <th
+                              style={{ zIndex: 6 }}
+                              scope="col"
+                              className="sticky top-0 border-b border-gray-300 bg-gray-50 px-4 py-3 text-right text-xm font-bold text-gray-900 tracking-wider sm:pl-6 align-middle"
+                            >
+                              Total
+                            </th>
+                            <th
+                              style={{ zIndex: 6 }}
+                              scope="col"
+                              className="sticky top-0 border-b border-gray-300 bg-gray-50 px-4 py-3 text-right text-xm font-bold text-gray-900 uppercase tracking-wider sm:pl-6 align-middle"
+                            >
+                              {state.debitTotal}
+                            </th>
+                            <th
+                              style={{ zIndex: 6 }}
+                              scope="col"
+                              className="sticky top-0 border-b border-gray-300 bg-gray-50 px-4 py-3 text-right text-xm font-bold text-gray-900 uppercase tracking-wider sm:pl-6 align-middle"
+                            >
+                              {state.creditTotal}
+                            </th>
+
+                            <th
+                              style={{ zIndex: 6 }}
+                              scope="col"
+                              className="sticky top-0 border-b border-gray-300 bg-gray-50 px-4 py-3 text-right text-xs font-bold text-gray-500 uppercase tracking-wider sm:pl-6 align-middle"
+                            ></th>
+                            <th
+                              style={{ zIndex: 6 }}
+                              scope="col"
+                              className="sticky top-0 border-b border-gray-300 bg-gray-50 px-4 py-3 text-right text-xs font-bold text-gray-500 uppercase tracking-wider sm:pl-6 align-middle"
+                            ></th>
+                          </tr>
+                        </thead>
+                        {state.debitCreditDiff !== "" ? (
+                          <thead className="bg-gray-50">
+                            <tr>
+                              <th
+                                style={{ zIndex: 6 }}
+                                scope="col"
+                                className="sticky top-0 border-b border-gray-300 bg-gray-50 px-4 py-3 text-right text-xs font-bold text-gray-500 uppercase tracking-wider sm:pl-6 align-middle"
+                              ></th>
+                              <th
+                                style={{ zIndex: 6 }}
+                                scope="col"
+                                className="sticky top-0 border-b border-gray-300 bg-gray-50 px-4 py-3 text-right text-xm font-bold text-gray-900 tracking-wider sm:pl-6 align-middle"
+                              >
+                                Difference in Opening Balance
+                              </th>
+                              <th
+                                style={{ zIndex: 6 }}
+                                scope="col"
+                                className="sticky top-0 border-b border-gray-300 bg-gray-50 px-4 py-3 text-right text-xm font-bold text-gray-900 uppercase tracking-wider sm:pl-6 align-middle"
+                              >
+                                {state.debitCreditDiff.includes("-")
+                                  ? state.debitCreditDiff.replace("-", "")
+                                  : "-"}
+                              </th>
+                              <th
+                                style={{ zIndex: 6 }}
+                                scope="col"
+                                className="sticky top-0 border-b border-gray-300 bg-gray-50 px-4 py-3 text-right text-xm font-bold text-gray-900 uppercase tracking-wider sm:pl-6 align-middle"
+                              >
+                                {state.debitCreditDiff.includes("-")
+                                  ? "-"
+                                  : state.debitCreditDiff}
+                              </th>
+
+                              <th
+                                style={{ zIndex: 6 }}
+                                scope="col"
+                                className="sticky top-0 border-b border-gray-300 bg-gray-50 px-4 py-3 text-right text-xs font-bold text-gray-500 uppercase tracking-wider sm:pl-6 align-middle"
+                              ></th>
+                              <th
+                                style={{ zIndex: 6 }}
+                                scope="col"
+                                className="sticky top-0 border-b border-gray-300 bg-gray-50 px-4 py-3 text-right text-xs font-bold text-gray-500 uppercase tracking-wider sm:pl-6 align-middle"
+                              ></th>
+                            </tr>
+                          </thead>
+                        ) : null}
                       </table>
                     </div>
                   </div>
