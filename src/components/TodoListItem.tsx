@@ -79,10 +79,10 @@ export default function TodoListItem(props: any) {
       if (!ref.current) {
         return;
       }
-      console.log(item);
+
       let dragIndex = item.index;
       let hoverIndex = index;
-      console.log("dragIndex", dragIndex, "hoverIndex", hoverIndex);
+
       // Don't replace items with themselves
       if (dragIndex === hoverIndex) {
         return;
@@ -117,19 +117,10 @@ export default function TodoListItem(props: any) {
       // 	return;
       // }
 
-      console.log("dragIndex", dragIndex, "hoverIndex", hoverIndex);
       // Time to actually perform the action
       moveItem(dragIndex, hoverIndex);
 
       item.index = hoverIndex;
-      console.log(
-        "item.index",
-        item.index,
-        "dragIndex",
-        dragIndex,
-        "hoverIndex",
-        hoverIndex
-      );
     },
   });
 

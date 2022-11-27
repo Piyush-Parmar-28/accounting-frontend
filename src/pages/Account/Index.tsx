@@ -20,15 +20,12 @@ import { Menu, Transition } from "@headlessui/react";
 import InActiveModal from "../../components/InActiveModal";
 import ActiveModal from "../../components/ActiveModal";
 import DeleteModal from "../../components/DeleteModal";
+import LogModal from "../../components/LogModal";
 import { withRouter } from "../../helpers/withRouter";
 import { compose } from "redux";
 import AddAccount from "./Add";
 import useEffectAfterInitialRender from "../../helpers/useEffectAfterInitialRender";
 import { string } from "prop-types";
-// import InactiveTagModal from "./InactiveTagModal";
-// import ActiveTagModal from "./ActiveTagModal";
-// import EditTag from "./Edit";
-// import DeleteTagModal from "./DeleteTagModal";
 
 const tagManagerArgs = {
   dataLayer: {
@@ -77,7 +74,7 @@ function AccountsList(props: Props & PropsFromRedux) {
     if (pageURL[3] === "list-with-opening-balances") {
       setPageType("opening-balances");
     }
-  }, []);
+  }, [pageURL]);
 
   const currentYear = (props as any).currentYear;
   interface state {
@@ -99,10 +96,12 @@ function AccountsList(props: Props & PropsFromRedux) {
     showActiveModal: boolean;
     showInActiveModal: boolean;
     showEditModal: boolean;
+    showLogModal: boolean;
     active: boolean;
     debitTotal: string;
     creditTotal: string;
     debitCreditDiff: string;
+    hideZeroBalance: boolean;
   }
 
   let inititalState = {
@@ -124,7 +123,9 @@ function AccountsList(props: Props & PropsFromRedux) {
     showActiveModal: false,
     showInActiveModal: false,
     showEditModal: false,
+    showLogModal: false,
     active: true,
+    hideZeroBalance: false,
     debitTotal: "",
     creditTotal: "",
     debitCreditDiff: "",
@@ -226,9 +227,7 @@ function AccountsList(props: Props & PropsFromRedux) {
     const debitCreditDiffFormatted = Intl.NumberFormat("en-IN", {
       minimumFractionDigits: 2,
     }).format(debitCreditDiff);
-    console.log(debitTotalFormatted, creditTotalFormatted);
 
-    console.log("debitCreditDiff", debitCreditDiffFormatted);
     return {
       debitTotal: debitTotalFormatted,
       creditTotal: creditTotalFormatted,
@@ -242,6 +241,27 @@ function AccountsList(props: Props & PropsFromRedux) {
     },
     [],
     0
+  );
+
+  useEffectAfterInitialRender(
+    () => {
+      // setState((prevState) => ({
+      //   ...prevState,
+      //   hideZeroBalance: false,
+      // }));
+
+      getAccountList(false);
+    },
+    [(props as any).location.pathname],
+    1
+  );
+
+  useEffectAfterInitialRender(
+    () => {
+      updateHideZeroBalance({ target: { checked: state.hideZeroBalance } });
+    },
+    [state.accounts],
+    1
   );
 
   useEffectAfterInitialRender(
@@ -362,6 +382,43 @@ function AccountsList(props: Props & PropsFromRedux) {
     }));
   };
 
+  const updateHideZeroBalance = (e: any) => {
+    const checked = e.target.checked;
+    setState((prevState) => ({
+      ...prevState,
+      hideZeroBalance: checked,
+    }));
+    if (checked && pageType === "opening-balances") {
+      setState((prevState) => ({
+        ...prevState,
+        displayAccountDetails: prevState.accounts.filter((account: any) => {
+          if (account.openingBalance === 0) {
+            return false;
+          }
+          return true;
+        }),
+      }));
+    } else if (checked && pageType === "list") {
+      setState((prevState) => ({
+        ...prevState,
+        displayAccountDetails: prevState.accounts.filter((account: any) => {
+          let balanceForCurrentYear = account.balances.find(
+            (item: any) => item.year === currentYear
+          )?.balance;
+          if (!balanceForCurrentYear || balanceForCurrentYear === 0) {
+            return false;
+          }
+          return true;
+        }),
+      }));
+    } else {
+      setState((prevState) => ({
+        ...prevState,
+        displayAccountDetails: prevState.accounts,
+      }));
+    }
+  };
+
   const openAddAccountModal = () => {
     const statusRights = (props as any)?.rights?.statusRights;
     const createRight = statusRights.create;
@@ -421,6 +478,22 @@ function AccountsList(props: Props & PropsFromRedux) {
     }));
   };
 
+  const openLogModal = (account: any) => {
+    setState((prevState) => ({
+      ...prevState,
+      selectedRow: account,
+      showBackDrop: false,
+    }));
+
+    logModalSetOpen(true);
+  };
+  const logModalSetOpen = (open: boolean) => {
+    setState((prevState) => ({
+      ...prevState,
+      showLogModal: open,
+    }));
+  };
+
   const openInActiveModal = (account: any) => {
     setState((prevState) => ({
       ...prevState,
@@ -464,6 +537,15 @@ function AccountsList(props: Props & PropsFromRedux) {
             state={state}
             onLoad={getAccountList}
             inActiveModalSetOpen={inActiveModalSetOpen}
+          />
+        )}
+
+        {state.showLogModal && (
+          <LogModal
+            type={"account"}
+            state={state}
+            onLoad={getAccountList}
+            logModalSetOpen={logModalSetOpen}
           />
         )}
 
@@ -529,9 +611,9 @@ function AccountsList(props: Props & PropsFromRedux) {
         <div className="relative flex items-start max-w-7xl mx-auto mt-6 px-4 sm:px-6 md:px-8">
           <div className="flex h-5 items-center">
             <input
-              id="comments"
+              id="showinactive"
               aria-describedby="comments-description"
-              name="comments"
+              name="showinactive"
               type="checkbox"
               className="h-4 w-4 rounded border-gray-400 cursor-pointer text-indigo-600 focus:ring-indigo-500"
               checked={state.active === false}
@@ -540,13 +622,34 @@ function AccountsList(props: Props & PropsFromRedux) {
           </div>
           <div className="ml-3 text-sm">
             <label
-              htmlFor="comments"
+              htmlFor="showinactive"
               className="font-medium cursor-pointer text-gray-700"
             >
               Show Inactive Account
             </label>
           </div>
+
+          <div className="flex h-5 items-center">
+            <input
+              id="zerobalance"
+              aria-describedby="comments-description"
+              name="zerobalance"
+              type="checkbox"
+              className="h-4 w-4 rounded border-gray-400 cursor-pointer text-indigo-600 focus:ring-indigo-500 ml-8"
+              checked={state.hideZeroBalance}
+              onChange={updateHideZeroBalance}
+            />
+          </div>
+          <div className="ml-3 text-sm">
+            <label
+              htmlFor="zerobalance"
+              className="font-medium cursor-pointer text-gray-700"
+            >
+              Hide Rows with Zero Balances
+            </label>
+          </div>
         </div>
+
         {/* <div className="flex justify-between mt-6">
             <Link to={`/${(props as any).currentOrganisation?._id}/tags/add`}>
               <button
@@ -861,6 +964,20 @@ function AccountsList(props: Props & PropsFromRedux) {
                                                     className="h-5 w-5 mr-2"
                                                   />
                                                   <span>Delete</span>
+                                                </button>
+                                              </Menu.Item>
+                                              <Menu.Item>
+                                                <button
+                                                  className="flex items-center w-full p-1 px-4 py-2 text-sm hover:bg-gray-100 text-gray-900"
+                                                  onClick={() =>
+                                                    openLogModal(account)
+                                                  }
+                                                >
+                                                  <Icon
+                                                    name="outline/document-report"
+                                                    className="h-5 w-5 mr-2"
+                                                  />
+                                                  <span>View Log</span>
                                                 </button>
                                               </Menu.Item>
                                             </div>

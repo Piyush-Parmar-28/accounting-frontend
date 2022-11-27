@@ -310,7 +310,7 @@ class DeleteModal extends React.Component<Props, PropsFromRedux> {
   deleteTodoItem = () => {
     const organisationId = (this.props as any)?.currentOrganisation._id;
     const toDoId = this.props.state.selectedRow._id;
-    console.log(this.props.state);
+
     this.setState({ logging: true });
     agent.Todo.delete({ organisationId, toDoId })
       .then(() => {

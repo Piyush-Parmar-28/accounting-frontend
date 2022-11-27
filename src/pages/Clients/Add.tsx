@@ -224,7 +224,6 @@ class AddClient extends React.Component<any, PropsFromRedux> {
     const active = true;
     agent.User.getUserList(organisationId, active, searchText)
       .then((response: any) => {
-        console.log({ response });
         this.setState({
           users: response.users,
         });
@@ -664,7 +663,6 @@ class AddClient extends React.Component<any, PropsFromRedux> {
   };
 
   onUserChange = (user: any) => {
-    console.log({ user });
     const { defUsers } = this.state;
     const index = defUsers.findIndex((item: any) => item._id === user._id);
     if (index === -1) {
@@ -805,7 +803,7 @@ class AddClient extends React.Component<any, PropsFromRedux> {
 
   addGroup = () => {
     const { selectedGroup, desc } = this.state;
-    console.log(selectedGroup, desc);
+
     if (selectedGroup === null) {
       (this.props as any).onNotify(
         "Group Not Selected",
@@ -923,7 +921,7 @@ class AddClient extends React.Component<any, PropsFromRedux> {
 
   render() {
     TagManager.dataLayer(tagManagerArgs);
-    console.log("ADD Clients STATE", this.state);
+
     return (
       <Dashboard>
         {this.state.showFieldModal && (

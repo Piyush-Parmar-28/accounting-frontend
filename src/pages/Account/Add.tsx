@@ -46,7 +46,6 @@ const connector = connect(mapStateToProps, mapDispatchToProps);
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
 function AddAccount(props: Props & PropsFromRedux) {
-  console.log(props);
   interface state {
     accountId: string;
     logging: boolean;
@@ -63,6 +62,12 @@ function AddAccount(props: Props & PropsFromRedux) {
     email: string;
     pan: string;
     tan: string;
+    gstRegType: string;
+    gstRegDate: string;
+    gstCancelDate: string;
+    gstRegStatus: string;
+    gstinname: string;
+    nameAvailable: boolean;
   }
   let intitialState: state;
   if (props.type === "edit") {
@@ -82,6 +87,12 @@ function AddAccount(props: Props & PropsFromRedux) {
       pan: props.data.pan,
       tan: props.data.tan,
       openingBalanceInWords: "",
+      gstRegType: props.data.gstRegType,
+      gstRegDate: props.data.gstRegDate,
+      gstCancelDate: props.data.gstCancelDate,
+      gstRegStatus: props.data.gstRegStatus,
+      gstinname: props.data.gstinname,
+      nameAvailable: true,
     };
   } else {
     intitialState = {
@@ -100,6 +111,12 @@ function AddAccount(props: Props & PropsFromRedux) {
       pan: "",
       tan: "",
       openingBalanceInWords: "",
+      gstRegType: "",
+      gstRegDate: "",
+      gstCancelDate: "",
+      gstRegStatus: "",
+      gstinname: "",
+      nameAvailable: true,
     };
   }
 
@@ -290,9 +307,9 @@ function AddAccount(props: Props & PropsFromRedux) {
       }));
     }
 
+    // select default dr or cr for selected account nature
     let accountDetails = accounts.find((acc: any) => acc.name === account);
-    console.log(account);
-    console.log(accountDetails);
+
     if (accountDetails) {
       let defaultSide = accountDetails.default;
       setState((prevState) => ({
@@ -311,11 +328,26 @@ function AddAccount(props: Props & PropsFromRedux) {
   };
 
   const gstinDetails = (gstinDetails: any) => {
+    // !state.name used as if user has already entered name then it is not reversed.
     if (!state.name) {
       setState((prevState) => ({ ...prevState, name: gstinDetails.name }));
     }
-  };
 
+    setState((prevState) => ({
+      ...prevState,
+      billingAddress: gstinDetails.address,
+    }));
+
+    setState((prevState) => ({
+      ...prevState,
+      gstinname: gstinDetails.gstinname,
+      gstRegDate: gstinDetails.gstRegDate,
+      gstRegType: gstinDetails.gstRegType,
+      gstCancelDate: gstinDetails.gstCancelDate,
+      gstRegStatus: gstinDetails.gstRegStatus,
+    }));
+  };
+  console.log("state", state);
   const gstRateSelectHandler = (gstRate: any) => {
     setState((prevState) => ({ ...prevState, gstRate: gstRate }));
   };
@@ -339,6 +371,27 @@ function AddAccount(props: Props & PropsFromRedux) {
   };
   const tanHandler = (tan: any) => {
     setState((prevState) => ({ ...prevState, tan: tan }));
+  };
+  const nameOnBlur = (e: any) => {
+    const organisationId = (props as any).currentOrganisation._id;
+    agent.Account.accountnameavailablecheck(organisationId, e.target.value)
+      .then((response: any) => {
+        console.log(response);
+        if (response.available) {
+          setState((prevState) => ({
+            ...prevState,
+            nameAvailable: true,
+          }));
+        } else {
+          setState((prevState) => ({
+            ...prevState,
+            nameAvailable: false,
+          }));
+        }
+      })
+      .catch((err: any) => {
+        console.log({ err });
+      });
   };
 
   return (
@@ -408,6 +461,7 @@ function AddAccount(props: Props & PropsFromRedux) {
                               value={state.name}
                               maximumCharacters={50}
                               case="title"
+                              onBlur={nameOnBlur}
                             />
                           </div>
                         </div>
@@ -553,17 +607,103 @@ function AddAccount(props: Props & PropsFromRedux) {
                                   value={state.gstin}
                                   gstinDetails={gstinDetails}
                                 />
-                                <div className="text-sm px-1">
-                                  <p>
-                                    {" "}
-                                    Enter GSTIN and all GST details will be
-                                    filled automatically.
-                                  </p>
-                                </div>
                               </div>
                             </div>
 
-                            {/* gstin box */}
+                            {/* gstin  name */}
+
+                            {state.gstinname && (
+                              <div className="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:border-gray-200">
+                                <label
+                                  htmlFor="last-name"
+                                  className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2"
+                                >
+                                  GSTIN Name
+                                </label>
+                                <label
+                                  htmlFor="last-name"
+                                  className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2"
+                                >
+                                  {state.gstinname}
+                                </label>
+                              </div>
+                            )}
+
+                            {/* gstin registration type */}
+
+                            {state.gstRegType && (
+                              <div className="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:border-gray-200">
+                                <label
+                                  htmlFor="last-name"
+                                  className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2"
+                                >
+                                  GST Reg. Type
+                                </label>
+                                <label
+                                  htmlFor="last-name"
+                                  className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2"
+                                >
+                                  {state.gstRegType}
+                                </label>
+                              </div>
+                            )}
+
+                            {/* gstin reg date */}
+
+                            {state.gstRegDate && (
+                              <div className="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:border-gray-200">
+                                <label
+                                  htmlFor="last-name"
+                                  className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2"
+                                >
+                                  GST Reg. Date
+                                </label>
+                                <label
+                                  htmlFor="last-name"
+                                  className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2"
+                                >
+                                  {state.gstRegDate}
+                                </label>
+                              </div>
+                            )}
+                            {/* gstin reg status */}
+
+                            {state.gstRegStatus && (
+                              <div className="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:border-gray-200">
+                                <label
+                                  htmlFor="last-name"
+                                  className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2"
+                                >
+                                  GST Reg. Status
+                                </label>
+                                <label
+                                  htmlFor="last-name"
+                                  className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2"
+                                >
+                                  {state.gstRegStatus}
+                                </label>
+                              </div>
+                            )}
+                            {/* gstin cancellation date */}
+
+                            {state.gstCancelDate && (
+                              <div className="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:border-gray-200">
+                                <label
+                                  htmlFor="last-name"
+                                  className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2"
+                                >
+                                  GST Can. Date
+                                </label>
+                                <label
+                                  htmlFor="last-name"
+                                  className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2"
+                                >
+                                  {state.gstCancelDate}
+                                </label>
+                              </div>
+                            )}
+
+                            {/* Billing address box */}
 
                             <div className="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:border-gray-200 sm:pt-5">
                               <label
@@ -578,6 +718,7 @@ function AddAccount(props: Props & PropsFromRedux) {
                                   value={state.billingAddress}
                                   maximumCharacters={100}
                                   case="title"
+                                  onBlur={console.log("onblur")}
                                 />
                               </div>
                             </div>
@@ -597,6 +738,7 @@ function AddAccount(props: Props & PropsFromRedux) {
                                   value={state.mobileNo}
                                   maximumCharacters={10}
                                   case="same"
+                                  onBlur={console.log("onblur")}
                                 />
                               </div>
                             </div>
@@ -616,6 +758,7 @@ function AddAccount(props: Props & PropsFromRedux) {
                                   value={state.email}
                                   maximumCharacters={50}
                                   case="same"
+                                  onBlur={console.log("onblur")}
                                 />
                               </div>
                             </div>
@@ -635,6 +778,7 @@ function AddAccount(props: Props & PropsFromRedux) {
                                   value={state.pan}
                                   maximumCharacters={10}
                                   case="capital"
+                                  onBlur={console.log("onblur")}
                                 />
                               </div>
                             </div>
@@ -654,6 +798,7 @@ function AddAccount(props: Props & PropsFromRedux) {
                                   value={state.tan}
                                   maximumCharacters={11}
                                   case="capital"
+                                  onBlur={console.log("onblur")}
                                 />
                               </div>
                             </div>

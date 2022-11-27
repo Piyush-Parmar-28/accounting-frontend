@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import TitleCase from "../helpers/TitleCase";
 
 function classNames(...classes: any) {
@@ -8,6 +8,10 @@ function classNames(...classes: any) {
 export default function TextBox(props: any) {
   const [value, setValue] = useState(props.value);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    setValue(props.value);
+  }, [props.value]);
 
   const handleChange = (event: any) => {
     let value;
@@ -38,7 +42,7 @@ export default function TextBox(props: any) {
   };
 
   return (
-    <div className="">
+    <div>
       <div className="mt-1 flex rounded-md shadow-sm">
         <input
           type="text"
@@ -47,6 +51,7 @@ export default function TextBox(props: any) {
           autoComplete="given-name"
           value={props.value}
           onChange={handleChange}
+          onBlur={props.onBlur}
           className="block w-full min-w-0 flex-1 rounded-none rounded-l-md border-gray-300 px-3 py-2 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
         />
         <span className="inline-flex items-center rounded-r-md border border-l-0 border-gray-300 bg-gray-50 px-2 text-gray-500 sm:text-sm">

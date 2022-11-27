@@ -20,8 +20,7 @@ export default function ComboBox(props: any) {
   if (props.selectedValue) {
     valueSelected = values.find((a: any) => a.name === props.selectedValue);
   }
-  console.log("props.selectedValue", props.selectedValue);
-  console.log("valueSelected", valueSelected);
+
   const [query, setQuery] = useState("");
   const [selectedValue, setSelectedValue] = useState(valueSelected);
   let filteredValues =
