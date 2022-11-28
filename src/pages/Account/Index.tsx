@@ -55,15 +55,11 @@ const mapDispatchToProps = (dispatch: any) => ({
     }),
 });
 
-type Props = {
-  type?: any;
-};
-
 const connector = connect(mapStateToProps, mapDispatchToProps);
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
-function AccountsList(props: Props & PropsFromRedux) {
+function AccountsList(props: PropsFromRedux) {
   const [pageType, setPageType] = React.useState("");
 
   const pageURL = (props as any).location.pathname.split("/");

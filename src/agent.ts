@@ -222,6 +222,10 @@ const Account = {
     requests.get(
       `/account/accountnameavailablecheck?organisationId=${organisationId}&name=${name}`
     ),
+  gstinalreadypresent: (organisationId: string, gstin: string) =>
+    requests.get(
+      `/account/gstinalreadypresent?organisationId=${organisationId}&gstin=${gstin}`
+    ),
   addAccount: (
     name: string,
     nature: string,

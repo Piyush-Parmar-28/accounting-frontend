@@ -320,7 +320,11 @@ function AddAccount(props: Props & PropsFromRedux) {
   };
 
   const nameSelectHandler = (name: any) => {
-    setState((prevState) => ({ ...prevState, name: name }));
+    setState((prevState) => ({
+      ...prevState,
+      name: name,
+      nameAvailable: true,
+    }));
   };
 
   const gstinSelectHandler = (gstin: string) => {
@@ -328,8 +332,8 @@ function AddAccount(props: Props & PropsFromRedux) {
   };
 
   const gstinDetails = (gstinDetails: any) => {
-    // !state.name used as if user has already entered name then it is not reversed.
-    if (!state.name) {
+    // if user has already entered name then it is not reversed. "state.gstin" is used so this run only when gstin is there othewise on selecting debtors/creditors as nature this runs and app crashes
+    if (state.gstin && state.name === "") {
       setState((prevState) => ({ ...prevState, name: gstinDetails.name }));
     }
 
@@ -374,24 +378,25 @@ function AddAccount(props: Props & PropsFromRedux) {
   };
   const nameOnBlur = (e: any) => {
     const organisationId = (props as any).currentOrganisation._id;
-    agent.Account.accountnameavailablecheck(organisationId, e.target.value)
-      .then((response: any) => {
-        console.log(response);
-        if (response.available) {
-          setState((prevState) => ({
-            ...prevState,
-            nameAvailable: true,
-          }));
-        } else {
-          setState((prevState) => ({
-            ...prevState,
-            nameAvailable: false,
-          }));
-        }
-      })
-      .catch((err: any) => {
-        console.log({ err });
-      });
+    if (e.target.value) {
+      agent.Account.accountnameavailablecheck(organisationId, e.target.value)
+        .then((response: any) => {
+          if (response.available) {
+            setState((prevState) => ({
+              ...prevState,
+              nameAvailable: true,
+            }));
+          } else {
+            setState((prevState) => ({
+              ...prevState,
+              nameAvailable: false,
+            }));
+          }
+        })
+        .catch((err: any) => {
+          console.log({ err });
+        });
+    }
   };
 
   return (
@@ -463,6 +468,14 @@ function AddAccount(props: Props & PropsFromRedux) {
                               case="title"
                               onBlur={nameOnBlur}
                             />
+                            {state.nameAvailable === false ? (
+                              <p
+                                className="mt-2 text-sm text-red-600"
+                                id="email-error"
+                              >
+                                An account with same name already exists.
+                              </p>
+                            ) : null}
                           </div>
                         </div>
 
@@ -606,6 +619,10 @@ function AddAccount(props: Props & PropsFromRedux) {
                                   onTyping={gstinSelectHandler}
                                   value={state.gstin}
                                   gstinDetails={gstinDetails}
+                                  organisationId={
+                                    (props as any).currentOrganisation._id
+                                  }
+                                  duplicateGstinCheck={true}
                                 />
                               </div>
                             </div>
