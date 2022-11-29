@@ -218,6 +218,10 @@ const Account = {
     requests.get(
       `/account/accountslist?organisationId=${organisationId}&active=${active}&skip=0&limit=10&searchText=${searchText}`
     ),
+  getAccountLog: (organisationId: string, accountId: string) =>
+    requests.get(
+      `/account/accountslog?organisationId=${organisationId}&accountId=${accountId}`
+    ),
   accountnameavailablecheck: (organisationId: string, name: string) =>
     requests.get(
       `/account/accountnameavailablecheck?organisationId=${organisationId}&name=${name}`

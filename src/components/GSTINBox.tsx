@@ -120,14 +120,11 @@ export default function GSTINBox(props: Props & PropsFromRedux) {
   };
 
   const gstinBlurHandler = (e: any) => {
-    console.log("gstin blur");
-    console.log("props", props);
     const gstin = e.target.value;
 
     if (gstin && gstin.length === 15) {
       agent.Account.gstinalreadypresent(props.organisationId, gstin)
         .then((response: any) => {
-          console.log("response", response);
           if (response.alreadyPresent) {
             setGstinAlreadyPresent(true);
           } else {
@@ -141,7 +138,6 @@ export default function GSTINBox(props: Props & PropsFromRedux) {
   };
 
   const handleBlur = (e: any) => {
-    console.log("blur");
     setShowMessage(false);
     if (
       e.target.value.length === 15 &&

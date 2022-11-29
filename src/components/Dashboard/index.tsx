@@ -86,6 +86,18 @@ const menuItems = (organisationId: string) => {
           route: `/${organisationId}/todo/list/starred`,
         },
     {
+      name: "Journal Entry",
+      iconName: "outline/settings",
+      route: "/settings",
+      children: [
+        {
+          name: "Add",
+          iconName: "outline/document-add",
+          route: `/${organisationId}/journal-entry/add`,
+        },
+      ],
+    },
+    {
       name: "Accounts",
       iconName: "outline/settings",
       route: "/settings",
@@ -284,20 +296,21 @@ class Dashboard extends React.Component<DashboardProps, PropsFromRedux> {
     }
   };
 
-  getStatusList = () => {
+  getAccountList = () => {
     const organisationId =
       (this.props as any).params?.organisationId ||
       (this.props as any).currentOrganisation?._id;
     const searchText = "";
     const active = true;
     if (organisationId) {
-      agent.Status.getStatusList(organisationId, active, searchText)
+      agent.Account.getAccountList(organisationId, active, searchText)
         .then((response: any) => {
-          (this.props as any).updateCommon({ status: response.status });
+          console.log(response);
+          (this.props as any).updateCommon({ accounts: response.accounts });
         })
         .catch((err: any) => {
           (this.props as any).onNotify(
-            "Could not fetch user status",
+            "Could not fetch account list.",
             err?.response?.data?.message || err?.message || err,
             "danger"
           );
@@ -373,7 +386,7 @@ class Dashboard extends React.Component<DashboardProps, PropsFromRedux> {
       (this.props as any)?.currentOrganisation?._id
     ) {
       this.getUserRights();
-      this.getStatusList();
+      this.getAccountList();
     }
 
     const prevOrganisationId = prevProps.params.organisationId;
@@ -386,7 +399,7 @@ class Dashboard extends React.Component<DashboardProps, PropsFromRedux> {
         currentOrganisation: selectOrganisation,
       });
       this.getUserRights();
-      this.getStatusList();
+      this.getAccountList();
     }
   };
 

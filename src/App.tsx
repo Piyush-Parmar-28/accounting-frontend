@@ -16,6 +16,9 @@ import AddOrganisation from "./pages/GSTs/AddNew";
 import Tags from "./pages/Tags/Index";
 import AddTag from "./pages/Tags/Add";
 
+// Journal Entry Page
+import JournalEntry from "./pages/Journal/Index";
+
 //  Account Import
 import AccountList from "./pages/Account/Index";
 
@@ -255,6 +258,7 @@ class App extends React.Component<PropsFromRedux> {
                   </this.PrivateRoute>
                 }
               />
+
               {/* Account list with current year balance Page */}
               <Route
                 path="/:organisationId/account/list"
@@ -264,6 +268,16 @@ class App extends React.Component<PropsFromRedux> {
                   </this.PrivateRoute>
                 }
               />
+              {/* Add Journal Entry */}
+              <Route
+                path="/:organisationId/journal-entry/add"
+                element={
+                  <this.PrivateRoute>
+                    <JournalEntry />
+                  </this.PrivateRoute>
+                }
+              />
+
               {/* Custom Field Page */}
               <Route
                 path="/:organisationId/custom-field/list"

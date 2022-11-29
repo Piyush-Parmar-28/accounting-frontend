@@ -10,6 +10,8 @@ function classNames(...classes: any) {
 type Props = {
   onChange: (item: any) => void;
   defaultValue: number;
+  id: string;
+  newValue: string;
 };
 
 export default function AmountBox(props: Props) {
@@ -17,8 +19,12 @@ export default function AmountBox(props: Props) {
   const [amountToShow, setAmountToShow] = useState("");
 
   useEffect(() => {
+    setAmountToShow(props.newValue);
+  }, [props.newValue]);
+
+  useEffect(() => {
     setAmount(props.defaultValue.toString());
-    if (props.defaultValue >= 0) {
+    if (props.defaultValue > 0) {
       let newValue: any = new Intl.NumberFormat("en-IN", {
         minimumFractionDigits: 2,
       }).format(props.defaultValue);
@@ -48,7 +54,7 @@ export default function AmountBox(props: Props) {
     }
     setAmount(newValue);
     setAmountToShow(newValue);
-    props.onChange(newValue);
+    props.onChange({ newValue, id: props.id });
   };
 
   const handleBlur = (e: any) => {
@@ -83,13 +89,14 @@ export default function AmountBox(props: Props) {
     <input
       type="text"
       name="first-name"
-      id="first-name"
+      id={props.id}
+      key={props.id}
       onChange={handleChange}
       onBlur={handleBlur}
       onFocus={handleFocus}
       autoComplete="given-name"
       value={amountToShow}
-      className="block w-full max-w-lg rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:max-w-xs sm:text-sm"
+      className="block w-full max-w-lg rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:max-w-xs sm:text-sm text-right"
     />
   );
 }

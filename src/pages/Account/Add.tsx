@@ -351,7 +351,7 @@ function AddAccount(props: Props & PropsFromRedux) {
       gstRegStatus: gstinDetails.gstRegStatus,
     }));
   };
-  console.log("state", state);
+
   const gstRateSelectHandler = (gstRate: any) => {
     setState((prevState) => ({ ...prevState, gstRate: gstRate }));
   };
@@ -510,6 +510,9 @@ function AddAccount(props: Props & PropsFromRedux) {
                             <AmountBox
                               defaultValue={state.openingBalance}
                               onChange={openingBalanceHandler}
+                              id="openingBalance"
+                              key="openingBalance"
+                              newValue={state.openingBalance.toString()}
                             />
                           </div>
                         </div>
@@ -550,7 +553,7 @@ function AddAccount(props: Props & PropsFromRedux) {
                                           <div className="flex items-center">
                                             <input
                                               id="dr"
-                                              name="push-notifications"
+                                              name="dr"
                                               type="radio"
                                               checked={
                                                 state.openingBalanceType ===
@@ -564,14 +567,14 @@ function AddAccount(props: Props & PropsFromRedux) {
                                               className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-500"
                                             />
                                             <label
-                                              htmlFor="push-everything"
+                                              htmlFor="dr"
                                               className="ml-3 block text-sm font-medium text-gray-700 pr-8"
                                             >
                                               Debit
                                             </label>
                                             <input
                                               id="cr"
-                                              name="push-notifications"
+                                              name="cr"
                                               type="radio"
                                               checked={
                                                 state.openingBalanceType ===
@@ -585,7 +588,7 @@ function AddAccount(props: Props & PropsFromRedux) {
                                               className="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-500"
                                             />
                                             <label
-                                              htmlFor="push-email"
+                                              htmlFor="cr"
                                               className="ml-3 block text-sm font-medium text-gray-700"
                                             >
                                               Credit
