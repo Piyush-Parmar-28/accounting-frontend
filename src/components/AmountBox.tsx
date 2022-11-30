@@ -18,6 +18,7 @@ export default function AmountBox(props: Props) {
   const [amount, setAmount] = useState("");
   const [amountToShow, setAmountToShow] = useState("");
 
+  // this will update amount when a row is deleted
   useEffect(() => {
     setAmountToShow(props.newValue);
   }, [props.newValue]);

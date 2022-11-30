@@ -1,4 +1,5 @@
 import React, { Fragment, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 // Import to Display skeleton while loading data
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
@@ -66,6 +67,7 @@ const connector = connect(mapStateToProps, mapDispatchToProps);
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
 function JournalEntry(props: PropsFromRedux) {
+  const navigate = useNavigate();
   // codes for data table with three columns
   const numberOfInitialRows = 3;
   const [id, setId] = useState(numberOfInitialRows - 1);
@@ -118,10 +120,6 @@ function JournalEntry(props: PropsFromRedux) {
   const [arr, setArr] = useState(initialInput);
   const [accountArray, setAccountArray] = useState([]);
   const [total, setTotal] = useState({ b: 0, c: 0 });
-
-  // to remove account when row is deleted
-  const [accountChangeCount, setAccountChangeCount] = useState(0);
-  const [deletedAccountId, setDeletedAccountId] = useState("");
 
   useEffect(() => {
     if (id > 2) {
@@ -183,6 +181,7 @@ function JournalEntry(props: PropsFromRedux) {
   // only if value is not entered already
 
   const balancingFigure = (id: any) => {
+    console.log("balancing figure", id);
     // get all rows with value
     let newArr = [];
     for (let object of arr) {
@@ -202,6 +201,25 @@ function JournalEntry(props: PropsFromRedux) {
           }
         }
       }
+    }
+    console.log("total", total);
+    const difference = total.b - total.c;
+    console.log(id.replace("a", "c"), difference);
+    if (difference > 0) {
+      changeValue(
+        id.replace("a", "c"),
+        new Intl.NumberFormat("en-IN", {
+          minimumFractionDigits: 2,
+        }).format(difference)
+      );
+    }
+    if (difference < 0) {
+      changeValue(
+        id.replace("a", "b"),
+        new Intl.NumberFormat("en-IN", {
+          minimumFractionDigits: 2,
+        }).format(difference * -1)
+      );
     }
     if (total.b === total.c) {
       return;
@@ -299,9 +317,6 @@ function JournalEntry(props: PropsFromRedux) {
   };
 
   const deleteRow = (e: any, id: any) => {
-    // to remove account when row is deleted
-    setAccountChangeCount((s: any) => s + 1);
-    setDeletedAccountId(id.replace("z", "a"));
     const index = id.replace("z", "");
 
     setArr((s: any) => {
@@ -531,12 +546,10 @@ function JournalEntry(props: PropsFromRedux) {
                 <div className="sm:col-span-4">
                   <div className="mt-1">
                     <AccountList
-                      accounts={(props as any).accounts}
                       onSelection={onAccountSelection}
                       id={item[0].id.replace("b", "a")}
-                      // to remove nwhen row is deleted
-                      onAccountChange={accountChangeCount}
-                      deletedAccountId={deletedAccountId}
+                      // this will update account when a row is deleted
+                      newAccount={item[2] ? item[2] : ""}
                     />
                   </div>
                 </div>
@@ -611,9 +624,16 @@ function JournalEntry(props: PropsFromRedux) {
           <br />
           <br />
 
-          <br />
-          <br />
-          <div>
+          <div className="mt-5 sm:mt-4 sm:flex sm:justify-start py-4 pr-24">
+            <div className="pr-4">
+              <button
+                type="button"
+                className="inline-flex mx-4 items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-100 focus:outline-none"
+                onClick={() => navigate(-1)}
+              >
+                Cancel
+              </button>
+            </div>
             <SaveButton
               type="save"
               options={["new", "close", "duplicate"]}

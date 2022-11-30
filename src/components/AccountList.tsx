@@ -35,17 +35,34 @@ const mapDispatchToProps = (dispatch: any) => ({
     }),
 });
 
+type Props = {
+  onSelection?: (forSearch: boolean) => void;
+
+  id?: any;
+  newAccount?: any;
+};
+
 const connector = connect(mapStateToProps, mapDispatchToProps);
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
-export default function Example(props: any) {
+function AccountList(props: Props & PropsFromRedux) {
+  console.log("props from account list", props);
   const [query, setQuery] = useState("");
   const [selectedAccount, setSelectedAccount] = useState({});
 
+  // this will update account when a row is deleted
+  useEffect(() => {
+    setSelectedAccount(props.newAccount);
+  }, [props.newAccount]);
+
   let accounts = (props as any).accounts;
   useEffect(() => {
-    const id: any = selectedAccount;
+    console.log(
+      "deleted row details",
+      (props as any).id,
+      (props as any).deletedAccountId
+    );
     if ((props as any).id === (props as any).deletedAccountId) {
       setSelectedAccount({});
     }
@@ -67,9 +84,28 @@ export default function Example(props: any) {
   };
 
   const onChangeHandler = (e: any) => {
+    if (e === "No Account Found") {
+      return;
+    }
+    if (e === "Add New Account") {
+      console.log("open new account");
+      openAddAccountModal();
+      return;
+    }
     setSelectedAccount(e);
     e.id = (props as any).id;
     (props as any).onSelection({ account: e });
+  };
+
+  const openAddAccountModal = () => {
+    (props as any).updateCommon({
+      currentModal: {
+        modalName: "ADD_ACCOUNT_MODAL",
+        fetchAgain: false,
+        type: "add",
+        data: "",
+      },
+    });
   };
 
   return (
@@ -91,6 +127,18 @@ export default function Example(props: any) {
 
         {filteredAccounts.length > 0 && (
           <Combobox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+            <Combobox.Option
+              key={2}
+              value={"Add New Account"}
+              className={({ active }) =>
+                classNames(
+                  "relative cursor-default select-none py-2 pl-3 pr-9",
+                  active ? "bg-indigo-600 text-white" : "text-gray-900"
+                )
+              }
+            >
+              + Add New Account
+            </Combobox.Option>
             {filteredAccounts.map((account: any) => (
               <Combobox.Option
                 key={account._id}
@@ -138,7 +186,39 @@ export default function Example(props: any) {
             ))}
           </Combobox.Options>
         )}
+
+        {filteredAccounts.length === 0 && (
+          <Combobox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+            <Combobox.Option
+              key={1}
+              value={"No Account Found"}
+              className={({ active }) =>
+                classNames(
+                  "relative cursor-default select-none py-2 pl-3 pr-9"
+                  // active ? "bg-indigo-600 text-white" : "text-gray-900"
+                )
+              }
+            >
+              No Account Found
+            </Combobox.Option>
+            <Combobox.Option
+              key={2}
+              value={"Add New Account"}
+              // onClick={openAddAccountModal}
+              className={({ active }) =>
+                classNames(
+                  "relative cursor-default select-none py-2 pl-3 pr-9",
+                  active ? "bg-indigo-600 text-white" : "text-gray-900"
+                )
+              }
+            >
+              + Add New Account
+            </Combobox.Option>
+          </Combobox.Options>
+        )}
       </div>
     </Combobox>
   );
 }
+
+export default connector(AccountList);
