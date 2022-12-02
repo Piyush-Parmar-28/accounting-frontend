@@ -118,7 +118,6 @@ function JournalEntry(props: PropsFromRedux) {
   ];
 
   const [arr, setArr] = useState(initialInput);
-  const [accountArray, setAccountArray] = useState([]);
   const [total, setTotal] = useState({ b: 0, c: 0 });
 
   useEffect(() => {
@@ -340,16 +339,22 @@ function JournalEntry(props: PropsFromRedux) {
 
   const pageURL = (props as any).location.pathname.split("/");
   useEffect(() => {
-    if (pageURL[3] === "list") {
-      setPageType("list");
+    console.log("pageURL", pageURL);
+    if (pageURL[3] === "add") {
+      setPageType("add");
     }
-    if (pageURL[3] === "list-with-opening-balances") {
-      setPageType("opening-balances");
+    if (pageURL[3] === "duplicate") {
+      setPageType("duplicate");
+    }
+    if (pageURL[3] === "edit") {
+      setPageType("edit");
     }
   }, [pageURL]);
 
   const currentYear = (props as any).currentYear;
-  const [date, setDate] = useState({ date: new Date(), error: "" });
+  const [date, setDate] = useState({ date: "", error: "" });
+  const [narration, setNarration] = useState("");
+
   interface state {
     loading: boolean;
     posX: any;
@@ -479,10 +484,11 @@ function JournalEntry(props: PropsFromRedux) {
   );
 
   const dateFunction = (data: any) => {
+    console.log(data);
     setDate(data);
   };
 
-  const onButtonClick = (option: any) => {
+  const onButtonClick = (buttonClicked: any) => {
     if (total.b !== total.c) {
       (props as any).onNotify(
         "Debit and Credit total should be equal",
@@ -491,7 +497,96 @@ function JournalEntry(props: PropsFromRedux) {
       );
       return;
     }
-    console.log("button type", option);
+    // check for error in rows which have data
+    for (const indArray of arr) {
+      if (indArray[0].value === "" && indArray[1].value === "" && indArray[2]) {
+        (props as any).onNotify(
+          "Please enter amount.",
+          "If account is selected in any row, then amount should exists in debit side or credit side.",
+          "danger"
+        );
+        return;
+      }
+      if (
+        (indArray[0].value !== "" || indArray[1].value !== "") &&
+        !indArray[2]
+      ) {
+        (props as any).onNotify(
+          "Please select  account.",
+          "If amount is entered in any row, then account should be selected.",
+          "danger"
+        );
+        return;
+      }
+    }
+    // set data in proper format which backend can process
+    const properFormatArray = [];
+
+    for (const indArray of arr) {
+      let individualArray: any = indArray;
+      if (
+        (individualArray[0].value !== "" || individualArray[1].value !== "") &&
+        individualArray[2]
+      ) {
+        const obj = {
+          accountId: individualArray[2]._id,
+          amount:
+            individualArray[0].value !== ""
+              ? Number(individualArray[0].value.replace(/,/g, ""))
+              : Number(individualArray[1].value.replace(/,/g, "")),
+          type: individualArray[0].value !== "" ? "debit" : "credit",
+        };
+        properFormatArray.push(obj);
+      }
+    }
+
+    const organisationId = (props as any).params?.organisationId;
+    const currentYear = (props as any).currentYear;
+
+    agent.JournalEntry.add(
+      organisationId,
+      date.date,
+      properFormatArray,
+      narration,
+      currentYear
+    )
+      .then((response: any) => {
+        if (buttonClicked === "Save & New") {
+          (props as any).onNotify("Journal Entry Added", "", "success");
+          setNarration("");
+          setDate({ date: "", error: "" });
+          setArr(initialInput);
+          setTotal({ b: 0, c: 0 });
+          navigate(`/${organisationId}/journal-entry/add`);
+        }
+        if (buttonClicked === "Save & Duplicate") {
+          (props as any).onNotify(
+            "Journal Entry Added and Copied",
+            "Entry is already saved and copied. You can now edit and save again.",
+            "success"
+          );
+          navigate(
+            `/${organisationId}/journal-entry/duplicate/${response.entryId}`
+          );
+        }
+        if (buttonClicked === "Save & Close") {
+          (props as any).onNotify("Journal Entry Added", "", "success");
+          setNarration("");
+          setDate({ date: "", error: "" });
+          setArr(initialInput);
+          setTotal({ b: 0, c: 0 });
+          navigate(-1);
+        }
+      })
+      .catch((err: any) => {
+        (props as any).onNotify(
+          "Could not add Journal Entry",
+          err?.response?.data?.message || err?.message || err,
+          "danger"
+        );
+      });
+
+    console.log("button type", buttonClicked);
   };
 
   return (
@@ -499,17 +594,16 @@ function JournalEntry(props: PropsFromRedux) {
       <form className="divide-y divide-gray-200">
         <div>
           <div>
-            <div>
-              <h3 className="text-xl font-medium leading-6 text-gray-900">
-                Journal Entry
-                <br />
-                <br />
-              </h3>
-            </div>
+            <h3 className="text-xl font-medium leading-6 text-gray-900">
+              Journal Entry
+              <br />
+              <br />
+            </h3>
+
             <div>
               {/* Date */}
 
-              <div className="sm:grid sm:grid-cols-11 sm:items-start sm:gap-4 sm:border-gray-200 sm:pt-5">
+              <div className="sm:grid sm:grid-cols-9 sm:items-start sm:gap-4 sm:border-gray-200 sm:pt-5">
                 <label
                   htmlFor="first-name"
                   className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2 sm:col-span-2"
@@ -561,16 +655,6 @@ function JournalEntry(props: PropsFromRedux) {
                       id={item[0].id}
                       newValue={item[0].value}
                     />
-                    {/* <input
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      onFocus={handleFocus}
-                      value={item[0].value}
-                      id={item[0].id}
-                      type={item[0].type}
-                      key={item[0].id}
-                      className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm text-right"
-                    /> */}
                   </div>
                 </div>
                 <div className="sm:col-span-2">
@@ -581,16 +665,6 @@ function JournalEntry(props: PropsFromRedux) {
                       id={item[1].id}
                       newValue={item[1].value}
                     />
-                    {/* <input
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      onFocus={handleFocus}
-                      value={item[1].value}
-                      id={item[1].id}
-                      type={item[1].type}
-                      key={item[1].id}
-                      className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm text-right"
-                    /> */}
                   </div>
                 </div>
                 <div className="sm:col-span-1 my-4 mx-1">
@@ -622,7 +696,27 @@ function JournalEntry(props: PropsFromRedux) {
             </div>
           </div>
           <br />
-          <br />
+
+          {/* narration */}
+          <div className="sm:grid sm:grid-cols-9 sm:items-start sm:gap-4 sm:border-gray-200 sm:pt-5">
+            <label
+              htmlFor="narration"
+              className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2 sm:col-span-2"
+            >
+              Narration
+            </label>
+            <div className="mt-1 sm:col-span-5 sm:mt-0">
+              <textarea
+                id="narration"
+                name="narration"
+                rows={5}
+                className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 mt-1 block w-full sm:text-sm border-gray-300 rounded-md"
+                defaultValue={""}
+                onChange={(e) => setNarration(e.target.value)}
+                value={narration}
+              />
+            </div>
+          </div>
 
           <div className="mt-5 sm:mt-4 sm:flex sm:justify-start py-4 pr-24">
             <div className="pr-4">

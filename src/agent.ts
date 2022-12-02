@@ -209,6 +209,23 @@ const Status = {
     requests.delete("/status/delete", { id, organisationId }),
 };
 
+const JournalEntry = {
+  add: (
+    organisationId: string,
+    date: string,
+    entries: any,
+    narration: string,
+    year: string
+  ) =>
+    requests.post("/journalentry/add", {
+      organisationId,
+      date,
+      entries,
+      narration,
+      year,
+    }),
+};
+
 const Account = {
   getAccountList: (
     organisationId: string,
@@ -614,6 +631,7 @@ let agent = {
   Clients,
   Gst,
   Todo,
+  JournalEntry,
 };
 
 export default agent;

@@ -95,7 +95,7 @@ export default function AmountBox(props: Props) {
       onChange={handleChange}
       onBlur={handleBlur}
       onFocus={handleFocus}
-      autoComplete="given-name"
+      autoComplete="off"
       value={amountToShow}
       className="block w-full max-w-lg rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:max-w-xs sm:text-sm text-right"
     />

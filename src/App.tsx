@@ -277,6 +277,24 @@ class App extends React.Component<PropsFromRedux> {
                   </this.PrivateRoute>
                 }
               />
+              {/* Copy Journal Entry */}
+              <Route
+                path="/:organisationId/journal-entry/duplicate/:id"
+                element={
+                  <this.PrivateRoute>
+                    <JournalEntry />
+                  </this.PrivateRoute>
+                }
+              />
+              {/* Edit Journal Entry */}
+              <Route
+                path="/:organisationId/journal-entry/edit"
+                element={
+                  <this.PrivateRoute>
+                    <JournalEntry />
+                  </this.PrivateRoute>
+                }
+              />
 
               {/* Custom Field Page */}
               <Route
