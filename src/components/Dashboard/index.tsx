@@ -85,18 +85,13 @@ const menuItems = (organisationId: string) => {
           iconName: "outline/document-text",
           route: `/${organisationId}/todo/list/starred`,
         },
+
     {
       name: "Journal Entry",
       iconName: "outline/settings",
-      route: "/settings",
-      children: [
-        {
-          name: "Add",
-          iconName: "outline/document-add",
-          route: `/${organisationId}/journal-entry/add`,
-        },
-      ],
+      route: `/${organisationId}/journal-entry/list`,
     },
+
     {
       name: "Accounts",
       iconName: "outline/settings",

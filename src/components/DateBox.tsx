@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { format } from "date-fns";
 
 // set props.onblurfunction for each error
@@ -53,6 +53,7 @@ const getDayfromDate = (date: Date) => {
 type Props = {
   currentYear: string;
   onBlurrFunction: (item: any) => void;
+  newDate: string;
 };
 
 export default function DateComponent(props: Props) {
@@ -61,6 +62,11 @@ export default function DateComponent(props: Props) {
   if (props.currentYear) {
     currentYearDetails = periodDetails(props.currentYear);
   }
+
+  // this will update account when a row is deleted
+  useEffect(() => {
+    setStartDate(props.newDate);
+  }, [props.newDate]);
 
   const formatedTodayDate = format(today, "dd-MM-yyyy");
 
@@ -304,7 +310,7 @@ export default function DateComponent(props: Props) {
             onFocus={(e) => e.target.select()}
             type="text"
             id="text"
-            className="block w-full rounded-md border-gray-300 pr-24 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm text-right"
+            className="block w-full rounded-md border-gray-300 pr-24 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm text-center"
             placeholder="Date"
             aria-describedby="price-currency"
           />

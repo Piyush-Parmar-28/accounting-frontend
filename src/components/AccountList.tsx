@@ -56,12 +56,8 @@ function AccountList(props: Props & PropsFromRedux) {
   }, [props.newAccount]);
 
   let accounts = (props as any).accounts;
+
   useEffect(() => {
-    console.log(
-      "deleted row details",
-      (props as any).id,
-      (props as any).deletedAccountId
-    );
     if ((props as any).id === (props as any).deletedAccountId) {
       setSelectedAccount({});
     }

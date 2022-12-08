@@ -224,6 +224,19 @@ const JournalEntry = {
       narration,
       year,
     }),
+  getsingleentrydetails: (organisationId: string, entryId: string) =>
+    requests.get(
+      `/journalentry/getsingleentrydetails?organisationId=${organisationId}&entryId=${entryId}`
+    ),
+  journalentrylist: (
+    organisationId: string,
+    year: string,
+    skip: number,
+    limit: number
+  ) =>
+    requests.get(
+      `/journalentry/journalentrylist?organisationId=${organisationId}&year=${year}&skip=${skip}&limit=${limit}`
+    ),
 };
 
 const Account = {

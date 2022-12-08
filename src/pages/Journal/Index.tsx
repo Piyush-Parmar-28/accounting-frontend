@@ -1,11 +1,7 @@
 import React, { Fragment, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-// Import to Display skeleton while loading data
-import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { TrashIcon } from "@heroicons/react/20/solid";
-// Pagination
-import ReactPaginate from "react-paginate";
 import { connect, ConnectedProps } from "react-redux";
 import AccountList from "../../components/AccountList";
 // Routing imports
@@ -19,20 +15,14 @@ import Icon from "../../components/Icon";
 import { ADD_NOTIFICATION, UPDATE_COMMON } from "../../store/types";
 import "../style.css";
 import TagManager from "react-gtm-module";
-import { Menu, Transition } from "@headlessui/react";
-import InActiveModal from "../../components/InActiveModal";
-import ActiveModal from "../../components/ActiveModal";
-import DeleteModal from "../../components/DeleteModal";
-import LogModal from "../../components/LogModal";
-import TextBox from "../../components/TextBox";
 import SaveButton from "../../components/SaveButton";
 import DateBox from "../../components/DateBox";
 import { withRouter } from "../../helpers/withRouter";
 import { compose } from "redux";
-import AddAccount from "../Account/Add";
 import useEffectAfterInitialRender from "../../helpers/useEffectAfterInitialRender";
-import { string } from "prop-types";
 import AmountBox from "../../components/AmountBox";
+import { convertDateToString } from "../../helpers/Convertdate";
+import { format } from "date-fns";
 
 const tagManagerArgs = {
   dataLayer: {
@@ -117,8 +107,99 @@ function JournalEntry(props: PropsFromRedux) {
     ],
   ];
 
+  // set pagetype on basis of url
+
+  const [pageType, setPageType] = useState("");
+  const currentYear = (props as any).currentYear;
+  const [date, setDate] = useState({ date: "", error: "" });
+  const [narration, setNarration] = useState("");
+
+  useEffect(() => {
+    const pageURL = (props as any).location.pathname.split("/");
+    console.log("useeffect runs");
+    if (pageURL[3] === "add") {
+      setPageType("add");
+      const today = new Date();
+      const formatedTodayDate = format(today, "dd-MM-yyyy");
+      const stringDate = formatedTodayDate.toString();
+      setDate({ date: stringDate, error: "" });
+    }
+    if (pageURL[3] === "duplicate") {
+      setPageType("duplicate");
+    }
+    if (pageURL[3] === "edit") {
+      setPageType("edit");
+    }
+  }, []);
+
   const [arr, setArr] = useState(initialInput);
   const [total, setTotal] = useState({ b: 0, c: 0 });
+
+  useEffectAfterInitialRender(
+    () => {
+      const pageURL = (props as any).location.pathname.split("/");
+      if (pageURL[3] === "edit" || pageURL[3] === "duplicate") {
+        const organisationId = (props as any).params?.organisationId;
+        agent.JournalEntry.getsingleentrydetails(
+          organisationId,
+          pageURL[4]
+        ).then((data: any) => {
+          console.log("data", typeof data.entryDetails.date);
+          console.log("date", data.entryDetails.date);
+          console.log("date", convertDateToString(data.entryDetails.date));
+          setDate({
+            date: convertDateToString(data.entryDetails.date),
+            error: "",
+          });
+          setNarration(data.entryDetails.narration);
+
+          setArr(changeArrayFormatToShowDate(data.entryDetails.entries));
+        });
+      }
+    },
+    [],
+    0
+  );
+
+  const changeArrayFormatToShowDate = (array: any) => {
+    const properFormatArray = [];
+    const organisationId = (props as any).params?.organisationId;
+    let accountsList = (props as any).accounts;
+    let id = 0;
+
+    for (const indArray of array) {
+      const selectedAccount = accountsList.find(
+        (account: any) => account.id === indArray.accountId
+      );
+      selectedAccount.id = `a${id}`;
+      console.log("selectedaccount", selectedAccount);
+      const obj = [
+        {
+          value:
+            indArray.type === "debit"
+              ? new Intl.NumberFormat("en-IN", {
+                  minimumFractionDigits: 2,
+                }).format(indArray.amount)
+              : "",
+          id: `b${id}`,
+        },
+        {
+          value:
+            indArray.type === "credit"
+              ? new Intl.NumberFormat("en-IN", {
+                  minimumFractionDigits: 2,
+                }).format(indArray.amount)
+              : "",
+          id: `c${id}`,
+        },
+        selectedAccount,
+      ];
+
+      properFormatArray.push(obj);
+      id += 1;
+    }
+    return properFormatArray;
+  };
 
   useEffect(() => {
     if (id > 2) {
@@ -180,7 +261,6 @@ function JournalEntry(props: PropsFromRedux) {
   // only if value is not entered already
 
   const balancingFigure = (id: any) => {
-    console.log("balancing figure", id);
     // get all rows with value
     let newArr = [];
     for (let object of arr) {
@@ -201,9 +281,9 @@ function JournalEntry(props: PropsFromRedux) {
         }
       }
     }
-    console.log("total", total);
+
     const difference = total.b - total.c;
-    console.log(id.replace("a", "c"), difference);
+
     if (difference > 0) {
       changeValue(
         id.replace("a", "c"),
@@ -258,7 +338,7 @@ function JournalEntry(props: PropsFromRedux) {
   const changeTotal = () => {
     let bTotal: any = 0;
     let cTotal: any = 0;
-    console.log("arry", arr);
+
     for (const array of arr) {
       for (const item of array) {
         if (item.id) {
@@ -333,158 +413,7 @@ function JournalEntry(props: PropsFromRedux) {
     });
   };
 
-  // set pagetype on basis of url
-
-  const [pageType, setPageType] = useState("");
-
-  const pageURL = (props as any).location.pathname.split("/");
-  useEffect(() => {
-    console.log("pageURL", pageURL);
-    if (pageURL[3] === "add") {
-      setPageType("add");
-    }
-    if (pageURL[3] === "duplicate") {
-      setPageType("duplicate");
-    }
-    if (pageURL[3] === "edit") {
-      setPageType("edit");
-    }
-  }, [pageURL]);
-
-  const currentYear = (props as any).currentYear;
-  const [date, setDate] = useState({ date: "", error: "" });
-  const [narration, setNarration] = useState("");
-
-  interface state {
-    loading: boolean;
-    posX: any;
-    posY: any;
-    hoverX: any;
-    hoverY: any;
-    showBackDrop: boolean;
-    searchText: string;
-    accounts: any;
-    totalRecords: number;
-    displayAccountDetails: any;
-    selectedGstId: string;
-    modalOpen: boolean;
-    typingTimeout: any;
-    selectedRow: any;
-    showDeleteModal: boolean;
-    showActiveModal: boolean;
-    showInActiveModal: boolean;
-    showEditModal: boolean;
-    showLogModal: boolean;
-    active: boolean;
-    debitTotal: string;
-    creditTotal: string;
-    debitCreditDiff: string;
-    hideZeroBalance: boolean;
-  }
-
-  let inititalState = {
-    loading: false,
-    posX: null,
-    posY: null,
-    hoverX: null,
-    hoverY: null,
-    showBackDrop: false,
-    searchText: "",
-    accounts: [],
-    totalRecords: 0,
-    displayAccountDetails: [],
-    selectedGstId: "",
-    modalOpen: false,
-    typingTimeout: 0,
-    selectedRow: undefined,
-    showDeleteModal: false,
-    showActiveModal: false,
-    showInActiveModal: false,
-    showEditModal: false,
-    showLogModal: false,
-    active: true,
-    hideZeroBalance: false,
-    debitTotal: "",
-    creditTotal: "",
-    debitCreditDiff: "",
-  };
-
-  const [state, setState] = React.useState<state>(inititalState);
-
-  //Get Organisation Data
-
-  const getAccountList = (forSearch: boolean) => {
-    const organisationId = (props as any).params?.organisationId;
-    const searchText = forSearch ? state.searchText : "";
-    const active = state.active;
-    // setState((prevState) => ({
-    //   ...prevState,
-    //   loading: true,
-    // }));
-    if (!organisationId) {
-      (props as any).onNotify(
-        "Could not load Organisation Details",
-        "",
-        "danger"
-      );
-      return;
-    }
-
-    agent.Account.getAccountList(organisationId, active, searchText)
-      .then((response: any) => {
-        setState((prevState) => ({
-          ...prevState,
-          loading: false,
-          displayAccountDetails: response.accounts,
-          totalRecords: response.count,
-          accounts: response.accounts,
-        }));
-      })
-      .catch((err: any) => {
-        setState((prevState) => ({
-          ...prevState,
-          loading: false,
-        }));
-
-        (props as any).onNotify(
-          "Could not load Organisation Details",
-          err?.response?.data?.message || err?.message || err,
-          "danger"
-        );
-      });
-  };
-
-  useEffectAfterInitialRender(
-    () => {
-      getAccountList(false);
-    },
-    [],
-    0
-  );
-
-  useEffectAfterInitialRender(
-    () => {
-      getAccountList(false);
-    },
-    [(props as any).currentModal],
-    1
-  );
-
-  useEffectAfterInitialRender(
-    () => {
-      setState((prevState) => ({
-        ...prevState,
-        searchText: "",
-      }));
-
-      getAccountList(false);
-    },
-    [(props as any).params?.organisationId],
-    1
-  );
-
   const dateFunction = (data: any) => {
-    console.log(data);
     setDate(data);
   };
 
@@ -540,6 +469,8 @@ function JournalEntry(props: PropsFromRedux) {
       }
     }
 
+    // save the entry
+
     const organisationId = (props as any).params?.organisationId;
     const currentYear = (props as any).currentYear;
 
@@ -552,13 +483,14 @@ function JournalEntry(props: PropsFromRedux) {
     )
       .then((response: any) => {
         if (buttonClicked === "Save & New") {
-          (props as any).onNotify("Journal Entry Added", "", "success");
           setNarration("");
           setDate({ date: "", error: "" });
           setArr(initialInput);
           setTotal({ b: 0, c: 0 });
+          (props as any).onNotify("Journal Entry Added", "", "success");
           navigate(`/${organisationId}/journal-entry/add`);
         }
+
         if (buttonClicked === "Save & Duplicate") {
           (props as any).onNotify(
             "Journal Entry Added and Copied",
@@ -569,12 +501,14 @@ function JournalEntry(props: PropsFromRedux) {
             `/${organisationId}/journal-entry/duplicate/${response.entryId}`
           );
         }
+
         if (buttonClicked === "Save & Close") {
-          (props as any).onNotify("Journal Entry Added", "", "success");
           setNarration("");
           setDate({ date: "", error: "" });
           setArr(initialInput);
           setTotal({ b: 0, c: 0 });
+          (props as any).onNotify("Journal Entry Added", "", "success");
+
           navigate(-1);
         }
       })
@@ -585,17 +519,17 @@ function JournalEntry(props: PropsFromRedux) {
           "danger"
         );
       });
-
-    console.log("button type", buttonClicked);
   };
-
+  console.log("arr", arr);
   return (
     <Dashboard>
       <form className="divide-y divide-gray-200">
         <div>
           <div>
             <h3 className="text-xl font-medium leading-6 text-gray-900">
-              Journal Entry
+              {pageType === "add" && "Journal Entry - Add"}
+              {pageType === "edit" && "Journal Entry - Edit"}
+              {pageType === "duplicate" && "Journal Entry - Duplicate"}
               <br />
               <br />
             </h3>
@@ -612,6 +546,7 @@ function JournalEntry(props: PropsFromRedux) {
                 </label>
                 <div className="mt-1 sm:col-span-2 sm:mt-0">
                   <DateBox
+                    newDate={date.date}
                     currentYear={currentYear}
                     onBlurrFunction={dateFunction}
                   />

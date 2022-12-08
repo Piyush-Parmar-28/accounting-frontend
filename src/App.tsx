@@ -64,6 +64,7 @@ import { connect, ConnectedProps } from "react-redux";
 // Todo Imports
 import Todos, { getTodoList } from "./pages/Todo/Index";
 import AddEditList from "./pages/Todo/AddEditList";
+import EntriesList from "./pages/EntriesList";
 
 const mapStateToProps = (state: any) => ({
   ...state.user,
@@ -288,10 +289,20 @@ class App extends React.Component<PropsFromRedux> {
               />
               {/* Edit Journal Entry */}
               <Route
-                path="/:organisationId/journal-entry/edit"
+                path="/:organisationId/journal-entry/edit/:id"
                 element={
                   <this.PrivateRoute>
                     <JournalEntry />
+                  </this.PrivateRoute>
+                }
+              />
+
+              {/* List Journal Entry */}
+              <Route
+                path="/:organisationId/journal-entry/list/"
+                element={
+                  <this.PrivateRoute>
+                    <EntriesList />
                   </this.PrivateRoute>
                 }
               />
