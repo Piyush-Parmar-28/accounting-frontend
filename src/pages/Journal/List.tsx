@@ -7,27 +7,27 @@ import ReactPaginate from "react-paginate";
 import { connect, ConnectedProps } from "react-redux";
 // Routing imports
 // Link backend
-import agent from "../agent";
+import agent from "../../agent";
 // Dashboard import
-import Dashboard from "../components/Dashboard";
+import Dashboard from "../../components/Dashboard";
 // Icons and styling
-import Icon from "../components/Icon";
+import Icon from "../../components/Icon";
 // Redux Notify
-import { ADD_NOTIFICATION, UPDATE_COMMON } from "../store/types";
-import { convertDateToString } from "../helpers/Convertdate";
+import { ADD_NOTIFICATION, UPDATE_COMMON } from "../../store/types";
+import { convertDateToString } from "../../helpers/Convertdate";
 
 import TagManager from "react-gtm-module";
 import { Menu, Transition } from "@headlessui/react";
-import InActiveModal from "../components/InActiveModal";
-import ActiveModal from "../components/ActiveModal";
-import DeleteModal from "../components/DeleteModal";
-import LogModal from "../components/LogModal";
-import { withRouter } from "../helpers/withRouter";
+
+import DeleteModal from "../../components/DeleteModal";
+import LogModal from "../../components/LogModal";
+import { withRouter } from "../../helpers/withRouter";
 import { compose } from "redux";
 
-import useEffectAfterInitialRender from "../helpers/useEffectAfterInitialRender";
+import useEffectAfterInitialRender from "../../helpers/useEffectAfterInitialRender";
 import { string } from "prop-types";
 import { useNavigate } from "react-router-dom";
+import { downloadFile } from "../../helpers/downloadFile";
 
 const tagManagerArgs = {
   dataLayer: {
@@ -61,7 +61,7 @@ const connector = connect(mapStateToProps, mapDispatchToProps);
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
-function AccountsList(props: PropsFromRedux) {
+function EntriesList(props: PropsFromRedux) {
   const navigate = useNavigate();
   const [pageType, setPageType] = React.useState("");
 
@@ -76,6 +76,13 @@ function AccountsList(props: PropsFromRedux) {
   }, [pageURL]);
 
   const currentYear = (props as any).currentYear;
+
+  // Chunk Size for number of table data displayed in each page during pagination
+  let chunkSize = 10;
+  // Selected pagination value
+  let currPage = 0;
+
+  console.log("currentYear", currentYear);
   interface state {
     loading: boolean;
     posX: any;
@@ -84,20 +91,20 @@ function AccountsList(props: PropsFromRedux) {
     hoverY: any;
     showBackDrop: boolean;
     searchText: string;
-    accounts: any;
+    entries: any;
     totalRecords: number;
-    displayAccountDetails: any;
-    selectedGstId: string;
+    displayEntryDetails: any;
+    selectedEntries: any;
     modalOpen: boolean;
     typingTimeout: any;
     selectedRow: any;
     showDeleteModal: boolean;
     showLogModal: boolean;
-    active: boolean;
-    debitTotal: string;
-    creditTotal: string;
-    debitCreditDiff: string;
-    hideZeroBalance: boolean;
+    pageTotal: number;
+    total: number;
+    skip: number;
+    limit: number;
+    sortBy: string;
   }
 
   let inititalState = {
@@ -108,28 +115,23 @@ function AccountsList(props: PropsFromRedux) {
     hoverY: null,
     showBackDrop: false,
     searchText: "",
-    accounts: [],
+    entries: [],
     totalRecords: 0,
-    displayAccountDetails: [],
-    selectedGstId: "",
+    displayEntryDetails: [],
+    selectedEntries: [],
     modalOpen: false,
     typingTimeout: 0,
     selectedRow: undefined,
     showDeleteModal: false,
     showLogModal: false,
-    active: true,
-    hideZeroBalance: false,
-    debitTotal: "",
-    creditTotal: "",
-    debitCreditDiff: "",
+    pageTotal: 0,
+    total: 0,
+    skip: 0,
+    limit: chunkSize,
+    sortBy: "dateAsc",
   };
 
   const [state, setState] = React.useState<state>(inititalState);
-
-  // Chunk Size for number of table data displayed in each page during pagination
-  let chunkSize = 10000;
-  // Selected pagination value
-  let currPage = 0;
 
   //Get Organisation Data
 
@@ -138,11 +140,12 @@ function AccountsList(props: PropsFromRedux) {
     const year = (props as any).currentYear;
     console.log("props", props);
     const searchText = forSearch ? state.searchText : "";
-    const active = state.active;
-    // setState((prevState) => ({
-    //   ...prevState,
-    //   loading: true,
-    // }));
+    let skip = state.skip;
+    let limit = state.limit;
+    setState((prevState) => ({
+      ...prevState,
+      loading: true,
+    }));
     if (!organisationId) {
       (props as any).onNotify(
         "Could not load Organisation Details",
@@ -152,16 +155,23 @@ function AccountsList(props: PropsFromRedux) {
       return;
     }
 
-    agent.JournalEntry.journalentrylist(organisationId, year, 0, 10)
+    agent.JournalEntry.journalentrylist(
+      organisationId,
+      year,
+      skip,
+      limit,
+      state.sortBy,
+      false
+    )
       .then((response: any) => {
-        console.log("response", response);
-
         setState((prevState) => ({
           ...prevState,
           loading: false,
-          displayAccountDetails: response.jounralEntries,
+          displayEntryDetails: response.jounralEntries,
           totalRecords: response.count,
-          accounts: response.jounralEntries,
+          entries: response.jounralEntries,
+          pageTotal: response.pageTotal,
+          total: response.total,
         }));
       })
       .catch((err: any) => {
@@ -178,54 +188,55 @@ function AccountsList(props: PropsFromRedux) {
       });
   };
 
-  const calculateTotal = (accounts: any) => {
-    let debitTotal = 0;
-    let creditTotal = 0;
-    let debitCreditDiff = 0;
+  const downloadEntriesList = () => {
+    const organisationId = (props as any).params?.organisationId;
+    const year = (props as any).currentYear;
+    console.log("props", props);
 
-    if (
-      (props as any).location.pathname.split("/")[3] ===
-      "list-with-opening-balances"
-    ) {
-      accounts.forEach((account: any) => {
-        if (account.openingBalanceType === "dr") {
-          debitTotal += account.openingBalance;
-        } else {
-          creditTotal += account.openingBalance;
-        }
-      });
+    let skip = state.skip;
+    let limit = state.limit;
+    setState((prevState) => ({
+      ...prevState,
+      loading: true,
+    }));
+    if (!organisationId) {
+      (props as any).onNotify(
+        "Could not load Organisation Details",
+        "",
+        "danger"
+      );
+      return;
     }
 
-    if ((props as any).location.pathname.split("/")[3] === "list") {
-      accounts.forEach((account: any) => {
-        let balance = account.balances.find(
-          (item: any) => item.year === currentYear
-        )?.balance;
-        if (balance) {
-          if (balance > 0) {
-            debitTotal += balance;
-          } else {
-            creditTotal -= balance;
-          }
-        }
-      });
-    }
-    debitCreditDiff = debitTotal - creditTotal;
-    const debitTotalFormatted = Intl.NumberFormat("en-IN", {
-      minimumFractionDigits: 2,
-    }).format(debitTotal);
-    const creditTotalFormatted = Intl.NumberFormat("en-IN", {
-      minimumFractionDigits: 2,
-    }).format(creditTotal);
-    const debitCreditDiffFormatted = Intl.NumberFormat("en-IN", {
-      minimumFractionDigits: 2,
-    }).format(debitCreditDiff);
+    agent.JournalEntry.journalentrylist(
+      organisationId,
+      year,
+      skip,
+      limit,
+      state.sortBy,
+      true
+    )
+      .then((response: any) => {
+        console.log("response1", response.headers);
+        downloadFile(response, `Journal Entries - ${year}.xlsx`);
+        (props as any).onNotify(
+          "Download",
+          "Report has been successfully exported in excel",
+          "success"
+        );
+      })
+      .catch((err: any) => {
+        setState((prevState) => ({
+          ...prevState,
+          loading: false,
+        }));
 
-    return {
-      debitTotal: debitTotalFormatted,
-      creditTotal: creditTotalFormatted,
-      debitCreditDiff: debitCreditDiffFormatted,
-    };
+        (props as any).onNotify(
+          "Could not load Organisation Details1",
+          err?.response?.data?.message || err?.message || err,
+          "danger"
+        );
+      });
   };
 
   useEffectAfterInitialRender(
@@ -238,11 +249,6 @@ function AccountsList(props: PropsFromRedux) {
 
   useEffectAfterInitialRender(
     () => {
-      // setState((prevState) => ({
-      //   ...prevState,
-      //   hideZeroBalance: false,
-      // }));
-
       getEntriesList(false);
     },
     [(props as any).location.pathname],
@@ -272,49 +278,26 @@ function AccountsList(props: PropsFromRedux) {
 
   useEffectAfterInitialRender(
     () => {
-      if (
-        (props as any)?.modalName === "ADD_ACCOUNT_MODAL" &&
-        (props as any)?.modalName === "" &&
-        (props as any)?.fetchAgain
-      ) {
-        getEntriesList(false);
-      }
+      getEntriesList(true);
     },
-    [(props as any).currentModal],
+    [state.skip],
     1
   );
-
   useEffectAfterInitialRender(
     () => {
       getEntriesList(true);
     },
-    [state.active],
+    [state.sortBy],
     1
   );
 
-  // useEffectAfterInitialRender(
-  //   () => {
-
-  //     getEntriesList(true);
-  //   },
-  //   [state.searchText],
-  //   1
-  // );
-
-  // TagManager.dataLayer(tagManagerArgs);
-
   const handlePageClick = (data: any) => {
     currPage = data.selected;
-    setState((prevState) => ({
-      ...prevState,
-      displayAccountDetails: state.accounts,
-    }));
-  };
 
-  const fetchRequired = () => {
     setState((prevState) => ({
       ...prevState,
-      requireFetch: true,
+      skip: currPage * chunkSize,
+      limit: chunkSize,
     }));
   };
 
@@ -326,15 +309,6 @@ function AccountsList(props: PropsFromRedux) {
       posX: e.clientX,
       posY: positionY,
       showBackDrop: true,
-    }));
-  };
-
-  const onDescriptionHover = (e: any) => {
-    const pos = e.target.getClientRects()[0];
-    setState((prevState) => ({
-      ...prevState,
-      hoverX: pos.x,
-      hoverY: pos.y,
     }));
   };
 
@@ -359,13 +333,6 @@ function AccountsList(props: PropsFromRedux) {
     // getEntriesList(true);
   };
 
-  const updateActive = () => {
-    setState((prevState) => ({
-      ...prevState,
-      active: !state.active,
-    }));
-  };
-
   const openLogModal = (account: any) => {
     setState((prevState) => ({
       ...prevState,
@@ -382,10 +349,11 @@ function AccountsList(props: PropsFromRedux) {
     }));
   };
 
-  const openDeleteModal = (account: any) => {
+  const openDeleteModal = (entry: any[]) => {
+    console.log("entry", entry);
     setState((prevState) => ({
       ...prevState,
-      selectedRow: account,
+      selectedRow: entry,
       showBackDrop: false,
     }));
 
@@ -407,6 +375,74 @@ function AccountsList(props: PropsFromRedux) {
     );
   };
 
+  const handleSortOrderChange = (e: any) => {
+    const value = e.target.value;
+    let newValue = "";
+    if (value === "Date Ascending") {
+      newValue = "dateAsc";
+    }
+    if (value === "Date Descending") {
+      newValue = "dateDesc";
+    }
+    if (value === "Amount Ascending") {
+      newValue = "amountAsc";
+    }
+    if (value === "Amount Descending") {
+      newValue = "amountDesc";
+    }
+    setState((prevState) => ({
+      ...prevState,
+      sortBy: newValue,
+    }));
+  };
+
+  const onEntryCheckBoxChange = (entry: any) => {
+    console.log("entry", entry);
+    const { selectedEntries } = state;
+    console.log("selectedEntries", selectedEntries);
+    const clientIndex = selectedEntries.findIndex(
+      (c: any) => c._id === entry._id
+    );
+    console.log("clientIndex", clientIndex);
+    if (clientIndex === -1) {
+      setState((prevState: any) => {
+        return {
+          ...prevState,
+          selectedEntries: [...selectedEntries, entry],
+        };
+      });
+    } else {
+      const removeClient = selectedEntries.filter(
+        (c: any) => c._id !== entry._id
+      );
+      setState((prevState: any) => {
+        return {
+          ...prevState,
+          selectedEntries: removeClient,
+        };
+      });
+    }
+  };
+
+  const onSelectAllEntry = () => {
+    const { displayEntryDetails, selectedEntries } = state;
+    if (selectedEntries.length === displayEntryDetails.length) {
+      setState((prevState: any) => {
+        return {
+          ...prevState,
+          selectedEntries: [],
+        };
+      });
+    } else {
+      setState((prevState: any) => {
+        return {
+          ...prevState,
+          selectedEntries: displayEntryDetails,
+        };
+      });
+    }
+  };
+  console.log("state", state);
   return (
     <Dashboard>
       <div className="gsts">
@@ -421,7 +457,7 @@ function AccountsList(props: PropsFromRedux) {
 
         {state.showDeleteModal && (
           <DeleteModal
-            type={"account"}
+            type={"journalentry"}
             state={state}
             onLoad={getEntriesList}
             deleteModalSetOpen={deleteModalSetOpen}
@@ -430,11 +466,11 @@ function AccountsList(props: PropsFromRedux) {
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
           <h1 className="text-2xl font-semibold text-gray-900">
-            {pageType === "journal-entry" ? "Journal Entries" : ""}
+            Journal Entries
           </h1>
         </div>
-        <div className="px-4 sm:px-6 md:px-8 grid grid-cols-3 gap-4 mt-6">
-          <div className="w-fit">
+        <div className="px-4 sm:px-6 md:px-8 grid grid-cols-12 gap-4 mt-6">
+          <div className="w-fit col-span-2">
             <button
               type="button"
               className="relative inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none"
@@ -450,16 +486,68 @@ function AccountsList(props: PropsFromRedux) {
           </div>
 
           {(state.totalRecords > 0 || state.searchText.length > 0) && (
-            <div className="w-64 sm:w-80">
+            <div className="col-span-3">
               <input
                 id="name"
                 name="name"
                 type="text"
                 value={state.searchText}
-                placeholder="Search by Account Name, Amount or Nature"
+                placeholder="Search by Account Name or Amount"
                 className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:border-indigo-500 text-sm"
                 onChange={handleSearchTextChange}
               />
+            </div>
+          )}
+
+          {(state.totalRecords > 0 || state.searchText.length > 0) && (
+            <div className="col-span-2">
+              <button
+                type="button"
+                className="w-full flex justify-center py-2 px-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none"
+                onClick={() => downloadEntriesList()}
+              >
+                Download as xlsx
+              </button>
+            </div>
+          )}
+          {(state.totalRecords > 0 || state.searchText.length > 0) && (
+            <div className="col-span-2">
+              <button
+                type="button"
+                className={
+                  state.selectedEntries.length === 0
+                    ? "w-full flex justify-center py-2 px-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-300 cursor-not-allowed"
+                    : "w-full flex justify-center py-2 px-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none"
+                }
+                // className="relative inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none"
+                disabled={state.selectedEntries.length === 0}
+                onClick={() => openDeleteModal(state.selectedEntries)}
+              >
+                Delete Selected
+              </button>
+            </div>
+          )}
+          {(state.totalRecords > 0 || state.searchText.length > 0) && (
+            <div className="col-span-1 py-2 text-right">Sort by</div>
+          )}
+          {(state.totalRecords > 0 || state.searchText.length > 0) && (
+            <div className="col-span-2">
+              {/* Sort by */}
+              <label
+                htmlFor="sortorder"
+                className="block text-sm font-medium text-gray-700"
+              ></label>
+              <select
+                id="sortorder"
+                name="sortorder"
+                className="mt-1 block rounded-md border-gray-300 text-base focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+                onChange={(e) => handleSortOrderChange(e)}
+              >
+                <option>Date Ascending</option>
+                <option>Date Descending</option>
+                <option>Amount Ascending</option>
+                <option>Amount Descending</option>
+              </select>
             </div>
           )}
         </div>
@@ -497,7 +585,7 @@ function AccountsList(props: PropsFromRedux) {
             </button>
           </div> */}
 
-        {!state.loading && state.displayAccountDetails ? (
+        {!state.loading && state.displayEntryDetails ? (
           state.totalRecords > 0 || state.searchText.length > 0 ? (
             <div className={"max-w-7xl mx-auto px-4 sm:px-6 md:px-8 pb-12"}>
               {/* Organisation List Table */}
@@ -506,7 +594,7 @@ function AccountsList(props: PropsFromRedux) {
                   id="table-scroll"
                   className="-my-2 -mx-4 sm:-mx-6 lg:-mx-8 overflow-auto"
                 >
-                  <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
+                  <div className="min-w-full py-2 align-middle md:px-6 lg:px-8">
                     <div className="shadow-sm ring-1 ring-black ring-opacity-5">
                       <table
                         className="min-w-full border-separate border shadow-sm"
@@ -514,6 +602,24 @@ function AccountsList(props: PropsFromRedux) {
                       >
                         <thead className="bg-gray-50">
                           <tr>
+                            {
+                              <th
+                                style={{ zIndex: 6 }}
+                                scope="col"
+                                className="sticky top-0 border-b border-gray-300 bg-gray-50 px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider sm:pl-6 align-bottom"
+                              >
+                                <input
+                                  type="checkbox"
+                                  className="h-4 w-4 rounded border-gray-400 text-indigo-600 focus:ring-indigo-500"
+                                  checked={
+                                    state.displayEntryDetails.length > 0 &&
+                                    state.displayEntryDetails.length ===
+                                      state.selectedEntries.length
+                                  }
+                                  onChange={onSelectAllEntry}
+                                />
+                              </th>
+                            }
                             <th
                               style={{ zIndex: 6 }}
                               scope="col"
@@ -532,7 +638,7 @@ function AccountsList(props: PropsFromRedux) {
                             <th
                               style={{ zIndex: 6 }}
                               scope="col"
-                              className="sticky top-0 border-b border-gray-300 bg-gray-50 px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider sm:pl-6 align-bottom"
+                              className="sticky top-0 border-b border-gray-300 bg-gray-50 px-8 py-3 text-right text-xs font-bold text-gray-500 uppercase tracking-wider sm:pl-6 align-bottom"
                             >
                               AMOUNT
                             </th>
@@ -541,7 +647,7 @@ function AccountsList(props: PropsFromRedux) {
                               style={{ zIndex: 6 }}
                               scope="col"
                               rowSpan={2}
-                              className="sticky top-0 border-b border-gray-300 bg-gray-50 px-4 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider sm:pl-6 align-bottom"
+                              className="sticky top-0 border-b border-gray-300 bg-gray-50 px-8 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider sm:pl-6 align-bottom"
                             >
                               ACTIONS
                             </th>
@@ -553,26 +659,40 @@ function AccountsList(props: PropsFromRedux) {
                           </div>
                         ) : (
                           <tbody className="bg-white">
-                            {state.displayAccountDetails?.map(
-                              (account: any, index: any) => (
+                            {state.displayEntryDetails?.map(
+                              (entry: any, index: any) => (
                                 <tr
-                                  key={account._id}
+                                  key={entry._id}
                                   className={
                                     index % 2 === 0 ? undefined : "bg-gray-100"
                                   }
                                 >
+                                  <td className="w-1/12 whitespace-nowrap py-4 pl-4 pr-3 text-sm text-black-900 sm:pl-6">
+                                    <div>
+                                      <input
+                                        type="checkbox"
+                                        className="h-4 w-4 rounded border-gray-400 text-indigo-600 focus:ring-indigo-500"
+                                        checked={state.selectedEntries.some(
+                                          (item: any) => item._id === entry._id
+                                        )}
+                                        onChange={() =>
+                                          onEntryCheckBoxChange(entry)
+                                        }
+                                      />
+                                    </div>
+                                  </td>
                                   <td className="w-3/12 whitespace-nowrap py-4 pl-4 pr-3 text-sm text-black-900 sm:pl-6">
-                                    {convertDateToString(account.date)}
+                                    {convertDateToString(entry.date)}
                                   </td>
 
                                   <td className="w-3/12 whitespace-nowrap py-4 pl-4 pr-3 text-sm text-gray-900 sm:pl-6">
-                                    {account.accountsToShow}
+                                    {entry.accountsToShow}
                                   </td>
 
-                                  <td className="w-3/12 whitespace-nowrap py-4 pl-4 pr-3 text-sm text-gray-900 sm:pl-6">
+                                  <td className="w-3/12 whitespace-nowrap py-4 pl-4 pr-3 text-sm text-gray-900 sm:pl-6 text-right">
                                     {new Intl.NumberFormat("en-IN", {
                                       minimumFractionDigits: 2,
-                                    }).format(account.amountToShow)}
+                                    }).format(entry.amountToShow)}
                                   </td>
 
                                   <td className="w-4/10 px-6 py-3 mx-4 text-center whitespace-nowrap text-sm text-gray-500">
@@ -619,7 +739,7 @@ function AccountsList(props: PropsFromRedux) {
                                                   className="flex items-center w-full p-1 px-4 py-2 text-sm hover:bg-gray-100 text-gray-900"
                                                   onClick={() =>
                                                     editEntryNavigateFunction(
-                                                      account
+                                                      entry
                                                     )
                                                   }
                                                 >
@@ -635,7 +755,7 @@ function AccountsList(props: PropsFromRedux) {
                                                 <button
                                                   className="flex items-center w-full p-1 px-4 py-2 text-sm hover:bg-gray-100 text-gray-900"
                                                   onClick={() =>
-                                                    openDeleteModal(account)
+                                                    openDeleteModal([entry])
                                                   }
                                                 >
                                                   <Icon
@@ -649,7 +769,7 @@ function AccountsList(props: PropsFromRedux) {
                                                 <button
                                                   className="flex items-center w-full p-1 px-4 py-2 text-sm hover:bg-gray-100 text-gray-900"
                                                   onClick={() =>
-                                                    openLogModal(account)
+                                                    openLogModal(entry)
                                                   }
                                                 >
                                                   <Icon
@@ -680,38 +800,33 @@ function AccountsList(props: PropsFromRedux) {
                             <th
                               style={{ zIndex: 6 }}
                               scope="col"
-                              className="sticky top-0 border-b border-gray-300 bg-gray-50 px-4 py-3 text-right text-xm font-bold text-gray-900 tracking-wider sm:pl-6 align-middle"
-                            >
-                              Total
-                            </th>
-                            <th
-                              style={{ zIndex: 6 }}
-                              scope="col"
-                              className="sticky top-0 border-b border-gray-300 bg-gray-50 px-4 py-3 text-right text-xm font-bold text-gray-900 uppercase tracking-wider sm:pl-6 align-middle"
-                            >
-                              {state.debitTotal}
-                            </th>
-                            <th
-                              style={{ zIndex: 6 }}
-                              scope="col"
-                              className="sticky top-0 border-b border-gray-300 bg-gray-50 px-4 py-3 text-right text-xm font-bold text-gray-900 uppercase tracking-wider sm:pl-6 align-middle"
-                            >
-                              {state.creditTotal}
-                            </th>
-
-                            <th
-                              style={{ zIndex: 6 }}
-                              scope="col"
                               className="sticky top-0 border-b border-gray-300 bg-gray-50 px-4 py-3 text-right text-xs font-bold text-gray-500 uppercase tracking-wider sm:pl-6 align-middle"
                             ></th>
                             <th
                               style={{ zIndex: 6 }}
                               scope="col"
-                              className="sticky top-0 border-b border-gray-300 bg-gray-50 px-4 py-3 text-right text-xs font-bold text-gray-500 uppercase tracking-wider sm:pl-6 align-middle"
+                              className="sticky top-0 border-b border-gray-300 bg-gray-50 px-4 py-3 text-right text-xs font-bold text-gray-900 tracking-wider sm:pl-6 align-middle"
+                            >
+                              {`Total (${state.displayEntryDetails.length} entries)`}
+                              :
+                            </th>
+                            <th
+                              style={{ zIndex: 6 }}
+                              scope="col"
+                              className="sticky top-0 border-b border-gray-300 bg-gray-50 px-4 py-3 text-right text-xs font-bold text-gray-900 uppercase tracking-wider sm:pl-6 align-middle"
+                            >
+                              {new Intl.NumberFormat("en-IN", {
+                                minimumFractionDigits: 2,
+                              }).format(state.pageTotal)}
+                            </th>
+                            <th
+                              style={{ zIndex: 6 }}
+                              scope="col"
+                              className="sticky top-0 border-b border-gray-300 bg-gray-50 px-4 py-3 text-right text-xm font-bold text-gray-900 uppercase tracking-wider sm:pl-6 align-middle"
                             ></th>
                           </tr>
                         </thead>
-                        {state.debitCreditDiff !== "" ? (
+                        {state.totalRecords > chunkSize ? (
                           <thead className="bg-gray-50">
                             <tr>
                               <th
@@ -722,34 +837,25 @@ function AccountsList(props: PropsFromRedux) {
                               <th
                                 style={{ zIndex: 6 }}
                                 scope="col"
-                                className="sticky top-0 border-b border-gray-300 bg-gray-50 px-4 py-3 text-right text-xm font-bold text-gray-900 tracking-wider sm:pl-6 align-middle"
-                              >
-                                Difference in Opening Balance
-                              </th>
-                              <th
-                                style={{ zIndex: 6 }}
-                                scope="col"
-                                className="sticky top-0 border-b border-gray-300 bg-gray-50 px-4 py-3 text-right text-xm font-bold text-gray-900 uppercase tracking-wider sm:pl-6 align-middle"
-                              >
-                                {state.debitCreditDiff.includes("-")
-                                  ? state.debitCreditDiff.replace("-", "")
-                                  : "-"}
-                              </th>
-                              <th
-                                style={{ zIndex: 6 }}
-                                scope="col"
-                                className="sticky top-0 border-b border-gray-300 bg-gray-50 px-4 py-3 text-right text-xm font-bold text-gray-900 uppercase tracking-wider sm:pl-6 align-middle"
-                              >
-                                {state.debitCreditDiff.includes("-")
-                                  ? "-"
-                                  : state.debitCreditDiff}
-                              </th>
-
-                              <th
-                                style={{ zIndex: 6 }}
-                                scope="col"
                                 className="sticky top-0 border-b border-gray-300 bg-gray-50 px-4 py-3 text-right text-xs font-bold text-gray-500 uppercase tracking-wider sm:pl-6 align-middle"
                               ></th>
+                              <th
+                                style={{ zIndex: 6 }}
+                                scope="col"
+                                className="sticky top-0 border-b border-gray-300 bg-gray-50 px-4 py-3 text-right text-xs font-bold text-gray-900 tracking-wider sm:pl-6 align-middle"
+                              >
+                                Total ({state.totalRecords} entries):
+                              </th>
+                              <th
+                                style={{ zIndex: 6 }}
+                                scope="col"
+                                className="sticky top-0 border-b border-gray-300 bg-gray-50 px-4 py-3 text-right text-xs font-bold text-gray-900 uppercase tracking-wider sm:pl-6 align-middle"
+                              >
+                                {new Intl.NumberFormat("en-IN", {
+                                  minimumFractionDigits: 2,
+                                }).format(state.total)}
+                              </th>
+
                               <th
                                 style={{ zIndex: 6 }}
                                 scope="col"
@@ -772,17 +878,21 @@ function AccountsList(props: PropsFromRedux) {
                 strokeWidth="1"
               />
               <h3 className="mt-2 text-sm font-medium text-gray-900">
-                No Account Entry
+                No Journal Entry Present
               </h3>
               <p className="mt-1 text-sm text-gray-500">
-                Get started by adding a new Account.
+                Get started by adding a new Journal Entry.
               </p>
               <div className="mt-6">
                 <button
                   type="button"
                   className="relative inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none"
                   onClick={() => {
-                    navigate("/accounts/add");
+                    navigate(
+                      `/${
+                        (props as any).params.organisationId
+                      }/journal-entry/add`
+                    );
                   }}
                 >
                   {(props as any)?.rights?.statusRights.create ? (
@@ -790,7 +900,7 @@ function AccountsList(props: PropsFromRedux) {
                   ) : (
                     <Icon name="outline/lock-closed" className="h-4 w-4 mr-2" />
                   )}
-                  Add Account
+                  Add Journal Entry
                 </button>
               </div>
             </div>
@@ -807,28 +917,27 @@ function AccountsList(props: PropsFromRedux) {
                           <tr>
                             <th
                               scope="col"
+                              className="w-1/12 px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider"
+                            ></th>
+                            <th
+                              scope="col"
                               className="w-2/12 px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider"
                             >
-                              ACCOUNT NAME
+                              DATE
                             </th>
                             <th
                               scope="col"
                               className="w-2/12 px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider"
                             >
-                              Nature of Account
+                              ACCOUNTS
                             </th>
                             <th
                               scope="col"
                               className="w-4/12 px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider"
                             >
-                              OPENING BALANCE
+                              AMOUNT
                             </th>
-                            <th
-                              scope="col"
-                              className="w-2/12 px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider"
-                            >
-                              ACCOUNT
-                            </th>
+
                             <th
                               scope="col"
                               className="w-2/12 px-4 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider"
@@ -860,20 +969,25 @@ function AccountsList(props: PropsFromRedux) {
             </div>
           </div>
         )}
-        {/* {state.displayAccountDetails.length > 0 ? (
+
+        {state.displayEntryDetails.length > 0 ? (
           <div className="bg-white px-4 py-3 my-4 lg:mx-8 flex items-center justify-between border-t border-gray-200 sm:px-6">
             <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
               <div>
                 <p className="text-sm text-gray-700">
                   Showing{" "}
                   <span className="font-medium">
-                    {currPage * chunkSize + 1}
+                    {state.skip + 1}
+                    {/* {currPage * chunkSize + 1} */}
                   </span>{" "}
                   to{" "}
                   <span className="font-medium">
-                    {(currPage + 1) * chunkSize > state.totalRecords
+                    {state.skip + chunkSize > state.totalRecords
                       ? state.totalRecords
-                      : (currPage + 1) * chunkSize}
+                      : state.skip + chunkSize}
+                    {/* {(currPage + 1) * chunkSize > state.totalRecords
+                      ? state.totalRecords
+                      : (currPage + 1) * chunkSize} */}
                   </span>{" "}
                   of <span className="font-medium">{state.totalRecords}</span>{" "}
                   results
@@ -895,15 +1009,13 @@ function AccountsList(props: PropsFromRedux) {
               />
             </div>
           </div>
-        ) : null} */}
+        ) : null}
       </div>
     </Dashboard>
   );
 }
 
-// export default AccountsList;
-
 export default compose(
   connector,
   withRouter
-)(AccountsList) as React.ComponentType;
+)(EntriesList) as React.ComponentType;

@@ -1,5 +1,6 @@
 export const downloadFile = (response: any, fileName: string) => {
   const { data, headers } = response;
+  console.log("responese", response.data);
   const blob = new Blob([data], { type: headers["content-type"] });
   let dom = document.createElement("a");
   let url = window.URL.createObjectURL(blob);

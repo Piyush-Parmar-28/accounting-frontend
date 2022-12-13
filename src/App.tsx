@@ -17,7 +17,8 @@ import Tags from "./pages/Tags/Index";
 import AddTag from "./pages/Tags/Add";
 
 // Journal Entry Page
-import JournalEntry from "./pages/Journal/Index";
+import ListJournalEntry from "./pages/Journal/List";
+import AddJournalEntry from "./pages/Journal/Add";
 
 //  Account Import
 import AccountList from "./pages/Account/Index";
@@ -64,7 +65,7 @@ import { connect, ConnectedProps } from "react-redux";
 // Todo Imports
 import Todos, { getTodoList } from "./pages/Todo/Index";
 import AddEditList from "./pages/Todo/AddEditList";
-import EntriesList from "./pages/EntriesList";
+import EntriesList from "./pages/Journal/List";
 
 const mapStateToProps = (state: any) => ({
   ...state.user,
@@ -274,7 +275,7 @@ class App extends React.Component<PropsFromRedux> {
                 path="/:organisationId/journal-entry/add"
                 element={
                   <this.PrivateRoute>
-                    <JournalEntry />
+                    <AddJournalEntry />
                   </this.PrivateRoute>
                 }
               />
@@ -283,7 +284,7 @@ class App extends React.Component<PropsFromRedux> {
                 path="/:organisationId/journal-entry/duplicate/:id"
                 element={
                   <this.PrivateRoute>
-                    <JournalEntry />
+                    <AddJournalEntry />
                   </this.PrivateRoute>
                 }
               />
@@ -292,7 +293,7 @@ class App extends React.Component<PropsFromRedux> {
                 path="/:organisationId/journal-entry/edit/:id"
                 element={
                   <this.PrivateRoute>
-                    <JournalEntry />
+                    <AddJournalEntry />
                   </this.PrivateRoute>
                 }
               />
@@ -302,7 +303,7 @@ class App extends React.Component<PropsFromRedux> {
                 path="/:organisationId/journal-entry/list/"
                 element={
                   <this.PrivateRoute>
-                    <EntriesList />
+                    <ListJournalEntry />
                   </this.PrivateRoute>
                 }
               />

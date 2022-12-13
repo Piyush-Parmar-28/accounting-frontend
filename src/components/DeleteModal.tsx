@@ -359,6 +359,49 @@ class DeleteModal extends React.Component<Props, PropsFromRedux> {
       });
   };
 
+  deleteJournalEntry = () => {
+    const organisationId = (this.props as any)?.currentOrganisation._id;
+
+    let entryIds: any[] = [];
+    console.log(this.props.state.selectedRows);
+    for (const entry of this.props.state.selectedRow) {
+      entryIds.push(entry._id);
+    }
+
+    this.setState({ logging: true });
+    agent.JournalEntry.delete(organisationId, entryIds)
+      .then(() => {
+        (this.props as any).addNotification(
+          "Success!",
+          `${entryIds.length} ${
+            entryIds.length === 1 ? "entry" : "entries"
+          } Deleted Successfully.`,
+          "success"
+        );
+        this.setState({ logging: false });
+        this.setOpen(false);
+        this.onLoad();
+      })
+      .catch((err: any) => {
+        this.setState({ logging: false });
+        (this.props as any).addNotification(
+          "Error",
+          err?.response?.data?.message || err?.message || err,
+          "danger"
+        );
+      });
+  };
+
+  messageToShow = () => {
+    if (this.props.type === "journalentry") {
+      return `Are you sure you want to delete selected ${
+        this.props.state.selectedRow.length
+      } ${this.props.state.selectedRow.length === 1 ? "entry" : "entries"} ?`;
+    } else {
+      return `Are you sure you want to delete ${this.props.state.selectedRow.name} ?`;
+    }
+  };
+
   deleteIdRow = () => {
     switch (this.props.type) {
       case "tag":
@@ -383,6 +426,8 @@ class DeleteModal extends React.Component<Props, PropsFromRedux> {
         return this.deleteUser();
       case "account":
         return this.deleteAccount();
+      case "journalentry":
+        return this.deleteJournalEntry();
       default:
         return;
     }
@@ -450,12 +495,11 @@ class DeleteModal extends React.Component<Props, PropsFromRedux> {
                           as="h3"
                           className="text-lg leading-6 font-medium text-gray-900"
                         >
-                          Conorganisation Delete
+                          Confirm Delete
                         </Dialog.Title>
                         <div className="mt-2">
                           <p className="text-sm text-gray-500">
-                            Are you sure you want to delete {this.props.type} '
-                            {this.props.state.selectedRow.name}'?
+                            {this.messageToShow()}
                           </p>
                         </div>
                       </div>

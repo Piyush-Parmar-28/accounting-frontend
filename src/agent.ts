@@ -44,6 +44,14 @@ const Agency = {
   },
 };
 
+function selectedEntryUrl(selectedEntry: any) {
+  let selectedEntryUrl = "";
+  for (var i = 0; i < selectedEntry.length; i++) {
+    selectedEntryUrl += "&entryIds[]=" + selectedEntry[i];
+  }
+  return selectedEntryUrl;
+}
+
 const Auth = {
   //Login
   login: (username: string, password: string) =>
@@ -224,6 +232,22 @@ const JournalEntry = {
       narration,
       year,
     }),
+  edit: (
+    organisationId: string,
+    entryId: string,
+    date: string,
+    entries: any,
+    narration: string,
+    year: string
+  ) =>
+    requests.post("/journalentry/edit", {
+      organisationId,
+      entryId,
+      date,
+      entries,
+      narration,
+      year,
+    }),
   getsingleentrydetails: (organisationId: string, entryId: string) =>
     requests.get(
       `/journalentry/getsingleentrydetails?organisationId=${organisationId}&entryId=${entryId}`
@@ -232,10 +256,18 @@ const JournalEntry = {
     organisationId: string,
     year: string,
     skip: number,
-    limit: number
+    limit: number,
+    sortBy: string,
+    download: boolean
   ) =>
     requests.get(
-      `/journalentry/journalentrylist?organisationId=${organisationId}&year=${year}&skip=${skip}&limit=${limit}`
+      `/journalentry/journalentrylist?organisationId=${organisationId}&year=${year}&skip=${skip}&limit=${limit}&sortBy=${sortBy}&download=${download}`
+    ),
+  delete: (organisationId: string, entryIds: string[]) =>
+    requests.delete(
+      `/journalentry/delete?organisationId=${organisationId}${selectedEntryUrl(
+        entryIds
+      )}`
     ),
 };
 
