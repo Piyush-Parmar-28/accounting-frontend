@@ -298,7 +298,7 @@ class Dashboard extends React.Component<DashboardProps, PropsFromRedux> {
     const searchText = "";
     const active = true;
     if (organisationId) {
-      agent.Account.getAccountList(organisationId, active, searchText)
+      agent.Account.getAccountList(organisationId, active, searchText, "all")
         .then((response: any) => {
           console.log(response);
           (this.props as any).updateCommon({ accounts: response.accounts });

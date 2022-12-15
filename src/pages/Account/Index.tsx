@@ -153,7 +153,7 @@ function AccountsList(props: PropsFromRedux) {
       return;
     }
 
-    agent.Account.getAccountList(organisationId, active, searchText)
+    agent.Account.getAccountList(organisationId, active, searchText, "all")
       .then((response: any) => {
         const total = calculateTotal(response.accounts);
         setState((prevState) => ({
@@ -238,6 +238,9 @@ function AccountsList(props: PropsFromRedux) {
     [],
     0
   );
+
+  // if page refreshed and current year not availabe then rerender on getting current year to show in heading and also change list if year changes
+  useEffectAfterInitialRender(() => {}, [currentYear], 0);
 
   useEffectAfterInitialRender(
     () => {
@@ -720,16 +723,19 @@ function AccountsList(props: PropsFromRedux) {
                             >
                               {pageType === "list"
                                 ? `Balances as on 31st March 20${
-                                    currentYear.split("-")[1]
+                                    currentYear ? currentYear.split("-")[1] : ""
                                   }`
                                 : `Opening Balances
                                 as on 1st April
                                 ${
-                                  (
-                                    props as any
-                                  ).currentOrganisation?.startingYear.split(
-                                    "-"
-                                  )[0]
+                                  (props as any).currentOrganisation
+                                    ?.startingYear
+                                    ? (
+                                        props as any
+                                      ).currentOrganisation?.startingYear?.split(
+                                        "-"
+                                      )[0]
+                                    : ""
                                 }`}
                             </th>
                             <th

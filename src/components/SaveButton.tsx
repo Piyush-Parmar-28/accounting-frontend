@@ -1,4 +1,4 @@
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { Listbox, Transition } from "@headlessui/react";
 import { CheckIcon, ChevronDownIcon } from "@heroicons/react/20/solid";
 
@@ -40,6 +40,11 @@ export default function Example(props: any) {
     }
   }
   const [selected, setSelected] = useState(buttonOptions[0]);
+
+  // change default option (this is useful as when edit page is opened, the page type is updated after second render, so if below useeffect is not there, on edit page, it shows default option as save & new)
+  useEffect(() => {
+    setSelected(buttonOptions[0]);
+  }, [props.type]);
 
   const onChangeHandler = (e: any) => {
     setSelected(e);

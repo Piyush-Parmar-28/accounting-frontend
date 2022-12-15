@@ -264,7 +264,7 @@ function AddAccount(props: Props & PropsFromRedux) {
   };
 
   const openingBalanceHandler = (value: any) => {
-    setState((prevState) => ({ ...prevState, openingBalance: value }));
+    setState((prevState) => ({ ...prevState, openingBalance: value.newValue }));
 
     if (value > 0) {
       const words = convertNumberToWords(value);

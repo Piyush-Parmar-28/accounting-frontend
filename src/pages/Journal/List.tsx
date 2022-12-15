@@ -155,6 +155,10 @@ function EntriesList(props: PropsFromRedux) {
       return;
     }
 
+    if (currentYear === undefined) {
+      return;
+    }
+
     agent.JournalEntry.journalentrylist(
       organisationId,
       year,
@@ -241,14 +245,16 @@ function EntriesList(props: PropsFromRedux) {
 
   useEffectAfterInitialRender(
     () => {
+      console.log(1);
       getEntriesList(false);
     },
-    [],
+    [currentYear],
     0
   );
 
   useEffectAfterInitialRender(
     () => {
+      console.log(2);
       getEntriesList(false);
     },
     [(props as any).location.pathname],
@@ -257,6 +263,7 @@ function EntriesList(props: PropsFromRedux) {
 
   useEffectAfterInitialRender(
     () => {
+      console.log(3);
       getEntriesList(false);
     },
     [(props as any).currentModal],
@@ -265,6 +272,7 @@ function EntriesList(props: PropsFromRedux) {
 
   useEffectAfterInitialRender(
     () => {
+      console.log(4);
       setState((prevState) => ({
         ...prevState,
         searchText: "",
@@ -278,6 +286,7 @@ function EntriesList(props: PropsFromRedux) {
 
   useEffectAfterInitialRender(
     () => {
+      console.log(5);
       getEntriesList(true);
     },
     [state.skip],
@@ -285,6 +294,7 @@ function EntriesList(props: PropsFromRedux) {
   );
   useEffectAfterInitialRender(
     () => {
+      console.log(6);
       getEntriesList(true);
     },
     [state.sortBy],
@@ -748,6 +758,28 @@ function EntriesList(props: PropsFromRedux) {
                                                     className="h-5 w-5 mr-2"
                                                   />
                                                   <span>Edit</span>
+                                                </button>
+                                              </Menu.Item>
+
+                                              <Menu.Item>
+                                                <button
+                                                  className="flex items-center w-full p-1 px-4 py-2 text-sm hover:bg-gray-100 text-gray-900"
+                                                  onClick={() =>
+                                                    navigate(
+                                                      `/${
+                                                        (props as any).params
+                                                          .organisationId
+                                                      }/journal-entry/duplicate/${
+                                                        entry._id
+                                                      }`
+                                                    )
+                                                  }
+                                                >
+                                                  <Icon
+                                                    name="edit"
+                                                    className="h-5 w-5 mr-2"
+                                                  />
+                                                  <span>Duplicate</span>
                                                 </button>
                                               </Menu.Item>
 

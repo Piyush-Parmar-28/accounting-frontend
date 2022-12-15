@@ -273,11 +273,17 @@ export default function DateComponent(props: Props) {
 
     // check that date within current financial year
     let resetError = true;
-    if (newDateInDateFormat > currentYearDetails.endDate) {
+    if (
+      currentYearDetails &&
+      newDateInDateFormat > currentYearDetails.endDate
+    ) {
       setError("Date should be within current financial year.");
       resetError = false;
     }
-    if (newDateInDateFormat < currentYearDetails.startDate) {
+    if (
+      currentYearDetails &&
+      newDateInDateFormat < currentYearDetails.startDate
+    ) {
       setError("Date should be within current financial year.");
       resetError = false;
     }
@@ -309,7 +315,7 @@ export default function DateComponent(props: Props) {
             onBlur={(e) => onBlurHandler(e)}
             onFocus={(e) => e.target.select()}
             type="text"
-            id="text"
+            id="date"
             className="block w-full rounded-md border-gray-300 pr-24 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm text-center"
             placeholder="Date"
             aria-describedby="price-currency"

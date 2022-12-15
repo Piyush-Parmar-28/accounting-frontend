@@ -260,9 +260,16 @@ const JournalEntry = {
     sortBy: string,
     download: boolean
   ) =>
-    requests.get(
-      `/journalentry/journalentrylist?organisationId=${organisationId}&year=${year}&skip=${skip}&limit=${limit}&sortBy=${sortBy}&download=${download}`
-    ),
+    download === false
+      ? requests.get(
+          `/journalentry/journalentrylist?organisationId=${organisationId}&year=${year}&skip=${skip}&limit=${limit}&sortBy=${sortBy}&download=${download}`
+        )
+      : requests.getBlob(
+          `/journalentry/journalentrylist?organisationId=${organisationId}&year=${year}&skip=${skip}&limit=${limit}&sortBy=${sortBy}&download=${download}`,
+          {
+            responseType: "blob",
+          }
+        ),
   delete: (organisationId: string, entryIds: string[]) =>
     requests.delete(
       `/journalentry/delete?organisationId=${organisationId}${selectedEntryUrl(
@@ -275,10 +282,11 @@ const Account = {
   getAccountList: (
     organisationId: string,
     active: boolean,
-    searchText: string
+    searchText: string,
+    nature: string
   ) =>
     requests.get(
-      `/account/accountslist?organisationId=${organisationId}&active=${active}&skip=0&limit=10&searchText=${searchText}`
+      `/account/accountslist?organisationId=${organisationId}&active=${active}&skip=0&limit=10&searchText=${searchText}&nature=${nature}`
     ),
   getAccountLog: (organisationId: string, accountId: string) =>
     requests.get(

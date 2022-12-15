@@ -130,38 +130,62 @@ function JournalEntry(props: PropsFromRedux) {
     if (pageURL[3] === "edit") {
       setPageType("edit");
     }
+    // first focus on narration so that when focus on date it gets selected whole
+    focusOnNarration();
   }, []);
 
   const [arr, setArr] = useState(initialInput);
   const [total, setTotal] = useState({ b: 0, c: 0 });
 
+  // focus on date on second render
   useEffectAfterInitialRender(
     () => {
-      const pageURL = (props as any).location.pathname.split("/");
-      if (pageURL[3] === "edit" || pageURL[3] === "duplicate") {
-        const organisationId = (props as any).params?.organisationId;
-        agent.JournalEntry.getsingleentrydetails(
-          organisationId,
-          pageURL[4]
-        ).then((data: any) => {
-          console.log("data", typeof data.entryDetails.date);
-          console.log("date", data.entryDetails.date);
-          console.log("date", convertDateToString(data.entryDetails.date));
-          setDate({
-            date: convertDateToString(data.entryDetails.date),
-            error: "",
-          });
-          setNarration(data.entryDetails.narration);
-
-          setArr(changeArrayFormatToShowDate(data.entryDetails.entries));
-        });
-      }
+      focusOnDate();
     },
     [],
     0
   );
 
-  const changeArrayFormatToShowDate = (array: any) => {
+  useEffectAfterInitialRender(
+    () => {
+      const pageURL = (props as any).location.pathname.split("/");
+      console.log(
+        (props as any).params?.organisationId,
+        (props as any).accounts,
+        (props as any).currentYear
+      );
+      if (
+        (props as any).params?.organisationId &&
+        (props as any).accounts &&
+        (props as any).currentYear
+      ) {
+        if (pageURL[3] === "edit" || pageURL[3] === "duplicate") {
+          const organisationId = (props as any).params?.organisationId;
+          agent.JournalEntry.getsingleentrydetails(
+            organisationId,
+            pageURL[4]
+          ).then((data: any) => {
+            setDate({
+              date: convertDateToString(data.entryDetails.date),
+              error: "",
+            });
+            setNarration(data.entryDetails.narration);
+
+            setArr(changeArrayFormatToShowData(data.entryDetails.entries));
+          });
+          focusOnDate();
+        }
+      }
+    },
+    [
+      (props as any).params?.organisationId,
+      (props as any).accounts,
+      (props as any).currentYear,
+    ],
+    0
+  );
+
+  const changeArrayFormatToShowData = (array: any) => {
     const properFormatArray = [];
     const organisationId = (props as any).params?.organisationId;
     let accountsList = (props as any).accounts;
@@ -169,10 +193,11 @@ function JournalEntry(props: PropsFromRedux) {
 
     for (const indArray of array) {
       const selectedAccount = accountsList.find(
-        (account: any) => account.id === indArray.accountId
+        (account: any) => account._id === indArray.accountId
       );
-      selectedAccount.id = `a${id}`;
-      console.log("selectedaccount", selectedAccount);
+
+      selectedAccount["id"] = `a${id}`;
+
       const obj = [
         {
           value:
@@ -198,6 +223,7 @@ function JournalEntry(props: PropsFromRedux) {
       properFormatArray.push(obj);
       id += 1;
     }
+
     return properFormatArray;
   };
 
@@ -473,54 +499,138 @@ function JournalEntry(props: PropsFromRedux) {
 
     const organisationId = (props as any).params?.organisationId;
     const currentYear = (props as any).currentYear;
+    if (
+      buttonClicked === "Save & New" ||
+      buttonClicked === "Save & Duplicate" ||
+      buttonClicked === "Save & Close"
+    ) {
+      agent.JournalEntry.add(
+        organisationId,
+        date.date,
+        properFormatArray,
+        narration,
+        currentYear
+      )
+        .then((response: any) => {
+          if (buttonClicked === "Save & New") {
+            setNarration("");
 
-    agent.JournalEntry.add(
-      organisationId,
-      date.date,
-      properFormatArray,
-      narration,
-      currentYear
-    )
-      .then((response: any) => {
-        if (buttonClicked === "Save & New") {
-          setNarration("");
-          setDate({ date: "", error: "" });
-          setArr(initialInput);
-          setTotal({ b: 0, c: 0 });
-          (props as any).onNotify("Journal Entry Added", "", "success");
-          navigate(`/${organisationId}/journal-entry/add`);
-        }
+            setArr(initialInput);
+            setTotal({ b: 0, c: 0 });
+            (props as any).onNotify(
+              "Journal Entry Saved Successfully",
+              "",
+              "success"
+            );
+            // navigate(`/${organisationId}/journal-entry/add`);
+            focusOnDate();
+          }
 
-        if (buttonClicked === "Save & Duplicate") {
+          if (buttonClicked === "Save & Duplicate") {
+            (props as any).onNotify(
+              "Journal Entry Added and Copied",
+              "Entry is already saved and copied. You can now edit and save again.",
+              "success"
+            );
+            navigate(
+              `/${organisationId}/journal-entry/duplicate/${response.entryId}`
+            );
+            focusOnDate();
+          }
+
+          if (buttonClicked === "Save & Close") {
+            setNarration("");
+            setDate({ date: "", error: "" });
+            setArr(initialInput);
+            setTotal({ b: 0, c: 0 });
+            (props as any).onNotify(
+              "Journal Entry Saved Successfully",
+              "",
+              "success"
+            );
+
+            navigate(-1);
+          }
+        })
+        .catch((err: any) => {
           (props as any).onNotify(
-            "Journal Entry Added and Copied",
-            "Entry is already saved and copied. You can now edit and save again.",
-            "success"
+            "Could not add Journal Entry",
+            err?.response?.data?.message || err?.message || err,
+            "danger"
           );
-          navigate(
-            `/${organisationId}/journal-entry/duplicate/${response.entryId}`
+        });
+    }
+    if (
+      buttonClicked === "Update & New" ||
+      buttonClicked === "Update & Duplicate" ||
+      buttonClicked === "Update & Close"
+    ) {
+      agent.JournalEntry.add(
+        organisationId,
+        date.date,
+        properFormatArray,
+        narration,
+        currentYear
+      )
+        .then((response: any) => {
+          if (buttonClicked === "Update & New") {
+            setNarration("");
+
+            setArr(initialInput);
+            setTotal({ b: 0, c: 0 });
+            (props as any).onNotify(
+              "Journal Entry Updated Successfully",
+              "",
+              "success"
+            );
+            // navigate(`/${organisationId}/journal-entry/add`);
+            focusOnDate();
+          }
+
+          if (buttonClicked === "Update & Duplicate") {
+            (props as any).onNotify(
+              "Journal Entry Updated and Copied",
+              "Entry is already updated and copied. You can now edit and save again.",
+              "success"
+            );
+            navigate(
+              `/${organisationId}/journal-entry/duplicate/${response.entryId}`
+            );
+            focusOnDate();
+          }
+
+          if (buttonClicked === "Update & Close") {
+            setNarration("");
+            setDate({ date: "", error: "" });
+            setArr(initialInput);
+            setTotal({ b: 0, c: 0 });
+            (props as any).onNotify(
+              "Journal Entry Updated Successfully",
+              "",
+              "success"
+            );
+
+            navigate(-1);
+          }
+        })
+        .catch((err: any) => {
+          (props as any).onNotify(
+            "Could not add Journal Entry",
+            err?.response?.data?.message || err?.message || err,
+            "danger"
           );
-        }
-
-        if (buttonClicked === "Save & Close") {
-          setNarration("");
-          setDate({ date: "", error: "" });
-          setArr(initialInput);
-          setTotal({ b: 0, c: 0 });
-          (props as any).onNotify("Journal Entry Added", "", "success");
-
-          navigate(-1);
-        }
-      })
-      .catch((err: any) => {
-        (props as any).onNotify(
-          "Could not add Journal Entry",
-          err?.response?.data?.message || err?.message || err,
-          "danger"
-        );
-      });
+        });
+    }
   };
-  console.log("arr", arr);
+
+  const focusOnDate = () => {
+    document.getElementById("date")?.focus();
+  };
+
+  const focusOnNarration = () => {
+    document.getElementById("narration")?.focus();
+  };
+
   return (
     <Dashboard>
       <form className="divide-y divide-gray-200">
@@ -539,7 +649,7 @@ function JournalEntry(props: PropsFromRedux) {
 
               <div className="sm:grid sm:grid-cols-9 sm:items-start sm:gap-4 sm:border-gray-200 sm:pt-5">
                 <label
-                  htmlFor="first-name"
+                  htmlFor="date"
                   className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2 sm:col-span-2"
                 >
                   Date*
@@ -646,7 +756,6 @@ function JournalEntry(props: PropsFromRedux) {
                 name="narration"
                 rows={5}
                 className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 mt-1 block w-full sm:text-sm border-gray-300 rounded-md"
-                defaultValue={""}
                 onChange={(e) => setNarration(e.target.value)}
                 value={narration}
               />
@@ -663,11 +772,19 @@ function JournalEntry(props: PropsFromRedux) {
                 Cancel
               </button>
             </div>
-            <SaveButton
-              type="save"
-              options={["new", "close", "duplicate"]}
-              onButtonClick={onButtonClick}
-            />
+            {pageType === "edit" ? (
+              <SaveButton
+                type="update"
+                options={["new", "close", "duplicate"]}
+                onButtonClick={onButtonClick}
+              />
+            ) : (
+              <SaveButton
+                type="save"
+                options={["new", "close", "duplicate"]}
+                onButtonClick={onButtonClick}
+              />
+            )}
           </div>
         </div>
       </div>
