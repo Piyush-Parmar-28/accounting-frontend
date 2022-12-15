@@ -64,10 +64,10 @@ function AccountsList(props: PropsFromRedux) {
 
   const pageURL = (props as any).location.pathname.split("/");
   useEffect(() => {
-    if (pageURL[3] === "list") {
+    if (pageURL[4] === "list") {
       setPageType("list");
     }
-    if (pageURL[3] === "list-with-opening-balances") {
+    if (pageURL[4] === "list-with-opening-balances") {
       setPageType("opening-balances");
     }
   }, [pageURL]);
@@ -152,8 +152,27 @@ function AccountsList(props: PropsFromRedux) {
       );
       return;
     }
-
-    agent.Account.getAccountList(organisationId, active, searchText, "all")
+    let type = "";
+    let year = "";
+    if ((props as any).location.pathname.split("/")[4] === "list") {
+      type = "yearendbalance";
+      year = currentYear;
+    }
+    if (
+      (props as any).location.pathname.split("/")[4] ===
+      "list-with-opening-balances"
+    ) {
+      type = "openingbalance";
+      year = "";
+    }
+    agent.Account.getAccountList(
+      organisationId,
+      active,
+      searchText,
+      "all",
+      type,
+      year
+    )
       .then((response: any) => {
         const total = calculateTotal(response.accounts);
         setState((prevState) => ({
@@ -187,29 +206,24 @@ function AccountsList(props: PropsFromRedux) {
     let debitCreditDiff = 0;
 
     if (
-      (props as any).location.pathname.split("/")[3] ===
+      (props as any).location.pathname.split("/")[4] ===
       "list-with-opening-balances"
     ) {
       accounts.forEach((account: any) => {
         if (account.openingBalanceType === "dr") {
           debitTotal += account.openingBalance;
         } else {
-          creditTotal += account.openingBalance;
+          creditTotal += account.openingBalance * -1;
         }
       });
     }
 
-    if ((props as any).location.pathname.split("/")[3] === "list") {
+    if ((props as any).location.pathname.split("/")[4] === "list") {
       accounts.forEach((account: any) => {
-        let balance = account.balances.find(
-          (item: any) => item.year === currentYear
-        )?.balance;
-        if (balance) {
-          if (balance > 0) {
-            debitTotal += balance;
-          } else {
-            creditTotal -= balance;
-          }
+        if (account.balance > 0) {
+          debitTotal += account.balance;
+        } else {
+          creditTotal += account.balance * -1;
         }
       });
     }
@@ -826,45 +840,29 @@ function AccountsList(props: PropsFromRedux) {
                                   <td className="w-4/10 px-6 py-3 whitespace-nowrap text-sm text-gray-900 font-bold text-right">
                                     {pageType === "opening-balances" &&
                                     account.openingBalanceType === "dr" &&
-                                    account.openingBalance !== 0
+                                    account.openingBalance > 0
                                       ? new Intl.NumberFormat("en-IN", {
                                           minimumFractionDigits: 2,
                                         }).format(account.openingBalance)
                                       : pageType === "list" &&
-                                        account.balances.find(
-                                          (item: any) =>
-                                            item.year === currentYear
-                                        )?.balance > 0
+                                        account.balance > 0
                                       ? new Intl.NumberFormat("en-IN", {
                                           minimumFractionDigits: 2,
-                                        }).format(
-                                          account.balances.find(
-                                            (item: any) =>
-                                              item.year === currentYear
-                                          )?.balance
-                                        )
+                                        }).format(account.balance)
                                       : "-"}
                                   </td>
                                   <td className="w-4/10 px-6 py-3 whitespace-nowrap text-sm text-gray-900 font-bold text-right">
                                     {pageType === "opening-balances" &&
                                     account.openingBalanceType === "cr" &&
-                                    account.openingBalance !== 0
+                                    account.openingBalance < 0
                                       ? new Intl.NumberFormat("en-IN", {
                                           minimumFractionDigits: 2,
-                                        }).format(account.openingBalance)
+                                        }).format(account.openingBalance * -1)
                                       : pageType === "list" &&
-                                        account.balances.find(
-                                          (item: any) =>
-                                            item.year === currentYear
-                                        )?.balance < 0
+                                        account.balance < 0
                                       ? new Intl.NumberFormat("en-IN", {
                                           minimumFractionDigits: 2,
-                                        }).format(
-                                          account.balances.find(
-                                            (item: any) =>
-                                              item.year === currentYear
-                                          )?.balance * -1
-                                        )
+                                        }).format(account.balance * -1)
                                       : "-"}
                                   </td>
                                   <td className="w-4/10 px-6 py-3 whitespace-nowrap text-sm text-gray-500">
@@ -1003,21 +1001,21 @@ function AccountsList(props: PropsFromRedux) {
                             <th
                               style={{ zIndex: 6 }}
                               scope="col"
-                              className="sticky top-0 border-b border-gray-300 bg-gray-50 px-4 py-3 text-right text-xm font-bold text-gray-900 tracking-wider sm:pl-6 align-middle"
+                              className="sticky top-0 border-b border-gray-300 bg-gray-50 px-4 py-3 text-right text-sm font-bold text-gray-900 tracking-wider sm:pl-6 align-middle"
                             >
                               Total
                             </th>
                             <th
                               style={{ zIndex: 6 }}
                               scope="col"
-                              className="sticky top-0 border-b border-gray-300 bg-gray-50 px-4 py-3 text-right text-xm font-bold text-gray-900 uppercase tracking-wider sm:pl-6 align-middle"
+                              className="sticky top-0 border-b border-gray-300 bg-gray-50 px-4 py-3 text-right text-sm font-bold text-gray-900 uppercase tracking-wider sm:pl-6 align-middle"
                             >
                               {state.debitTotal}
                             </th>
                             <th
                               style={{ zIndex: 6 }}
                               scope="col"
-                              className="sticky top-0 border-b border-gray-300 bg-gray-50 px-4 py-3 text-right text-xm font-bold text-gray-900 uppercase tracking-wider sm:pl-6 align-middle"
+                              className="sticky top-0 border-b border-gray-300 bg-gray-50 px-4 py-3 text-right text-sm font-bold text-gray-900 uppercase tracking-wider sm:pl-6 align-middle"
                             >
                               {state.creditTotal}
                             </th>
@@ -1045,14 +1043,14 @@ function AccountsList(props: PropsFromRedux) {
                               <th
                                 style={{ zIndex: 6 }}
                                 scope="col"
-                                className="sticky top-0 border-b border-gray-300 bg-gray-50 px-4 py-3 text-right text-xm font-bold text-gray-900 tracking-wider sm:pl-6 align-middle"
+                                className="sticky top-0 border-b border-gray-300 bg-gray-50 px-4 py-3 text-right text-sm font-bold text-gray-900 tracking-wider sm:pl-6 align-middle"
                               >
                                 Difference in Opening Balance
                               </th>
                               <th
                                 style={{ zIndex: 6 }}
                                 scope="col"
-                                className="sticky top-0 border-b border-gray-300 bg-gray-50 px-4 py-3 text-right text-xm font-bold text-gray-900 uppercase tracking-wider sm:pl-6 align-middle"
+                                className="sticky top-0 border-b border-gray-300 bg-gray-50 px-4 py-3 text-right text-sm font-bold text-gray-900 uppercase tracking-wider sm:pl-6 align-middle"
                               >
                                 {state.debitCreditDiff.includes("-")
                                   ? state.debitCreditDiff.replace("-", "")
@@ -1061,7 +1059,7 @@ function AccountsList(props: PropsFromRedux) {
                               <th
                                 style={{ zIndex: 6 }}
                                 scope="col"
-                                className="sticky top-0 border-b border-gray-300 bg-gray-50 px-4 py-3 text-right text-xm font-bold text-gray-900 uppercase tracking-wider sm:pl-6 align-middle"
+                                className="sticky top-0 border-b border-gray-300 bg-gray-50 px-4 py-3 text-right text-sm font-bold text-gray-900 uppercase tracking-wider sm:pl-6 align-middle"
                               >
                                 {state.debitCreditDiff.includes("-")
                                   ? "-"

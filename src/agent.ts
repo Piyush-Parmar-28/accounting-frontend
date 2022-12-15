@@ -283,10 +283,12 @@ const Account = {
     organisationId: string,
     active: boolean,
     searchText: string,
-    nature: string
+    nature: string,
+    type: string,
+    year: string
   ) =>
     requests.get(
-      `/account/accountslist?organisationId=${organisationId}&active=${active}&skip=0&limit=10&searchText=${searchText}&nature=${nature}`
+      `/account/accountslist?organisationId=${organisationId}&active=${active}&searchText=${searchText}&nature=${nature}&type=${type}&year=${year}`
     ),
   getAccountLog: (organisationId: string, accountId: string) =>
     requests.get(

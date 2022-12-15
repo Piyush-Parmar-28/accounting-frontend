@@ -31,65 +31,12 @@ const getCurrentFinYear = () => {
   return currentYear + "-" + (currentYear + 1 - 2000);
 };
 
-const menuItems = (organisationId: string) => {
-  const list = todoList.map((item) => {
-    return {
-      name: item.name || "Default",
-      iconName: "outline/document-text",
-      route: `/${organisationId}/todo/${item._id}`,
-    };
-  });
-
+const menuItems = (organisationId: string, year: string) => {
   return [
-    {
-      name: "Clients",
-      iconName: "outline/users",
-      route: `/${organisationId}/clients/list`,
-    },
-    {
-      name: "Contact Person",
-      iconName: "outline/user",
-      route: `/${organisationId}/contact-person/list`,
-    },
-    list.length > 0
-      ? {
-          name: "To Do List",
-          iconName: "outline/document-text",
-          route: `/${organisationId}/todo`,
-          children: [
-            {
-              name: "Starred",
-              iconName: "outline/star",
-              route: `/${organisationId}/todo/list/starred`,
-            },
-            {
-              name: "Today",
-              iconName: "outline/calendar",
-              route: `/${organisationId}/todo/list/today`,
-            },
-            {
-              name: "Overdue",
-              iconName: "outline/calendar",
-              route: `/${organisationId}/todo/list/overdue`,
-            },
-            {
-              name: "Week",
-              iconName: "outline/calendar",
-              route: `/${organisationId}/todo/list/week`,
-            },
-            ...list,
-          ],
-        }
-      : {
-          name: "To Do List",
-          iconName: "outline/document-text",
-          route: `/${organisationId}/todo/list/starred`,
-        },
-
     {
       name: "Journal Entry",
       iconName: "outline/settings",
-      route: `/${organisationId}/journal-entry/list`,
+      route: `/${organisationId}/${year}/journal-entry/list`,
     },
 
     {
@@ -100,44 +47,12 @@ const menuItems = (organisationId: string) => {
         {
           name: "Year End Balances",
           iconName: "outline/document-add",
-          route: `/${organisationId}/account/list`,
+          route: `/${organisationId}/${year}/account/list`,
         },
         {
           name: "Opening Balances",
           iconName: "outline/group",
-          route: `/${organisationId}/account/list-with-opening-balances`,
-        },
-      ],
-    },
-    {
-      name: "Settings",
-      iconName: "outline/settings",
-      route: "/settings",
-      children: [
-        {
-          name: "Custom Field",
-          iconName: "outline/document-add",
-          route: `/${organisationId}/custom-field/list`,
-        },
-        {
-          name: "Groups",
-          iconName: "outline/group",
-          route: `/${organisationId}/groups/list`,
-        },
-        {
-          name: "Status",
-          iconName: "outline/document-text",
-          route: `/${organisationId}/status/list`,
-        },
-        {
-          name: "Tags",
-          iconName: "outline/tag",
-          route: `/${organisationId}/tags/list`,
-        },
-        {
-          name: "User",
-          iconName: "outline/user-plus",
-          route: `/${organisationId}/user/list`,
+          route: `/${organisationId}/${year}/account/list-with-opening-balances`,
         },
       ],
     },
@@ -235,9 +150,12 @@ class Dashboard extends React.Component<DashboardProps, PropsFromRedux> {
         });
       }
     }
-    (this.props as any).updateCommon({
-      currentYear: getCurrentFinYear(),
-    });
+    if (!(this.props as any).currentYear) {
+      console.log("updatecurrentyear");
+      (this.props as any).updateCommon({
+        currentYear: getCurrentFinYear(),
+      });
+    }
   };
 
   getAllYears = () => {
@@ -298,7 +216,14 @@ class Dashboard extends React.Component<DashboardProps, PropsFromRedux> {
     const searchText = "";
     const active = true;
     if (organisationId) {
-      agent.Account.getAccountList(organisationId, active, searchText, "all")
+      agent.Account.getAccountList(
+        organisationId,
+        active,
+        searchText,
+        "all",
+        "openingbalance",
+        ""
+      )
         .then((response: any) => {
           console.log(response);
           (this.props as any).updateCommon({ accounts: response.accounts });
@@ -315,9 +240,10 @@ class Dashboard extends React.Component<DashboardProps, PropsFromRedux> {
 
   settingMenuToggle = () => {
     const organisationId = (this.props as any).params?.organisationId;
+    const currentYear = (this.props as any).currentYear;
     if (organisationId) {
       let childrenMenus: any = [];
-      menuItems(organisationId).forEach((item: any) => {
+      menuItems(organisationId, currentYear).forEach((item: any) => {
         if (item.children) {
           item.children.forEach((child: any) => {
             const subMenu = { name: item.name, route: child.route };
@@ -402,16 +328,23 @@ class Dashboard extends React.Component<DashboardProps, PropsFromRedux> {
     setTimeout(() => {
       if (!this.state.loading) {
         const path = (this.props as any).location.pathname;
+        console.log("path", path);
         if (path !== "/organisations") {
           if ((this.props as any).currentOrganisation) {
-            let newParams = (this.props as any).currentOrganisation._id;
-            let path = (this.props as any).location.pathname;
+            let formattedYear =
+              (this.props as any).currentYear.substring(0, 4) +
+              "-" +
+              (this.props as any).currentYear.substring(5);
+
+            let newParams =
+              (this.props as any).currentOrganisation._id + "/" + formattedYear;
+
             (this.props as any).updateCommon({ urlInfo: "/" + newParams });
             let newPath;
             if ((this.props as any).params?.organisationId) {
               let paramLength = (this.props as any).params.organisationId
                 .length;
-              newPath = "/" + newParams + path.substring(paramLength + 1);
+              newPath = "/" + newParams + path.substring(paramLength + 9);
             } else {
               newPath = "/" + newParams + path;
             }
@@ -422,15 +355,37 @@ class Dashboard extends React.Component<DashboardProps, PropsFromRedux> {
     }, 100);
   };
 
+  updateRoute1 = () => {
+    let path = (this.props as any).match?.path;
+    let url = (this.props as any).match?.url;
+    let paramLength = (this.props as any).match.params?.userInfo?.length;
+    path = url.substring(paramLength + 1);
+    let menuState: any = {};
+    let subMenuState: any = {};
+    const selectedOrganisationId = (this.props as any).currentOrganisation?._id;
+    const currentYear = (this.props as any).currentYear;
+    menuItems(selectedOrganisationId, currentYear).forEach((menuItem: any) => {
+      if (path.indexOf(menuItem.route) === 0) {
+        menuState[menuItem.name] = true;
+      }
+      menuItem.children?.forEach((subItem: any) => {
+        if (path.indexOf(subItem.route) === 0) {
+          subMenuState[subItem.name] = true;
+        }
+      });
+    });
+    this.setState({ menuState, subMenuState });
+  };
+
   updateRoute = () => {
     let url = (this.props as any).location.pathname;
     let paramLength = (this.props as any).params?.organisationId?.length;
-    let path = url.substring(paramLength + 1);
+    let path = url.substring(paramLength + 9);
     const selectedOrganisationId = (this.props as any).currentOrganisation?._id;
-
+    const currentYear = (this.props as any).currentYear;
     let menuState: any = {};
     let subMenuState: any = {};
-    menuItems(selectedOrganisationId).forEach((menuItem: any) => {
+    menuItems(selectedOrganisationId, currentYear).forEach((menuItem: any) => {
       if (path.indexOf(menuItem.route) === 0) {
         menuState[menuItem.name] = true;
       }
@@ -590,6 +545,7 @@ class Dashboard extends React.Component<DashboardProps, PropsFromRedux> {
   };
 
   onYearChange = (year: any) => {
+    console.log("updatecurrentYear2");
     (this.props as any).updateCommon({ currentYear: year.name });
     this.updatePathName();
   };
@@ -661,7 +617,8 @@ class Dashboard extends React.Component<DashboardProps, PropsFromRedux> {
                   <div className="mt-5 flex-1 h-0 overflow-y-auto">
                     <nav className="px-2 space-y-1">
                       {menuItems(
-                        (this.props as any).currentOrganisation?._id
+                        (this.props as any).currentOrganisation?._id,
+                        (this.props as any).currentYear
                       ).map((menuItem: any) =>
                         !menuItem.children ? (
                           <div key={menuItem.name}>
@@ -861,181 +818,183 @@ class Dashboard extends React.Component<DashboardProps, PropsFromRedux> {
               </div>
               <div className="flex-1 flex flex-col overflow-y-auto">
                 <nav className="flex-1 px-2 py-4 bg-gray-800 space-y-1">
-                  {menuItems((this.props as any).currentOrganisation?._id).map(
-                    (menuItem: any) =>
-                      !menuItem.children ? (
-                        <div key={menuItem.name}>
-                          <Link
-                            to={this.linkRouteDirect(menuItem.route)}
-                            key={menuItem.name}
+                  {menuItems(
+                    (this.props as any).currentOrganisation?._id,
+                    (this.props as any).currentYear
+                  ).map((menuItem: any) =>
+                    !menuItem.children ? (
+                      <div key={menuItem.name}>
+                        <Link
+                          to={this.linkRouteDirect(menuItem.route)}
+                          key={menuItem.name}
+                          className={
+                            (this.props as any).location.pathname ===
+                            menuItem.route
+                              ? "bg-gray-900 text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md"
+                              : "text-gray-300 hover:bg-gray-700 hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md"
+                          }
+                          onClick={this.noOrganisationClickHandler}
+                        >
+                          <Icon
+                            name={menuItem.iconName}
                             className={
-                              (this.props as any).location.pathname ===
-                              menuItem.route
-                                ? "bg-gray-900 text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md"
-                                : "text-gray-300 hover:bg-gray-700 hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md"
+                              this.state.menuState[menuItem.name]
+                                ? "text-gray-500 mr-3 flex-shrink-0 h-5 w-5"
+                                : "text-gray-400 group-hover:text-gray-500 mr-3 flex-shrink-0 h-5 w-5"
                             }
-                            onClick={this.noOrganisationClickHandler}
-                          >
-                            <Icon
-                              name={menuItem.iconName}
-                              className={
-                                this.state.menuState[menuItem.name]
-                                  ? "text-gray-500 mr-3 flex-shrink-0 h-5 w-5"
-                                  : "text-gray-400 group-hover:text-gray-500 mr-3 flex-shrink-0 h-5 w-5"
-                              }
-                              aria-hidden="true"
-                            />
-                            {menuItem.name}
-                          </Link>
-                        </div>
-                      ) : (
-                        <div key={menuItem.name}>
-                          <Disclosure
-                            as="div"
-                            key={menuItem.name}
-                            className="space-y-1"
-                          >
-                            {({ open }) => (
-                              <div>
-                                <div
-                                  onClick={() =>
-                                    this.toggleDropdown(menuItem.name)
-                                  }
-                                >
-                                  <Disclosure.Button className="text-gray-300 w-full justify-between hover:bg-gray-700 hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md">
-                                    <span className="flex items-center">
-                                      <Icon
-                                        name={menuItem.iconName}
-                                        className="mr-3 flex-shrink-0 h-5 w-5 text-gray-400 group-hover:text-gray-500"
-                                        aria-hidden="true"
-                                      />
-                                      {menuItem.name}
-                                    </span>
-                                    <ChevronDownIcon
-                                      className={
-                                        !this.state.menuState[menuItem.name]
-                                          ? "text-gray-400 -rotate-90 ml-3 h-5 w-5 transform group-hover:text-gray-400 transition-colors ease-in-out duration-150"
-                                          : "text-gray-300 ml-3 h-5 w-5 transform group-hover:text-gray-400 transition-colors ease-in-out duration-150"
-                                      }
+                            aria-hidden="true"
+                          />
+                          {menuItem.name}
+                        </Link>
+                      </div>
+                    ) : (
+                      <div key={menuItem.name}>
+                        <Disclosure
+                          as="div"
+                          key={menuItem.name}
+                          className="space-y-1"
+                        >
+                          {({ open }) => (
+                            <div>
+                              <div
+                                onClick={() =>
+                                  this.toggleDropdown(menuItem.name)
+                                }
+                              >
+                                <Disclosure.Button className="text-gray-300 w-full justify-between hover:bg-gray-700 hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md">
+                                  <span className="flex items-center">
+                                    <Icon
+                                      name={menuItem.iconName}
+                                      className="mr-3 flex-shrink-0 h-5 w-5 text-gray-400 group-hover:text-gray-500"
+                                      aria-hidden="true"
                                     />
-                                  </Disclosure.Button>
-                                </div>
-                                {this.state.menuState[menuItem.name] ? (
-                                  <Disclosure.Panel
-                                    className="space-y-1 ml-11 border-l border-gray-700"
-                                    static
-                                  >
-                                    {menuItem.children.map((subItem: any) =>
-                                      !subItem.children ? (
-                                        <div key={subItem.name}>
-                                          <Link
-                                            to={this.linkRouteDirect(
-                                              subItem.route
-                                            )}
-                                            key={subItem.name}
-                                            className={
-                                              (this.props as any).location
-                                                .pathname === subItem.route
-                                                ? "bg-gray-900 text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md"
-                                                : "text-gray-300 hover:bg-gray-700 hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md"
-                                            }
-                                            onClick={
-                                              this.noOrganisationClickHandler
-                                            }
-                                          >
-                                            <Icon
-                                              name={subItem.iconName}
-                                              className={
-                                                this.state.menuState[
-                                                  menuItem.name
-                                                ]
-                                                  ? "text-gray-500 mr-3 flex-shrink-0 h-5 w-5"
-                                                  : "text-gray-400 group-hover:text-gray-500 mr-3 flex-shrink-0 h-5 w-5"
-                                              }
-                                            />
-                                            {subItem.name}
-                                          </Link>
-                                        </div>
-                                      ) : (
-                                        <div key={subItem.name}>
-                                          <Disclosure
-                                            as="div"
-                                            key={subItem.name}
-                                            className="space-y-1"
-                                          >
-                                            {({ open }) => (
-                                              <div
-                                                onClick={() =>
-                                                  this.toggleSubItemDropdown(
-                                                    subItem.name
-                                                  )
-                                                }
-                                              >
-                                                <Disclosure.Button className="text-gray-300 w-full justify-between hover:bg-gray-700 hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md">
-                                                  <span className="flex items-center">
-                                                    <Icon
-                                                      name={subItem.iconName}
-                                                      className="mr-3 flex-shrink-0 h-5 w-5 text-gray-400 group-hover:text-gray-500"
-                                                      aria-hidden="true"
-                                                    />
-                                                    {subItem.name}
-                                                  </span>
-                                                  <ChevronDownIcon
-                                                    className={
-                                                      !this.state.subMenuState[
-                                                        subItem.name
-                                                      ]
-                                                        ? "text-gray-400 -rotate-90 ml-3 h-5 w-5 transform group-hover:text-gray-400 transition-colors ease-in-out duration-150"
-                                                        : "text-gray-300 ml-3 h-5 w-5 transform group-hover:text-gray-400 transition-colors ease-in-out duration-150"
-                                                    }
-                                                  />
-                                                </Disclosure.Button>
-                                                {this.state.subMenuState[
-                                                  subItem.name
-                                                ] ? (
-                                                  <Disclosure.Panel
-                                                    className="space-y-1 ml-6 border-l border-gray-700"
-                                                    static
-                                                  >
-                                                    {subItem.children.map(
-                                                      (subSubItem: any) => (
-                                                        <Link
-                                                          to={this.linkRouteDirect(
-                                                            subSubItem.route
-                                                          )}
-                                                          key={subSubItem.name}
-                                                          className={
-                                                            (this.props as any)
-                                                              .location
-                                                              .pathname ===
-                                                            subSubItem.route
-                                                              ? "bg-gray-900 text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md"
-                                                              : "text-gray-300 hover:bg-gray-700 hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md"
-                                                          }
-                                                          onClick={
-                                                            this
-                                                              .noOrganisationClickHandler
-                                                          }
-                                                        >
-                                                          {subSubItem.name}
-                                                        </Link>
-                                                      )
-                                                    )}
-                                                  </Disclosure.Panel>
-                                                ) : null}
-                                              </div>
-                                            )}
-                                          </Disclosure>
-                                        </div>
-                                      )
-                                    )}
-                                  </Disclosure.Panel>
-                                ) : null}
+                                    {menuItem.name}
+                                  </span>
+                                  <ChevronDownIcon
+                                    className={
+                                      !this.state.menuState[menuItem.name]
+                                        ? "text-gray-400 -rotate-90 ml-3 h-5 w-5 transform group-hover:text-gray-400 transition-colors ease-in-out duration-150"
+                                        : "text-gray-300 ml-3 h-5 w-5 transform group-hover:text-gray-400 transition-colors ease-in-out duration-150"
+                                    }
+                                  />
+                                </Disclosure.Button>
                               </div>
-                            )}
-                          </Disclosure>
-                        </div>
-                      )
+                              {this.state.menuState[menuItem.name] ? (
+                                <Disclosure.Panel
+                                  className="space-y-1 ml-11 border-l border-gray-700"
+                                  static
+                                >
+                                  {menuItem.children.map((subItem: any) =>
+                                    !subItem.children ? (
+                                      <div key={subItem.name}>
+                                        <Link
+                                          to={this.linkRouteDirect(
+                                            subItem.route
+                                          )}
+                                          key={subItem.name}
+                                          className={
+                                            (this.props as any).location
+                                              .pathname === subItem.route
+                                              ? "bg-gray-900 text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md"
+                                              : "text-gray-300 hover:bg-gray-700 hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md"
+                                          }
+                                          onClick={
+                                            this.noOrganisationClickHandler
+                                          }
+                                        >
+                                          <Icon
+                                            name={subItem.iconName}
+                                            className={
+                                              this.state.menuState[
+                                                menuItem.name
+                                              ]
+                                                ? "text-gray-500 mr-3 flex-shrink-0 h-5 w-5"
+                                                : "text-gray-400 group-hover:text-gray-500 mr-3 flex-shrink-0 h-5 w-5"
+                                            }
+                                          />
+                                          {subItem.name}
+                                        </Link>
+                                      </div>
+                                    ) : (
+                                      <div key={subItem.name}>
+                                        <Disclosure
+                                          as="div"
+                                          key={subItem.name}
+                                          className="space-y-1"
+                                        >
+                                          {({ open }) => (
+                                            <div
+                                              onClick={() =>
+                                                this.toggleSubItemDropdown(
+                                                  subItem.name
+                                                )
+                                              }
+                                            >
+                                              <Disclosure.Button className="text-gray-300 w-full justify-between hover:bg-gray-700 hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md">
+                                                <span className="flex items-center">
+                                                  <Icon
+                                                    name={subItem.iconName}
+                                                    className="mr-3 flex-shrink-0 h-5 w-5 text-gray-400 group-hover:text-gray-500"
+                                                    aria-hidden="true"
+                                                  />
+                                                  {subItem.name}
+                                                </span>
+                                                <ChevronDownIcon
+                                                  className={
+                                                    !this.state.subMenuState[
+                                                      subItem.name
+                                                    ]
+                                                      ? "text-gray-400 -rotate-90 ml-3 h-5 w-5 transform group-hover:text-gray-400 transition-colors ease-in-out duration-150"
+                                                      : "text-gray-300 ml-3 h-5 w-5 transform group-hover:text-gray-400 transition-colors ease-in-out duration-150"
+                                                  }
+                                                />
+                                              </Disclosure.Button>
+                                              {this.state.subMenuState[
+                                                subItem.name
+                                              ] ? (
+                                                <Disclosure.Panel
+                                                  className="space-y-1 ml-6 border-l border-gray-700"
+                                                  static
+                                                >
+                                                  {subItem.children.map(
+                                                    (subSubItem: any) => (
+                                                      <Link
+                                                        to={this.linkRouteDirect(
+                                                          subSubItem.route
+                                                        )}
+                                                        key={subSubItem.name}
+                                                        className={
+                                                          (this.props as any)
+                                                            .location
+                                                            .pathname ===
+                                                          subSubItem.route
+                                                            ? "bg-gray-900 text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md"
+                                                            : "text-gray-300 hover:bg-gray-700 hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md"
+                                                        }
+                                                        onClick={
+                                                          this
+                                                            .noOrganisationClickHandler
+                                                        }
+                                                      >
+                                                        {subSubItem.name}
+                                                      </Link>
+                                                    )
+                                                  )}
+                                                </Disclosure.Panel>
+                                              ) : null}
+                                            </div>
+                                          )}
+                                        </Disclosure>
+                                      </div>
+                                    )
+                                  )}
+                                </Disclosure.Panel>
+                              ) : null}
+                            </div>
+                          )}
+                        </Disclosure>
+                      </div>
+                    )
                   )}
                 </nav>
               </div>

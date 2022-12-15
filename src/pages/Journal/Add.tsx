@@ -117,17 +117,17 @@ function JournalEntry(props: PropsFromRedux) {
   useEffect(() => {
     const pageURL = (props as any).location.pathname.split("/");
     console.log("useeffect runs");
-    if (pageURL[3] === "add") {
+    if (pageURL[4] === "add") {
       setPageType("add");
       const today = new Date();
       const formatedTodayDate = format(today, "dd-MM-yyyy");
       const stringDate = formatedTodayDate.toString();
       setDate({ date: stringDate, error: "" });
     }
-    if (pageURL[3] === "duplicate") {
+    if (pageURL[4] === "duplicate") {
       setPageType("duplicate");
     }
-    if (pageURL[3] === "edit") {
+    if (pageURL[4] === "edit") {
       setPageType("edit");
     }
     // first focus on narration so that when focus on date it gets selected whole
@@ -159,11 +159,11 @@ function JournalEntry(props: PropsFromRedux) {
         (props as any).accounts &&
         (props as any).currentYear
       ) {
-        if (pageURL[3] === "edit" || pageURL[3] === "duplicate") {
+        if (pageURL[4] === "edit" || pageURL[4] === "duplicate") {
           const organisationId = (props as any).params?.organisationId;
           agent.JournalEntry.getsingleentrydetails(
             organisationId,
-            pageURL[4]
+            pageURL[5]
           ).then((data: any) => {
             setDate({
               date: convertDateToString(data.entryDetails.date),

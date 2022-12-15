@@ -253,7 +253,7 @@ class App extends React.Component<PropsFromRedux> {
               />
               {/* Account list with opening balance Page */}
               <Route
-                path="/:organisationId/account/list-with-opening-balances"
+                path="/:organisationId/:year/account/list-with-opening-balances"
                 element={
                   <this.PrivateRoute>
                     <AccountList />
@@ -263,7 +263,7 @@ class App extends React.Component<PropsFromRedux> {
 
               {/* Account list with current year balance Page */}
               <Route
-                path="/:organisationId/account/list"
+                path="/:organisationId/:year/account/list"
                 element={
                   <this.PrivateRoute>
                     <AccountList />
@@ -272,7 +272,7 @@ class App extends React.Component<PropsFromRedux> {
               />
               {/* Add Journal Entry */}
               <Route
-                path="/:organisationId/journal-entry/add"
+                path="/:organisationId/:year/journal-entry/add"
                 element={
                   <this.PrivateRoute>
                     <AddJournalEntry />
@@ -281,7 +281,7 @@ class App extends React.Component<PropsFromRedux> {
               />
               {/* Copy Journal Entry */}
               <Route
-                path="/:organisationId/journal-entry/duplicate/:id"
+                path="/:organisationId/:year/journal-entry/duplicate/:id"
                 element={
                   <this.PrivateRoute>
                     <AddJournalEntry />
@@ -290,7 +290,7 @@ class App extends React.Component<PropsFromRedux> {
               />
               {/* Edit Journal Entry */}
               <Route
-                path="/:organisationId/journal-entry/edit/:id"
+                path="/:organisationId/:year/journal-entry/edit/:id"
                 element={
                   <this.PrivateRoute>
                     <AddJournalEntry />
@@ -300,7 +300,7 @@ class App extends React.Component<PropsFromRedux> {
 
               {/* List Journal Entry */}
               <Route
-                path="/:organisationId/journal-entry/list/"
+                path="/:organisationId/:year/journal-entry/list/"
                 element={
                   <this.PrivateRoute>
                     <ListJournalEntry />

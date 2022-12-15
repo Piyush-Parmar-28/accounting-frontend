@@ -70,9 +70,6 @@ function EntriesList(props: PropsFromRedux) {
     if (pageURL[2] === "journal-entry") {
       setPageType("journal-entry");
     }
-    if (pageURL[3] === "list-with-opening-balances") {
-      setPageType("opening-balances");
-    }
   }, [pageURL]);
 
   const currentYear = (props as any).currentYear;
@@ -254,6 +251,15 @@ function EntriesList(props: PropsFromRedux) {
 
   useEffectAfterInitialRender(
     () => {
+      console.log(1);
+      getEntriesList(false);
+    },
+    [(props as any).currentYear],
+    1
+  );
+
+  useEffectAfterInitialRender(
+    () => {
       console.log(2);
       getEntriesList(false);
     },
@@ -379,9 +385,9 @@ function EntriesList(props: PropsFromRedux) {
 
   const editEntryNavigateFunction = (entry: any) => {
     navigate(
-      `/${(props as any).params?.organisationId}/journal-entry/edit/${
-        entry._id
-      }`
+      `/${(props as any).params?.organisationId}/${
+        (props as any).currentYear
+      }/journal-entry/edit/${entry._id}`
     );
   };
 
@@ -486,7 +492,9 @@ function EntriesList(props: PropsFromRedux) {
               className="relative inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none"
               onClick={() =>
                 navigate(
-                  `/${(props as any).params.organisationId}/journal-entry/add`
+                  `/${(props as any).params.organisationId}/${
+                    (props as any).currentYear
+                  }/journal-entry/add`
                 )
               }
             >
@@ -769,6 +777,9 @@ function EntriesList(props: PropsFromRedux) {
                                                       `/${
                                                         (props as any).params
                                                           .organisationId
+                                                      }/${
+                                                        (props as any)
+                                                          .currentYear
                                                       }/journal-entry/duplicate/${
                                                         entry._id
                                                       }`
@@ -921,8 +932,8 @@ function EntriesList(props: PropsFromRedux) {
                   className="relative inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none"
                   onClick={() => {
                     navigate(
-                      `/${
-                        (props as any).params.organisationId
+                      `/${(props as any).params.organisationId}/${
+                        (props as any).currentYear
                       }/journal-entry/add`
                     );
                   }}
