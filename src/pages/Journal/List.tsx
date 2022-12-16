@@ -132,11 +132,11 @@ function EntriesList(props: PropsFromRedux) {
 
   //Get Organisation Data
 
-  const getEntriesList = (forSearch: boolean) => {
+  const getEntriesList = (forSearch: boolean, searchText = "") => {
+    console.log("getEntriesList");
     const organisationId = (props as any).params?.organisationId;
     const year = (props as any).currentYear;
-    console.log("props", props);
-    const searchText = forSearch ? state.searchText : "";
+
     let skip = state.skip;
     let limit = state.limit;
     setState((prevState) => ({
@@ -161,10 +161,13 @@ function EntriesList(props: PropsFromRedux) {
       year,
       skip,
       limit,
+      false,
       state.sortBy,
-      false
+
+      searchText
     )
       .then((response: any) => {
+        console.log("response", response);
         setState((prevState) => ({
           ...prevState,
           loading: false,
@@ -193,7 +196,7 @@ function EntriesList(props: PropsFromRedux) {
     const organisationId = (props as any).params?.organisationId;
     const year = (props as any).currentYear;
     console.log("props", props);
-
+    let searchText = state.searchText || "";
     let skip = state.skip;
     let limit = state.limit;
     setState((prevState) => ({
@@ -214,8 +217,9 @@ function EntriesList(props: PropsFromRedux) {
       year,
       skip,
       limit,
+      true,
       state.sortBy,
-      true
+      searchText
     )
       .then((response: any) => {
         console.log("response1", response.headers);
@@ -240,23 +244,10 @@ function EntriesList(props: PropsFromRedux) {
       });
   };
 
-  useEffectAfterInitialRender(
-    () => {
-      console.log(1);
-      getEntriesList(false);
-    },
-    [currentYear],
-    0
-  );
-
-  useEffectAfterInitialRender(
-    () => {
-      console.log(1);
-      getEntriesList(false);
-    },
-    [(props as any).currentYear],
-    1
-  );
+  useEffect(() => {
+    console.log("initial use effect");
+    getEntriesList(false);
+  }, [(props as any).currentYear]);
 
   useEffectAfterInitialRender(
     () => {
@@ -293,7 +284,7 @@ function EntriesList(props: PropsFromRedux) {
   useEffectAfterInitialRender(
     () => {
       console.log(5);
-      getEntriesList(true);
+      getEntriesList(false);
     },
     [state.skip],
     1
@@ -301,7 +292,7 @@ function EntriesList(props: PropsFromRedux) {
   useEffectAfterInitialRender(
     () => {
       console.log(6);
-      getEntriesList(true);
+      getEntriesList(false);
     },
     [state.sortBy],
     1
@@ -339,14 +330,14 @@ function EntriesList(props: PropsFromRedux) {
     if (state.typingTimeout) {
       clearTimeout(state.typingTimeout);
     }
+    console.log("searchText", ev.target.value);
     setState((prevState) => ({
       ...prevState,
       searchText: ev.target.value,
       typingTimeout: setTimeout(() => {
-        getEntriesList(true);
+        getEntriesList(true, ev.target.value);
       }, 700),
     }));
-    // getEntriesList(true);
   };
 
   const openLogModal = (account: any) => {
@@ -458,6 +449,7 @@ function EntriesList(props: PropsFromRedux) {
       });
     }
   };
+  console.log("selected entries", state.selectedEntries);
   console.log("state", state);
   return (
     <Dashboard>

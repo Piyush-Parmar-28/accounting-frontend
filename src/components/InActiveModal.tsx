@@ -2,7 +2,7 @@ import { Dialog, Transition } from "@headlessui/react";
 import React, { Fragment } from "react";
 import agent from "../agent";
 import { connect, ConnectedProps } from "react-redux";
-import { ADD_NOTIFICATION } from "../store/types";
+import { ADD_NOTIFICATION, UPDATE_COMMON } from "../store/types";
 import {
   ExclamationTriangleIcon,
   XMarkIcon,
@@ -15,6 +15,7 @@ const mapStateToProps = (state: any) => ({
 });
 
 const mapDispatchToProps = (dispatch: any) => ({
+  updateCommon: (payload: any) => dispatch({ type: UPDATE_COMMON, payload }),
   addNotification: (title: string, message: string, type: string) =>
     dispatch({
       type: ADD_NOTIFICATION,
@@ -291,6 +292,7 @@ class InActiveModal extends React.Component<Props, PropsFromRedux> {
       this.setState({ logging: true });
       agent.Account.makeAccountInactive(organisationId, accountId)
         .then((response: any) => {
+          (this.props as any).updateCommon({ updateAccounts: true });
           (this.props as any).addNotification(
             "Account Inactive",
             "Successfully Inactivated an Account.",

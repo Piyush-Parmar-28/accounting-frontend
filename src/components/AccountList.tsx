@@ -37,9 +37,9 @@ const mapDispatchToProps = (dispatch: any) => ({
 
 type Props = {
   onSelection?: (forSearch: boolean) => void;
-
   id?: any;
   newAccount?: any;
+  filterByNature?: string[];
 };
 
 const connector = connect(mapStateToProps, mapDispatchToProps);
@@ -64,11 +64,26 @@ function AccountList(props: Props & PropsFromRedux) {
   }, [(props as any).onAccountChange]);
 
   let filteredAccounts = [];
+  let filteredByNature = [];
   if (accounts !== undefined) {
+    if (
+      props.filterByNature !== undefined &&
+      !props.filterByNature?.includes("All")
+    ) {
+      filteredByNature = accounts.filter((account: any) => {
+        const nature: string = account.nature;
+        if (props.filterByNature?.includes(nature)) {
+          return true;
+        }
+        return false;
+      });
+    } else {
+      filteredByNature = accounts;
+    }
     filteredAccounts =
       query === ""
-        ? accounts
-        : accounts.filter((account: any) => {
+        ? filteredByNature
+        : filteredByNature.filter((account: any) => {
             return account.name.toLowerCase().includes(query.toLowerCase());
           });
   }

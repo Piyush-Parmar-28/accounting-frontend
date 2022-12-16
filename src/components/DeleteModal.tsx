@@ -340,6 +340,9 @@ class DeleteModal extends React.Component<Props, PropsFromRedux> {
     this.setState({ logging: true });
     agent.Account.delete(accountId, organisationId)
       .then(() => {
+        (this.props as any).updateCommon({
+          updateAccounts: true,
+        });
         (this.props as any).addNotification(
           "Success!",
           "Account Deleted Successfully.",

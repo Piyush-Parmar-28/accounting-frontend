@@ -165,7 +165,9 @@ function AddAccount(props: Props & PropsFromRedux) {
       )
         .then((response: any) => {
           setState((prevState) => ({ ...prevState, logging: false }));
-
+          (props as any).updateCommon({
+            updateAccounts: true,
+          });
           (props as any).addNotification(
             "Account Added",
             "Successfully added a new account.",
@@ -224,7 +226,9 @@ function AddAccount(props: Props & PropsFromRedux) {
       )
         .then((response: any) => {
           setState((prevState) => ({ ...prevState, logging: false }));
-
+          (props as any).updateCommon({
+            updateAccounts: true,
+          });
           (props as any).addNotification(
             "Account Edited",
             "Successfully edited account.",

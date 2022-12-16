@@ -136,14 +136,18 @@ function AccountsList(props: PropsFromRedux) {
 
   //Get Organisation Data
 
-  const getAccountList = (forSearch: boolean) => {
+  const getAccountList = (forSearch: boolean, searchText = "") => {
     const organisationId = (props as any).params?.organisationId;
-    const searchText = forSearch ? state.searchText : "";
+
     const active = state.active;
-    // setState((prevState) => ({
-    //   ...prevState,
-    //   loading: true,
-    // }));
+    setState((prevState) => ({
+      ...prevState,
+      loading: true,
+    }));
+    console.log("statefrom function", state);
+    console.log("forSearch", forSearch);
+    // const searchText = forSearch ? state.searchText : "";
+    console.log("searchTextfromgetaccountlist function", state.searchText);
     if (!organisationId) {
       (props as any).onNotify(
         "Could not load Organisation Details",
@@ -320,15 +324,6 @@ function AccountsList(props: PropsFromRedux) {
     1
   );
 
-  // useEffectAfterInitialRender(
-  //   () => {
-
-  //     getAccountList(true);
-  //   },
-  //   [state.searchText],
-  //   1
-  // );
-
   useEffectAfterInitialRender(() => {}, [state.showEditModal], 1);
   // TagManager.dataLayer(tagManagerArgs);
 
@@ -378,14 +373,14 @@ function AccountsList(props: PropsFromRedux) {
     if (state.typingTimeout) {
       clearTimeout(state.typingTimeout);
     }
+    console.log("searchText", ev.target.value);
     setState((prevState) => ({
       ...prevState,
       searchText: ev.target.value,
       typingTimeout: setTimeout(() => {
-        getAccountList(true);
+        getAccountList(true, ev.target.value);
       }, 700),
     }));
-    // getAccountList(true);
   };
 
   const updateActive = () => {
@@ -415,10 +410,7 @@ function AccountsList(props: PropsFromRedux) {
       setState((prevState) => ({
         ...prevState,
         displayAccountDetails: prevState.accounts.filter((account: any) => {
-          let balanceForCurrentYear = account.balances.find(
-            (item: any) => item.year === currentYear
-          )?.balance;
-          if (!balanceForCurrentYear || balanceForCurrentYear === 0) {
+          if (account.balance === 0) {
             return false;
           }
           return true;

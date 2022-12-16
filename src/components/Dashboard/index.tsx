@@ -322,6 +322,11 @@ class Dashboard extends React.Component<DashboardProps, PropsFromRedux> {
       this.getUserRights();
       this.getAccountList();
     }
+
+    if ((this.props as any).updateAccounts === true) {
+      this.getAccountList();
+      (this.props as any).updateCommon({ updateAccounts: false });
+    }
   };
 
   updatePathName = () => {

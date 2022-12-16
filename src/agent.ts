@@ -257,15 +257,16 @@ const JournalEntry = {
     year: string,
     skip: number,
     limit: number,
+    download: boolean,
     sortBy: string,
-    download: boolean
+    searchText: string
   ) =>
     download === false
       ? requests.get(
-          `/journalentry/journalentrylist?organisationId=${organisationId}&year=${year}&skip=${skip}&limit=${limit}&sortBy=${sortBy}&download=${download}`
+          `/journalentry/journalentrylist?organisationId=${organisationId}&year=${year}&skip=${skip}&limit=${limit}&sortBy=${sortBy}&download=${download}&searchText=${searchText}`
         )
       : requests.getBlob(
-          `/journalentry/journalentrylist?organisationId=${organisationId}&year=${year}&skip=${skip}&limit=${limit}&sortBy=${sortBy}&download=${download}`,
+          `/journalentry/journalentrylist?organisationId=${organisationId}&year=${year}&skip=${skip}&limit=${limit}&sortBy=${sortBy}&download=${download}&searchText=${searchText}`,
           {
             responseType: "blob",
           }

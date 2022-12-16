@@ -533,7 +533,9 @@ function JournalEntry(props: PropsFromRedux) {
               "success"
             );
             navigate(
-              `/${organisationId}/journal-entry/duplicate/${response.entryId}`
+              `/${organisationId}/${
+                (props as any).currentYear
+              }/journal-entry/duplicate/${response.entryId}`
             );
             focusOnDate();
           }
@@ -594,7 +596,9 @@ function JournalEntry(props: PropsFromRedux) {
               "success"
             );
             navigate(
-              `/${organisationId}/journal-entry/duplicate/${response.entryId}`
+              `/${organisationId}/${
+                (props as any).currentYear
+              }/journal-entry/duplicate/${response.entryId}`
             );
             focusOnDate();
           }
@@ -689,6 +693,7 @@ function JournalEntry(props: PropsFromRedux) {
                       id={item[0].id.replace("b", "a")}
                       // this will update account when a row is deleted
                       newAccount={item[2] ? item[2] : ""}
+                      filterByNature={["All"]}
                     />
                   </div>
                 </div>
