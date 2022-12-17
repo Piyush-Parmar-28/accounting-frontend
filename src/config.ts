@@ -6,11 +6,11 @@ console.log("Environment =>", process.env.REACT_APP_NODE_ENV);
 
 if (process.env.REACT_APP_NODE_ENV === "production") {
   config = {
-    baseURL: "http://localhost:5002/api",
+    baseURL: "https://app.rapidbooks.co/api",
   };
 } else if (process.env.REACT_APP_NODE_ENV === "staging") {
   config = {
-    baseURL: "http://localhost:5002/api",
+    baseURL: "https://dev.rapidbooks.co/api",
   };
 } else {
   config = {

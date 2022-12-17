@@ -567,8 +567,10 @@ function JournalEntry(props: PropsFromRedux) {
       buttonClicked === "Update & Duplicate" ||
       buttonClicked === "Update & Close"
     ) {
-      agent.JournalEntry.add(
+      console.log((props as any).params?.id);
+      agent.JournalEntry.edit(
         organisationId,
+        (props as any).params?.id,
         date.date,
         properFormatArray,
         narration,

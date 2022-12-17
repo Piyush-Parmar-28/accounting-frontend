@@ -69,141 +69,6 @@ class InActiveModal extends React.Component<Props, PropsFromRedux> {
     document.removeEventListener("keydown", this.onKeyUpFunction, false);
   }
 
-  makeTagInactive = () => {
-    const organisationId = (this.props as any)?.currentOrganisation._id;
-    const tagId = this.props.state.selectedRow._id;
-    if (tagId !== undefined) {
-      this.setState({ logging: true });
-      agent.Tag.makeTagInactive(tagId, organisationId)
-        .then((response: any) => {
-          (this.props as any).addNotification(
-            "Tag Inactive",
-            "Successfully Inactivated a tag.",
-            "success"
-          );
-          this.setState({ logging: false });
-          this.setOpen(false);
-          this.onLoad();
-        })
-        .catch((err: any) => {
-          this.setState({ logging: false });
-          (this.props as any).addNotification(
-            "Error",
-            err?.response?.data?.message || err?.message || err,
-            "danger"
-          );
-        });
-    }
-  };
-
-  makeStatusInactive = () => {
-    const organisationId = (this.props as any)?.currentOrganisation._id;
-    const statusId = this.props.state.selectedRow._id;
-    if (statusId !== undefined) {
-      this.setState({ logging: true });
-      agent.Status.makeStatusInactive(statusId, organisationId)
-        .then((response: any) => {
-          (this.props as any).addNotification(
-            "Status Inactive",
-            "Successfully Inactivated a status.",
-            "success"
-          );
-          this.setState({ logging: false });
-          this.setOpen(false);
-          this.onLoad();
-        })
-        .catch((err: any) => {
-          this.setState({ logging: false });
-          (this.props as any).addNotification(
-            "Error",
-            err?.response?.data?.message || err?.message || err,
-            "danger"
-          );
-        });
-    }
-  };
-
-  makeCustomFieldInactive = () => {
-    const organisationId = (this.props as any)?.currentOrganisation._id;
-    const customFieldId = this.props.state.selectedRow._id;
-    if (customFieldId !== undefined) {
-      this.setState({ logging: true });
-      agent.CustomField.makeCustomFieldInactive(customFieldId, organisationId)
-        .then((response: any) => {
-          (this.props as any).addNotification(
-            "Field Inactive",
-            "Successfully Inactivated a field.",
-            "success"
-          );
-          this.setState({ logging: false });
-          this.setOpen(false);
-          this.onLoad();
-        })
-        .catch((err: any) => {
-          this.setState({ logging: false });
-          (this.props as any).addNotification(
-            "Error",
-            err?.response?.data?.message || err?.message || err,
-            "danger"
-          );
-        });
-    }
-  };
-
-  makePersonInactive = () => {
-    const organisationId = (this.props as any)?.currentOrganisation._id;
-    const contactPersonId = this.props.state.selectedRow._id;
-    if (contactPersonId !== undefined) {
-      this.setState({ logging: true });
-      agent.ContactPerson.makePersonInactive(contactPersonId, organisationId)
-        .then((response: any) => {
-          (this.props as any).addNotification(
-            "Person Inactive",
-            "Successfully Inactivated a person.",
-            "success"
-          );
-          this.setState({ logging: false });
-          this.setOpen(false);
-          this.onLoad();
-        })
-        .catch((err: any) => {
-          this.setState({ logging: false });
-          (this.props as any).addNotification(
-            "Error",
-            err?.response?.data?.message || err?.message || err,
-            "danger"
-          );
-        });
-    }
-  };
-
-  makeGroupInactive = () => {
-    const organisationId = (this.props as any)?.currentOrganisation._id;
-    const groupId = this.props.state.selectedRow._id;
-    if (groupId !== undefined) {
-      this.setState({ logging: true });
-      agent.ClientGroups.makeClientGroupInactive(organisationId, groupId)
-        .then((response: any) => {
-          (this.props as any).addNotification(
-            "Group Inactive",
-            "Successfully Inactivated a group.",
-            "success"
-          );
-          this.setState({ logging: false });
-          this.setOpen(false);
-          this.onLoad();
-        })
-        .catch((err: any) => {
-          this.setState({ logging: false });
-          (this.props as any).addNotification(
-            "Error",
-            err?.response?.data?.message || err?.message || err,
-            "danger"
-          );
-        });
-    }
-  };
-
   makeOrganisationInactive = () => {
     const organisationId = this.props.state.selectedRow._id;
     if (organisationId !== undefined) {
@@ -221,33 +86,6 @@ class InActiveModal extends React.Component<Props, PropsFromRedux> {
         })
         .catch((err: any) => {
           console.log("INACTIVE ORGANISATION----->", { err });
-          this.setState({ logging: false });
-          (this.props as any).addNotification(
-            "Error",
-            err?.response?.data?.message || err?.message || err,
-            "danger"
-          );
-        });
-    }
-  };
-
-  makeClientInactive = () => {
-    const organisationId = (this.props as any)?.currentOrganisation._id;
-    const clientId = this.props.state.selectedRow._id;
-    if (clientId !== undefined) {
-      this.setState({ logging: true });
-      agent.Clients.makeClientInactive(organisationId, clientId)
-        .then((response: any) => {
-          (this.props as any).addNotification(
-            "Client Inactive",
-            "Successfully Inactivated a client.",
-            "success"
-          );
-          this.setState({ logging: false });
-          this.setOpen(false);
-          this.onLoad();
-        })
-        .catch((err: any) => {
           this.setState({ logging: false });
           (this.props as any).addNotification(
             "Error",
@@ -315,20 +153,8 @@ class InActiveModal extends React.Component<Props, PropsFromRedux> {
 
   inActiveRow = () => {
     switch (this.props.type) {
-      case "tag":
-        return this.makeTagInactive();
-      case "status":
-        return this.makeStatusInactive();
-      case "field":
-        return this.makeCustomFieldInactive();
-      case "person":
-        return this.makePersonInactive();
-      case "group":
-        return this.makeGroupInactive();
       case "organisation":
         return this.makeOrganisationInactive();
-      case "client":
-        return this.makeClientInactive();
       case "user":
         return this.makeUserInactive();
       case "account":

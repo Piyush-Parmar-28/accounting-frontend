@@ -1,7 +1,4 @@
 import { useState, useEffect } from "react";
-import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
-import { Combobox } from "@headlessui/react";
-import { colorsList } from "../constants/colors";
 
 function classNames(...classes: any) {
   return classes.filter(Boolean).join(" ");

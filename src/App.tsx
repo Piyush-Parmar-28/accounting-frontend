@@ -12,10 +12,6 @@ import Notification from "./components/Notification";
 import GSTs from "./pages/GSTs/Index";
 import AddOrganisation from "./pages/GSTs/AddNew";
 
-// Tag Import
-import Tags from "./pages/Tags/Index";
-import AddTag from "./pages/Tags/Add";
-
 // Journal Entry Page
 import ListJournalEntry from "./pages/Journal/List";
 import AddJournalEntry from "./pages/Journal/Add";
@@ -25,27 +21,10 @@ import AccountList from "./pages/Account/Index";
 
 import AddAccount from "./pages/Account/Add";
 
-//  Person Import
-import ContactPerson from "./pages/ContactPerson/Index";
-import AddPerson from "./pages/ContactPerson/Add";
-
 // User Import
 import Users from "./pages/Users/Index";
 import AddUser from "./pages/Users/Add";
 import EditUser from "./pages/Users/Edit";
-
-// Custom Field Import
-import CustomField from "./pages/CustomField/Index";
-import AddCustomField from "./pages/CustomField/Add";
-
-// Client Group Import
-import ClientGroups from "./pages/Groups/Index";
-import AddClientGroups from "./pages/Groups/Add";
-
-// Clients Import
-import Clients from "./pages/Clients/Index";
-import AddClient from "./pages/Clients/Add";
-import EditClient from "./pages/Clients/Edit";
 
 // Login Import
 import Login from "./pages/Login";
@@ -61,11 +40,6 @@ import ResetToken from "./pages/Verify/ResetToken";
 // Connect to redux
 import { TOKEN_PRESENT, UPDATE_COMMON } from "./store/types";
 import { connect, ConnectedProps } from "react-redux";
-
-// Todo Imports
-import Todos, { getTodoList } from "./pages/Todo/Index";
-import AddEditList from "./pages/Todo/AddEditList";
-import EntriesList from "./pages/Journal/List";
 
 const mapStateToProps = (state: any) => ({
   ...state.user,
@@ -143,9 +117,9 @@ class App extends React.Component<PropsFromRedux> {
     return (
       <div>
         <Notification />
-        {(this.props as any)?.currentModal?.modalName === "ADD_TAG_MODAL" && (
+        {/* {(this.props as any)?.currentModal?.modalName === "ADD_TAG_MODAL" && (
           <AddTag closeModal={this.closeModal} />
-        )}
+        )} */}
         {(this.props as any)?.currentModal?.modalName ===
           "ADD_ACCOUNT_MODAL" && (
           <AddAccount
@@ -153,22 +127,6 @@ class App extends React.Component<PropsFromRedux> {
             type={(this.props as any)?.currentModal?.type}
             data={(this.props as any)?.currentModal?.data}
           />
-        )}
-
-        {(this.props as any)?.currentModal?.modalName ===
-          "ADD_PERSON_MODAL" && <AddPerson closeModal={this.closeModal} />}
-
-        {(this.props as any)?.currentModal?.modalName ===
-          "ADD_CUSTOM_FIELD_MODAL" && (
-          <AddCustomField closeModal={this.closeModal} />
-        )}
-
-        {(this.props as any)?.currentModal?.modalName === "ADD_GROUP_MODAL" && (
-          <AddClientGroups closeModal={this.closeModal} />
-        )}
-
-        {(this.props as any)?.currentModal?.modalName === "ADD_TODO_MODAL" && (
-          <AddEditList closeModal={this.closeModal} props={this.props} />
         )}
 
         {!this.state.loading ? (
@@ -242,15 +200,6 @@ class App extends React.Component<PropsFromRedux> {
                   </this.PrivateRoute>
                 }
               />
-              {/* Tag Page */}
-              <Route
-                path="/:organisationId/tags/list"
-                element={
-                  <this.PrivateRoute>
-                    <Tags />
-                  </this.PrivateRoute>
-                }
-              />
               {/* Account list with opening balance Page */}
               <Route
                 path="/:organisationId/:year/account/list-with-opening-balances"
@@ -308,24 +257,6 @@ class App extends React.Component<PropsFromRedux> {
                 }
               />
 
-              {/* Custom Field Page */}
-              <Route
-                path="/:organisationId/custom-field/list"
-                element={
-                  <this.PrivateRoute>
-                    <CustomField />
-                  </this.PrivateRoute>
-                }
-              />
-              {/* Contact Perosn Page */}
-              <Route
-                path="/:organisationId/contact-person/list"
-                element={
-                  <this.PrivateRoute>
-                    <ContactPerson />
-                  </this.PrivateRoute>
-                }
-              />
               {/* User Page */}
               <Route
                 path="/:organisationId/user/list"
@@ -352,68 +283,7 @@ class App extends React.Component<PropsFromRedux> {
                   </this.PrivateRoute>
                 }
               />
-              {/* Group */}
-              <Route
-                path="/:organisationId/groups/list"
-                element={
-                  <this.PrivateRoute>
-                    <ClientGroups />
-                  </this.PrivateRoute>
-                }
-              />
 
-              {/* Clients */}
-              <Route
-                path="/:organisationId/clients/list"
-                element={
-                  <this.PrivateRoute>
-                    <Clients />
-                  </this.PrivateRoute>
-                }
-              />
-
-              <Route
-                path="/:organisationId/clients/add"
-                element={
-                  <this.PrivateRoute>
-                    <AddClient />
-                  </this.PrivateRoute>
-                }
-              />
-
-              <Route
-                path="/:organisationId/clients/edit"
-                element={
-                  <this.PrivateRoute>
-                    <EditClient />
-                  </this.PrivateRoute>
-                }
-              />
-              {/* Insights and settings */}
-              {/* <this.PrivateRoute exact path="/insights" component={Settings} /> */}
-              {/* <this.PrivateRoute
-                exact
-                path="/:userInfo/settings"
-                component={Settings}
-              /> */}
-
-              {/* Todo Page */}
-              <Route
-                path="/:organisationId/todo/list/:list"
-                element={
-                  <this.PrivateRoute>
-                    <Todos />
-                  </this.PrivateRoute>
-                }
-              />
-              <Route
-                path="/:organisationId/todo/:toDoListId"
-                element={
-                  <this.PrivateRoute>
-                    <Todos />
-                  </this.PrivateRoute>
-                }
-              />
               {/* Login */}
               <Route
                 path="/"

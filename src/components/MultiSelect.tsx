@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
 import { Combobox } from "@headlessui/react";
-import { colorsList } from "../constants/colors";
 
 function classNames(...classes: any) {
   return classes.filter(Boolean).join(" ");
@@ -21,9 +20,6 @@ export default function MultiSelect(props: Props) {
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState(props.selected);
   const options = props.items;
-  const selectedColor: any = colorsList?.find(
-    (color: any) => color.name === props.selected.name
-  );
 
   useEffect(() => {
     setSelected(props.selected);
@@ -48,14 +44,6 @@ export default function MultiSelect(props: Props) {
       </Combobox.Label>
       <div className="relative mt-1">
         <Combobox.Input
-          style={{
-            backgroundColor:
-              props.type === "colors" ? selectedColor?.value : "white",
-            color:
-              props.type === "colors" && props.selected.name.includes("Dark")
-                ? "white"
-                : "black",
-          }}
           className="w-full rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm"
           onChange={(event: any) => {
             setQuery(event.target.value);

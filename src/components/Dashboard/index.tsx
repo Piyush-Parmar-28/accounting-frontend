@@ -18,8 +18,6 @@ import Icon from "../Icon";
 import MultiSelect from "../MultiSelect";
 import SearchNavigation from "../SearchNavigation";
 
-import { todoList } from "../../pages/Todo/Index";
-
 const getCurrentFinYear = () => {
   const todayDate5 = new Date();
   todayDate5.setMonth(todayDate5.getMonth());

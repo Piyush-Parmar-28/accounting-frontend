@@ -70,141 +70,6 @@ class ActiveModal extends React.Component<Props, PropsFromRedux> {
     document.removeEventListener("keydown", this.onKeyUpFunction, false);
   }
 
-  makeTagActive = () => {
-    const organisationId = (this.props as any)?.currentOrganisation._id;
-    const tagId = this.props.state.selectedRow._id;
-    if (tagId !== undefined) {
-      this.setState({ logging: true });
-      agent.Tag.makeTagActive(tagId, organisationId)
-        .then((response: any) => {
-          (this.props as any).addNotification(
-            "Tag is Activated",
-            "Successfully Activated a tag.",
-            "success"
-          );
-          this.setState({ logging: false });
-          this.setOpen(false);
-          this.onLoad();
-        })
-        .catch((err: any) => {
-          this.setState({ logging: false });
-          (this.props as any).addNotification(
-            "Error",
-            err?.response?.data?.message || err?.message || err,
-            "danger"
-          );
-        });
-    }
-  };
-
-  makeStatusActive = () => {
-    const organisationId = (this.props as any)?.currentOrganisation._id;
-    const statusId = this.props.state.selectedRow._id;
-    if (statusId !== undefined) {
-      this.setState({ logging: true });
-      agent.Status.makeStatusActive(statusId, organisationId)
-        .then((response: any) => {
-          (this.props as any).addNotification(
-            "Status is Activated",
-            "Successfully Activated a status.",
-            "success"
-          );
-          this.setState({ logging: false });
-          this.setOpen(false);
-          this.onLoad();
-        })
-        .catch((err: any) => {
-          this.setState({ logging: false });
-          (this.props as any).addNotification(
-            "Error",
-            err?.response?.data?.message || err?.message || err,
-            "danger"
-          );
-        });
-    }
-  };
-
-  makeCustomFieldActive = () => {
-    const organisationId = (this.props as any)?.currentOrganisation._id;
-    const customFieldId = this.props.state.selectedRow._id;
-    if (customFieldId !== undefined) {
-      this.setState({ logging: true });
-      agent.CustomField.makeCustomFieldActive(customFieldId, organisationId)
-        .then((response: any) => {
-          (this.props as any).addNotification(
-            "Field Active",
-            "Successfully Activated a field.",
-            "success"
-          );
-          this.setState({ logging: false });
-          this.setOpen(false);
-          this.onLoad();
-        })
-        .catch((err: any) => {
-          this.setState({ logging: false });
-          (this.props as any).addNotification(
-            "Error",
-            err?.response?.data?.message || err?.message || err,
-            "danger"
-          );
-        });
-    }
-  };
-
-  makePersonActive = () => {
-    const organisationId = (this.props as any)?.currentOrganisation._id;
-    const contactPersonId = this.props.state.selectedRow._id;
-    if (contactPersonId !== undefined) {
-      this.setState({ logging: true });
-      agent.ContactPerson.makePersonActive(contactPersonId, organisationId)
-        .then((response: any) => {
-          (this.props as any).addNotification(
-            "Person Active",
-            "Successfully Activated a person.",
-            "success"
-          );
-          this.setState({ logging: false });
-          this.setOpen(false);
-          this.onLoad();
-        })
-        .catch((err: any) => {
-          this.setState({ logging: false });
-          (this.props as any).addNotification(
-            "Error",
-            err?.response?.data?.message || err?.message || err,
-            "danger"
-          );
-        });
-    }
-  };
-
-  makeGroupActive = () => {
-    const organisationId = (this.props as any)?.currentOrganisation._id;
-    const groupId = this.props.state.selectedRow._id;
-    if (groupId !== undefined) {
-      this.setState({ logging: true });
-      agent.ClientGroups.makeClientGroupActive(organisationId, groupId)
-        .then((response: any) => {
-          (this.props as any).addNotification(
-            "Group Active",
-            "Successfully Activated a group.",
-            "success"
-          );
-          this.setState({ logging: false });
-          this.setOpen(false);
-          this.onLoad();
-        })
-        .catch((err: any) => {
-          this.setState({ logging: false });
-          (this.props as any).addNotification(
-            "Error",
-            err?.response?.data?.message || err?.message || err,
-            "danger"
-          );
-        });
-    }
-  };
-
   makeOrganisationActive = () => {
     const organisationId = this.props.state.selectedRow._id;
     if (organisationId !== undefined) {
@@ -214,33 +79,6 @@ class ActiveModal extends React.Component<Props, PropsFromRedux> {
           (this.props as any).addNotification(
             "Organisation Active",
             "Successfully Activated a organisation.",
-            "success"
-          );
-          this.setState({ logging: false });
-          this.setOpen(false);
-          this.onLoad();
-        })
-        .catch((err: any) => {
-          this.setState({ logging: false });
-          (this.props as any).addNotification(
-            "Error",
-            err?.response?.data?.message || err?.message || err,
-            "danger"
-          );
-        });
-    }
-  };
-
-  makeClientActive = () => {
-    const organisationId = (this.props as any)?.currentOrganisation._id;
-    const clientId = this.props.state.selectedRow._id;
-    if (clientId !== undefined) {
-      this.setState({ logging: true });
-      agent.Clients.makeClientActive(organisationId, clientId)
-        .then((response: any) => {
-          (this.props as any).addNotification(
-            "Client Active",
-            "Successfully Activated a client.",
             "success"
           );
           this.setState({ logging: false });
@@ -315,20 +153,8 @@ class ActiveModal extends React.Component<Props, PropsFromRedux> {
 
   activeRow = () => {
     switch (this.props.type) {
-      case "tag":
-        return this.makeTagActive();
-      case "status":
-        return this.makeStatusActive();
-      case "field":
-        return this.makeCustomFieldActive();
-      case "person":
-        return this.makePersonActive();
-      case "group":
-        return this.makeGroupActive();
       case "organisation":
         return this.makeOrganisationActive();
-      case "client":
-        return this.makeClientActive();
       case "user":
         return this.makeUserActive();
       case "account":
