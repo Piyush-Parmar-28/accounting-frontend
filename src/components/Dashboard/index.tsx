@@ -304,7 +304,7 @@ class Dashboard extends React.Component<DashboardProps, PropsFromRedux> {
       prevProps.currentOrganisation?._id === undefined &&
       (this.props as any)?.currentOrganisation?._id
     ) {
-      this.getUserRights();
+      // this.getUserRights();
       this.getAccountList();
     }
 
@@ -317,7 +317,7 @@ class Dashboard extends React.Component<DashboardProps, PropsFromRedux> {
       (this.props as any).updateCommon({
         currentOrganisation: selectOrganisation,
       });
-      this.getUserRights();
+      // this.getUserRights();
       this.getAccountList();
     }
 
