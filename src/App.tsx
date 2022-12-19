@@ -37,6 +37,10 @@ import SignupToken from "./pages/Verify/SignupToken";
 import ForgetPassword from "./pages/ForgetPassword";
 import ResetOTP from "./pages/Verify/ResetOTP";
 import ResetToken from "./pages/Verify/ResetToken";
+
+// Receipts Import
+import ReceiptHome from "./pages/Receipts/Index";
+import AddReceipt from "./pages/Receipts/Add";
 // Connect to redux
 import { TOKEN_PRESENT, UPDATE_COMMON } from "./store/types";
 import { connect, ConnectedProps } from "react-redux";
@@ -122,16 +126,34 @@ class App extends React.Component<PropsFromRedux> {
         )} */}
         {(this.props as any)?.currentModal?.modalName ===
           "ADD_ACCOUNT_MODAL" && (
-          <AddAccount
-            closeModal={this.closeModal}
-            type={(this.props as any)?.currentModal?.type}
-            data={(this.props as any)?.currentModal?.data}
-          />
-        )}
+            <AddAccount
+              closeModal={this.closeModal}
+              type={(this.props as any)?.currentModal?.type}
+              data={(this.props as any)?.currentModal?.data}
+            />
+          )}
 
         {!this.state.loading ? (
           <Router>
             <Routes>
+              {/* Receipts Home Page */}
+              <Route
+                path="/:organisationId/:year/receipts/"
+                element={
+                  <this.PrivateRoute>
+                    <ReceiptHome />
+                  </this.PrivateRoute>
+                }
+              />
+              {/* Receipts Add Receipt Page */}
+              <Route
+                path="/:organisationId/:year/receipts/add"
+                element={
+                  <this.PrivateRoute>
+                    <AddReceipt />
+                  </this.PrivateRoute>
+                }
+              />
               {/* SignUp */}
               <Route
                 path="/signup"
@@ -246,6 +268,7 @@ class App extends React.Component<PropsFromRedux> {
                   </this.PrivateRoute>
                 }
               />
+
 
               {/* List Journal Entry */}
               <Route
