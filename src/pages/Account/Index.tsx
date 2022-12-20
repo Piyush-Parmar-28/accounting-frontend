@@ -20,7 +20,7 @@ import { Menu, Transition } from "@headlessui/react";
 import InActiveModal from "../../components/InActiveModal";
 import ActiveModal from "../../components/ActiveModal";
 import DeleteModal from "../../components/DeleteModal";
-import LogModal from "../../components/LogModal";
+import LogsModal from "../../components/LogsModal";
 import { withRouter } from "../../helpers/withRouter";
 import { compose } from "redux";
 import AddAccount from "./Add";
@@ -89,10 +89,10 @@ function AccountsList(props: PropsFromRedux) {
     typingTimeout: any;
     selectedRow: any;
     showDeleteModal: boolean;
+    showLogsModal: boolean;
     showActiveModal: boolean;
     showInActiveModal: boolean;
     showEditModal: boolean;
-    showLogModal: boolean;
     active: boolean;
     debitTotal: string;
     creditTotal: string;
@@ -116,10 +116,10 @@ function AccountsList(props: PropsFromRedux) {
     typingTimeout: 0,
     selectedRow: undefined,
     showDeleteModal: false,
+    showLogsModal: false,
     showActiveModal: false,
     showInActiveModal: false,
     showEditModal: false,
-    showLogModal: false,
     active: true,
     hideZeroBalance: false,
     debitTotal: "",
@@ -446,24 +446,24 @@ function AccountsList(props: PropsFromRedux) {
   };
 
   const openEditAccountModal = (account: any) => {
-    const statusRights = (props as any)?.rights?.statusRights;
-    const createRight = statusRights.create;
-    if (createRight) {
-      (props as any).updateCommon({
-        currentModal: {
-          modalName: "ADD_ACCOUNT_MODAL",
-          fetchAgain: false,
-          type: "edit",
-          data: account,
-        },
-      });
-    } else {
-      (props as any).onNotify(
-        "Rights Not Available",
-        "Ask Admin to change your user rights.",
-        "danger"
-      );
-    }
+    // const statusRights = (props as any)?.rights?.statusRights;
+    // const createRight = statusRights.create;
+    // if (createRight) {
+    (props as any).updateCommon({
+      currentModal: {
+        modalName: "ADD_ACCOUNT_MODAL",
+        fetchAgain: false,
+        type: "edit",
+        data: account,
+      },
+    });
+    // } else {
+    //   (props as any).onNotify(
+    //     "Rights Not Available",
+    //     "Ask Admin to change your user rights.",
+    //     "danger"
+    //   );
+    // }
   };
 
   const openActiveModal = (account: any) => {
@@ -480,22 +480,6 @@ function AccountsList(props: PropsFromRedux) {
     setState((prevState) => ({
       ...prevState,
       showActiveModal: open,
-    }));
-  };
-
-  const openLogModal = (account: any) => {
-    setState((prevState) => ({
-      ...prevState,
-      selectedRow: account,
-      showBackDrop: false,
-    }));
-
-    logModalSetOpen(true);
-  };
-  const logModalSetOpen = (open: boolean) => {
-    setState((prevState) => ({
-      ...prevState,
-      showLogModal: open,
     }));
   };
 
@@ -533,6 +517,23 @@ function AccountsList(props: PropsFromRedux) {
     }));
   };
 
+  const openLogsModal = (account: any) => {
+    setState((prevState) => ({
+      ...prevState,
+      selectedRow: account,
+      showBackDrop: false,
+    }));
+
+    logsModalSetOpen(true);
+  };
+
+  const logsModalSetOpen = (open: boolean) => {
+    setState((prevState) => ({
+      ...prevState,
+      showLogsModal: open,
+    }));
+  };
+
   return (
     <Dashboard>
       <div className="gsts">
@@ -542,15 +543,6 @@ function AccountsList(props: PropsFromRedux) {
             state={state}
             onLoad={getAccountList}
             inActiveModalSetOpen={inActiveModalSetOpen}
-          />
-        )}
-
-        {state.showLogModal && (
-          <LogModal
-            type={"account"}
-            state={state}
-            onLoad={getAccountList}
-            logModalSetOpen={logModalSetOpen}
           />
         )}
 
@@ -568,6 +560,15 @@ function AccountsList(props: PropsFromRedux) {
             state={state}
             onLoad={getAccountList}
             deleteModalSetOpen={deleteModalSetOpen}
+          />
+        )}
+
+        {state.showLogsModal && (
+          <LogsModal
+            type={"account"}
+            showLogsModal={state.showLogsModal}
+            selectedRow={state.selectedRow}
+            setOpen={logsModalSetOpen}
           />
         )}
 
@@ -962,7 +963,7 @@ function AccountsList(props: PropsFromRedux) {
                                                 <button
                                                   className="flex items-center w-full p-1 px-4 py-2 text-sm hover:bg-gray-100 text-gray-900"
                                                   onClick={() =>
-                                                    openLogModal(account)
+                                                    openLogsModal(account)
                                                   }
                                                 >
                                                   <Icon

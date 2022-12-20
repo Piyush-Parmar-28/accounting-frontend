@@ -383,7 +383,11 @@ function AddAccount(props: Props & PropsFromRedux) {
   const nameOnBlur = (e: any) => {
     const organisationId = (props as any).currentOrganisation._id;
     if (e.target.value) {
-      agent.Account.accountnameavailablecheck(organisationId, e.target.value)
+      agent.Account.accountnameavailablecheck(
+        organisationId,
+        e.target.value,
+        state.accountId
+      )
         .then((response: any) => {
           if (response.available) {
             setState((prevState) => ({
@@ -402,7 +406,7 @@ function AddAccount(props: Props & PropsFromRedux) {
         });
     }
   };
-
+  console.log("add account state", state);
   return (
     <>
       <Transition.Root
@@ -516,7 +520,11 @@ function AddAccount(props: Props & PropsFromRedux) {
                               onChange={openingBalanceHandler}
                               id="openingBalance"
                               key="openingBalance"
-                              newValue={state.openingBalance.toString()}
+                              newValue={
+                                state.openingBalance
+                                  ? state.openingBalance.toString()
+                                  : "0"
+                              }
                             />
                           </div>
                         </div>
