@@ -222,9 +222,13 @@ const Account = {
     requests.get(
       `/account/accountslog?organisationId=${organisationId}&accountId=${accountId}`
     ),
-  accountnameavailablecheck: (organisationId: string, name: string) =>
+  accountnameavailablecheck: (
+    organisationId: string,
+    name: string,
+    accountId: string
+  ) =>
     requests.get(
-      `/account/accountnameavailablecheck?organisationId=${organisationId}&name=${name}`
+      `/account/accountnameavailablecheck?organisationId=${organisationId}&name=${name}&accountId=${accountId}`
     ),
   gstinalreadypresent: (organisationId: string, gstin: string) =>
     requests.get(
@@ -348,6 +352,13 @@ const User = {
     requests.post("/organisation/removeuser", { organisationId, userId }),
 };
 
+const Logs = {
+  getAccountLogs: (organisationId: string, accountId: string) =>
+    requests.get(
+      `/account/accountslog?organisationId=${organisationId}&accountId=${accountId}`
+    ),
+};
+
 const Gst = {
   addGst: (gstin: string) => requests.post("/gsts", { gstin }),
   getAll: () => requests.get("/gsts"),
@@ -365,6 +376,7 @@ let agent = {
   User,
   Gst,
   JournalEntry,
+  Logs,
 };
 
 export default agent;

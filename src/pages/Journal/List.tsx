@@ -20,7 +20,7 @@ import TagManager from "react-gtm-module";
 import { Menu, Transition } from "@headlessui/react";
 
 import DeleteModal from "../../components/DeleteModal";
-import LogModal from "../../components/LogModal";
+
 import { withRouter } from "../../helpers/withRouter";
 import { compose } from "redux";
 
@@ -454,15 +454,6 @@ function EntriesList(props: PropsFromRedux) {
   return (
     <Dashboard>
       <div className="gsts">
-        {state.showLogModal && (
-          <LogModal
-            type={"account"}
-            state={state}
-            onLoad={getEntriesList}
-            logModalSetOpen={logModalSetOpen}
-          />
-        )}
-
         {state.showDeleteModal && (
           <DeleteModal
             type={"journalentry"}
