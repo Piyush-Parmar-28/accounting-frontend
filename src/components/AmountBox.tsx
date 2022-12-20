@@ -9,7 +9,7 @@ type Props = {
   defaultValue: number;
   id: string;
   newValue: string;
-  // negativeAllowed: boolean;
+  negativeAllowed?: boolean | false;
 };
 
 export default function AmountBox(props: Props) {
@@ -35,15 +35,10 @@ export default function AmountBox(props: Props) {
     e.preventDefault();
 
     // do not allow anything other othan numbers and dot .
-    let newValue = e.target.value.replace(
-      /([A-Za-z!@#$%^&*()_+=[\]{};':"\\|,<>?~`-])*/g,
-      ""
-    );
-    //  props.negativeAllowed ? e.target.value.replace(
-    //   /([A-Za-z!@#$%^&*()_+=[\]{};':"\\|,<>?~`])*/g,
-    //   ""
-    // ) : 
-   
+    let newValue = !props.negativeAllowed ? e.target.value.replace(/([A-Za-z!@#$%^&*()_+=[\]{};':"\\|,<>?~`-])*/g, "")
+      :
+      e.target.value.replace(/([A-Za-z!@#$%^&*()_+=[\]{};':"\\|,<>?~`])*/g, "");
+
     const splitNewValue = newValue.split(".");
 
     // do not allow entering second dot .
