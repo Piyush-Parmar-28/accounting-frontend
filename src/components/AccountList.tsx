@@ -50,18 +50,22 @@ function AccountList(props: Props & PropsFromRedux) {
   const [query, setQuery] = useState("");
   const [selectedAccount, setSelectedAccount] = useState({});
 
-  // this will update account when a row is deleted
-  useEffect(() => {
-    setSelectedAccount(props.newAccount);
-  }, [props.newAccount]);
-
   let accounts = (props as any).accounts;
 
+  // this will update account when a row is deleted
   useEffect(() => {
-    if ((props as any).id === (props as any).deletedAccountId) {
-      setSelectedAccount({});
+    if (accounts) {
+      let account = accounts.find((account: any) => {
+        return account._id === props.newAccount;
+      });
+      console.log("props.newAccount", props.newAccount);
+      if (!account) {
+        setSelectedAccount({});
+      } else {
+        setSelectedAccount(account);
+      }
     }
-  }, [(props as any).onAccountChange]);
+  }, [props.newAccount]);
 
   let filteredAccounts = [];
   let filteredByNature = [];

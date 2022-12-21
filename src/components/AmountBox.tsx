@@ -35,9 +35,15 @@ export default function AmountBox(props: Props) {
     e.preventDefault();
 
     // do not allow anything other othan numbers and dot .
-    let newValue = !props.negativeAllowed ? e.target.value.replace(/([A-Za-z!@#$%^&*()_+=[\]{};':"\\|,<>?~`-])*/g, "")
-      :
-      e.target.value.replace(/([A-Za-z!@#$%^&*()_+=[\]{};':"\\|,<>?~`])*/g, "");
+    let newValue = !props.negativeAllowed
+      ? e.target.value.replace(
+          /([A-Za-z!@#$%^&*()_+=[\]{};':"\\|,<>?~`-])*/g,
+          ""
+        )
+      : e.target.value.replace(
+          /([A-Za-z!@#$%^&*()_+=[\]{};':"\\|,<>?~`])*/g,
+          ""
+        );
 
     const splitNewValue = newValue.split(".");
 
