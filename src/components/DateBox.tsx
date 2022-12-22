@@ -310,6 +310,7 @@ export default function DateComponent(props: Props) {
         <div className="mx-2">
           <input
             autoFocus
+            autoComplete="off"
             value={startDate}
             onChange={(e) => onChangeHandler(e)}
             onBlur={(e) => onBlurHandler(e)}
