@@ -77,7 +77,7 @@ function JournalEntry(props: PropsFromRedux) {
     initialInput.push({
       accountId: "",
       amount: 0,
-      id: i + 1,
+      id: i,
     });
   }
 
@@ -193,7 +193,7 @@ function JournalEntry(props: PropsFromRedux) {
   }, [id]);
 
   const addRow = async () => {
-    setId((id) => {
+    setId((id: number) => {
       return id + 1;
     });
   };
@@ -216,8 +216,6 @@ function JournalEntry(props: PropsFromRedux) {
   };
 
   const handleChange = (e: any) => {
-    console.log(+e.newValue);
-
     changeValue(e.id, +e.newValue);
   };
 
@@ -226,10 +224,11 @@ function JournalEntry(props: PropsFromRedux) {
   };
 
   const changeTotal = () => {
-    let totalAmount = 0;
+    let totalAmount: any = 0;
     arr.forEach((item: any) => {
       totalAmount += item.amount;
     });
+    totalAmount = new Intl.NumberFormat("en-IN", { minimumFractionDigits: 2, }).format(totalAmount);
     setTotal(totalAmount);
   }
 
@@ -241,7 +240,7 @@ function JournalEntry(props: PropsFromRedux) {
         if (obj.id === e.account.id) {
           let index = newArr.indexOf(obj);
           if (index !== -1) {
-            newArr.splice(index, 1, { ...obj, account: e.account });
+            newArr.splice(index, 1, { ...obj, accountId: e.account._id });
           }
         }
       }
@@ -251,26 +250,20 @@ function JournalEntry(props: PropsFromRedux) {
   };
 
   const addInput = async () => {
-    setId((id) => {
+    setId((id: number) => {
       return id + 1;
     });
   };
 
-  const deleteRow = (e: any, id: any) => {
-    console.log(id);
-    const index = id;
+  const deleteRow = (id: any) => {
+    console.log(arr, id);
 
-    setArr((s: any) => {
-      let newArr = arr.slice();
+    let newArr = arr.slice();
+    newArr.splice(id, 1);
+    changeTotal();
+    console.log(newArr);
 
-      newArr = newArr.filter((item: any) => {
-        return item.id !== index;
-      });
-      console.log(newArr);
-
-      changeTotal();
-      return newArr;
-    });
+    setArr(newArr);
   };
 
   const dateFunction = (data: any) => {
@@ -619,7 +612,7 @@ function JournalEntry(props: PropsFromRedux) {
                   <AccountList
                     onSelection={setReceivedAccount}
                     // this will update account when a row is deleted
-                    filterByNature={["All"]}
+                    filterByNature={["Cash", "Bank", "Bank OD/CC"]}
                   />
                 </div>
               </div>
@@ -641,6 +634,8 @@ function JournalEntry(props: PropsFromRedux) {
             </div>
           </div>
           {arr.map((item: any, i: any) => {
+            console.log(item);
+            
             return (
               <div key={i} className="grid grid-cols-1 sm:grid-cols-9 -my-2 ">
 
@@ -660,7 +655,7 @@ function JournalEntry(props: PropsFromRedux) {
                       id={item.id}
                       // this will update account when a row is deleted
                       newAccount={item[2] ? item[2] : ""}
-                      filterByNature={["All"]}
+                      filterByNature={["Capital", "Creditors", "Current Assets", "Current Liabilities", "Debtors", "Deposits - Assets", "Direct Expense", "Direct Income", "Duties & Taxes", "Fixed Asset", 'Indirect Expense', "Indirect Income", "Investments", "Loans and Advances - Asset", "Miscellaneous Assets", "Miscellaneous Liabilities", "Provisions", "Reserves", "Secured Loan", "Suspense", "Unsecured Loan"]}
                     />
                   </div>
                 </div>
@@ -685,7 +680,7 @@ function JournalEntry(props: PropsFromRedux) {
                     className="h-4 w-4"
                     aria-hidden="true"
                     color="gray"
-                    onClick={(e) => deleteRow(e, item.id)}
+                    onClick={() => deleteRow(item.id)}
                   />
                   <div />
                 </div>
@@ -721,7 +716,7 @@ function JournalEntry(props: PropsFromRedux) {
                 name="narration"
                 rows={5}
                 className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 mt-1 block w-full sm:text-sm border-gray-300 rounded-md"
-                onChange={(e) => setNarration(e.target.value)}
+                onChange={(e: { target: { value: any; }; }) => setNarration(e.target.value)}
                 value={narration}
               />
             </div>
