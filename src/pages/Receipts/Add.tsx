@@ -217,7 +217,7 @@ function JournalEntry(props: PropsFromRedux) {
 
   const handleChange = (e: any) => {
     console.log(+e.newValue);
-    
+
     changeValue(e.id, +e.newValue);
   };
 
@@ -234,8 +234,6 @@ function JournalEntry(props: PropsFromRedux) {
   }
 
   const onAccountSelection = (e: any) => {
-    console.log(e);
-
     setArr((s: any) => {
       const newArr = s.slice();
 
@@ -259,17 +257,17 @@ function JournalEntry(props: PropsFromRedux) {
   };
 
   const deleteRow = (e: any, id: any) => {
+    console.log(id);
     const index = id;
 
     setArr((s: any) => {
-      let newArr = s.slice();
+      let newArr = arr.slice();
 
       newArr = newArr.filter((item: any) => {
-        if (item.id === index) {
-          return false;
-        }
-        return true;
+        return item.id !== index;
       });
+      console.log(newArr);
+
       changeTotal();
       return newArr;
     });
@@ -372,17 +370,17 @@ function JournalEntry(props: PropsFromRedux) {
         // }
 
         if (buttonClicked === "Save & Close") {
-            setNarration("");
-            setDate({ date: "", error: "" });
-            setArr(initialInput);
-            setTotal(0);
-            (props as any).onNotify(
-                "Journal Entry Saved Successfully",
-                "",
-                "success"
-            );
+          setNarration("");
+          setDate({ date: "", error: "" });
+          setArr(initialInput);
+          setTotal(0);
+          (props as any).onNotify(
+            "Journal Entry Saved Successfully",
+            "",
+            "success"
+          );
 
-            navigate(-1);
+          navigate(-1);
         }
       })
         .catch((err: any) => {
@@ -669,6 +667,7 @@ function JournalEntry(props: PropsFromRedux) {
                 <div className="sm:col-span-2">
                   <div className="mt-1">
                     <AmountBox
+                      negativeAllowed={true}
                       defaultValue={0}
                       onChange={handleChange}
                       // id={item[1].id}
@@ -681,8 +680,8 @@ function JournalEntry(props: PropsFromRedux) {
                   <TrashIcon
                     // id={item[0].id.replace("b", "z")}
                     // key={item[0].id.replace("b", "z")}
-                    id='afdadf'
-                    key='afdac'
+                    id={item.id}
+                    key={item.id}
                     className="h-4 w-4"
                     aria-hidden="true"
                     color="gray"
