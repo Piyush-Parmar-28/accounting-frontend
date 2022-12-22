@@ -190,14 +190,14 @@ const JournalEntry = {
   ) =>
     download === false
       ? requests.get(
-          `/journalentry/journalentrylist?organisationId=${organisationId}&year=${year}&skip=${skip}&limit=${limit}&sortBy=${sortBy}&download=${download}&searchText=${searchText}`
-        )
+        `/journalentry/journalentrylist?organisationId=${organisationId}&year=${year}&skip=${skip}&limit=${limit}&sortBy=${sortBy}&download=${download}&searchText=${searchText}`
+      )
       : requests.getBlob(
-          `/journalentry/journalentrylist?organisationId=${organisationId}&year=${year}&skip=${skip}&limit=${limit}&sortBy=${sortBy}&download=${download}&searchText=${searchText}`,
-          {
-            responseType: "blob",
-          }
-        ),
+        `/journalentry/journalentrylist?organisationId=${organisationId}&year=${year}&skip=${skip}&limit=${limit}&sortBy=${sortBy}&download=${download}&searchText=${searchText}`,
+        {
+          responseType: "blob",
+        }
+      ),
   delete: (organisationId: string, entryIds: string[]) =>
     requests.delete(
       `/journalentry/delete?organisationId=${organisationId}${selectedEntryUrl(
@@ -340,8 +340,7 @@ const User = {
     }),
   getUserRights: (organisationId: string, userId?: string) =>
     requests.get(
-      `/user/rights?organisationId=${organisationId}${
-        userId ? `&userId=${userId}` : ""
+      `/user/rights?organisationId=${organisationId}${userId ? `&userId=${userId}` : ""
       }`
     ),
   makeUserInactive: (organisationId: string, userId: string) =>
@@ -367,6 +366,27 @@ const Gst = {
     requests.put("/gsts/changeName", body),
 };
 
+const ReceiptEntry = {
+  add: (
+    organisationId: string,
+    date: string,
+    receivedAccountId: string,
+    receivedAmount: number,
+    entries: any,
+    narration: string,
+    year: string
+  ) =>
+    requests.post("/receipts/add", {
+      organisationId,
+      date,
+      receivedAccountId,
+      receivedAmount,
+      entries,
+      narration,
+      year,
+    }),
+}
+
 let agent = {
   setToken: (_token: string | undefined) => (token = _token),
   Agency,
@@ -377,6 +397,7 @@ let agent = {
   Gst,
   JournalEntry,
   Logs,
+  ReceiptEntry
 };
 
 export default agent;
