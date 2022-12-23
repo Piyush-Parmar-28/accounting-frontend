@@ -168,14 +168,14 @@ function JournalEntry(props: PropsFromRedux) {
         debitAmount:
           array[i].debitAmount > 0
             ? new Intl.NumberFormat("en-IN", {
-                minimumFractionDigits: 2,
-              }).format(array[i].debitAmount)
+              minimumFractionDigits: 2,
+            }).format(array[i].debitAmount)
             : "",
         creditAmount:
           array[i].creditAmount > 0
             ? new Intl.NumberFormat("en-IN", {
-                minimumFractionDigits: 2,
-              }).format(array[i].creditAmount)
+              minimumFractionDigits: 2,
+            }).format(array[i].creditAmount)
             : "",
         id: i + 1,
       });
@@ -202,11 +202,10 @@ function JournalEntry(props: PropsFromRedux) {
   }, [arr]);
 
   const changeValue = (id: string, newValue: any, totalChange = true) => {
-    // set value in state
     const index = id;
 
     setArr((s: any) => {
-      const newArr = s.slice();
+      const newArr = arr.map((obj: any) => ({ ...obj }));
       newArr.map((item: any) => {
         return item.id === index ? (item.amount = Number(newValue)) : null;
       });
@@ -234,20 +233,12 @@ function JournalEntry(props: PropsFromRedux) {
   };
 
   const onAccountSelection = (e: any) => {
-    console.log(arr);
+    const newData = [...arr];
+    let object: any = newData.find((item: any) => item.id === e.account.id);
+    object.accountId = e.account._id;
+    // console.log(newData);
+    setArr(newData);
 
-    setArr((s: any): [] => {
-      const newArr = s.slice();
-      for (let obj of newArr) {
-        if (obj.id === e.account.id) {
-          let index = newArr.indexOf(obj);
-          if (index !== -1) {
-            newArr.splice(index, 1, { ...obj, accountId: e.account._id });
-          }
-        }
-      }
-      return newArr;
-    });
   };
 
   const addInput = async () => {
@@ -257,8 +248,6 @@ function JournalEntry(props: PropsFromRedux) {
   };
 
   const deleteRow = (id: any) => {
-    console.log(arr, id);
-
     let newArr = arr.slice();
     newArr.splice(id, 1);
     changeTotal();
@@ -325,30 +314,6 @@ function JournalEntry(props: PropsFromRedux) {
       (props as any).onNotify(error, "", "danger");
       return;
     }
-    // let count = 0;
-    // for (const obj of arr) {
-    //   // For atleat one entry
-    //   // if ((obj.amount === 0 || obj.account === "") && !(obj.amount === 0 && obj.account === "")) {
-    //   //   (props as any).onNotify(
-    //   //     "Please fill atleast one field in received for.",
-    //   //     "",
-    //   //     "danger"
-    //   //   );
-    //   //   return;
-    //   // }
-    //   if (obj.amount === 0 && obj.account === "") {
-    //     count++;
-    //   }
-    // }
-    // if (count === 0) {
-    //   (props as any).onNotify(
-    //     "Please fill the both fields amount and account if either one of them is filled.",
-    //     "",
-    //     "danger"
-    //   );
-    //   return;
-    // }
-    // set data in proper format which backend can process
     const properFormatArray = [];
 
     for (const obj of arr) {
@@ -378,15 +343,15 @@ function JournalEntry(props: PropsFromRedux) {
       //   // navigate(`/${organisationId}/journal-entry/add`);
       //   // focusOnDate();
       // }
-      // console.log({
-      //   organisationId,
-      //   date: date.date,
-      //   receivedAmount: Number(total),
-      //   receivedAccountId: receivedInAccountId,
-      //   entries: properFormatArray,
-      //   narration,
-      //   year: currentYear
-      // });
+      console.log({
+        organisationId,
+        date: date.date,
+        receivedAmount: Number(total),
+        receivedAccountId: receivedInAccountId,
+        entries: properFormatArray,
+        narration,
+        year: currentYear
+      });
 
       agent.ReceiptEntry.add(
         organisationId,
@@ -716,8 +681,8 @@ function JournalEntry(props: PropsFromRedux) {
                       id={item.id}
                       // this will update account when a row is deleted
                       newAccount={item.accountId ? item.accountId : ""}
-                      filterByNature={["All"]}
-                      // filterByNature={["Capital", "Creditors", "Current Assets", "Current Liabilities", "Debtors", "Deposits - Assets", "Direct Expense", "Direct Income", "Duties & Taxes", "Fixed Asset", 'Indirect Expense', "Indirect Income", "Investments", "Loans and Advances - Asset", "Miscellaneous Assets", "Miscellaneous Liabilities", "Provisions", "Reserves", "Secured Loan", "Suspense", "Unsecured Loan"]}
+                      // filterByNature={["All"]}
+                      filterByNature={["Capital", "Creditors", "Current Assets", "Current Liabilities", "Debtors", "Deposits - Assets", "Direct Expense", "Direct Income", "Duties & Taxes", "Fixed Asset", 'Indirect Expense', "Indirect Income", "Investments", "Loans and Advances - Asset", "Miscellaneous Assets", "Miscellaneous Liabilities", "Provisions", "Reserves", "Secured Loan", "Suspense", "Unsecured Loan"]}
                     />
                   </div>
                 </div>
