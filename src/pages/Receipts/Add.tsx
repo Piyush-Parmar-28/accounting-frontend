@@ -233,9 +233,10 @@ function JournalEntry(props: PropsFromRedux) {
   }
 
   const onAccountSelection = (e: any) => {
-    setArr((s: any) => {
-      const newArr = s.slice();
+    console.log(arr);
 
+    setArr((s: any): [] => {
+      const newArr = s.slice();
       for (let obj of newArr) {
         if (obj.id === e.account.id) {
           let index = newArr.indexOf(obj);
@@ -270,35 +271,99 @@ function JournalEntry(props: PropsFromRedux) {
     setDate(data);
   };
 
-  const onButtonClick = (buttonClicked: any) => {
-    console.log("Button CLicked!");
-    for (const indArray of arr) {
-      console.log(indArray);
 
-      if (indArray.amount === 0 || indArray.account === "") {
-        (props as any).onNotify(
-          "Please enter amount and account.",
-          "",
-          "danger"
-        );
-        return;
+  function validateData(): string {
+    let error = '';
+    let totalAmount = 0;
+
+    // Check if there is at least one row with both an account and an amount
+    let hasAccountAndAmount = false;
+    arr.forEach((input: any) => {
+      console.log(input)
+      if (input.accountId && input.amount) {
+        hasAccountAndAmount = true;
       }
+    });
+    if (!hasAccountAndAmount) {
+      error = "At least one row with both an account and an amount is required";
+      return error;
     }
+
+    // Check if there is an account selected in any row, then the amount is compulsory and vice-versa
+    arr.forEach((input: any) => {
+      if (input.accountId && !input.amount) {
+        error = ("Amount is required when an account is selected");
+        return error;
+      }
+      if (!input.accountId && input.amount) {
+        error = ("Account is required when an amount is entered");
+        return error;
+      }
+    });
+
+    // Calculate the total amount
+    arr.forEach((input: any) => {
+      totalAmount += input.amount;
+    });
+
+    // Check if the total amount is positive and not equal to zero
+    if (totalAmount <= 0) {
+      error = ("Total amount must be positive and not equal to zero");
+      return error;
+    }
+
+    return '';
+    // return !hasError;
+  }
+
+
+  const onButtonClick = (buttonClicked: any) => {
+    let error = validateData();
+    if (error !== '') {
+      (props as any).onNotify(
+        error,
+        "",
+        "danger"
+      );
+      return;
+    }
+    // let count = 0;
+    // for (const obj of arr) {
+    //   // For atleat one entry
+    //   // if ((obj.amount === 0 || obj.account === "") && !(obj.amount === 0 && obj.account === "")) {
+    //   //   (props as any).onNotify(
+    //   //     "Please fill atleast one field in received for.",
+    //   //     "",
+    //   //     "danger"
+    //   //   );
+    //   //   return;
+    //   // }
+    //   if (obj.amount === 0 && obj.account === "") {
+    //     count++;
+    //   }
+    // }
+    // if (count === 0) {
+    //   (props as any).onNotify(
+    //     "Please fill the both fields amount and account if either one of them is filled.",
+    //     "",
+    //     "danger"
+    //   );
+    //   return;
+    // }
     // set data in proper format which backend can process
     const properFormatArray = [];
 
     for (const obj of arr) {
       let individualObject: any = obj;
-      if (
-        (individualObject.amount !== 0 || individualObject.account !== "")
-      ) {
+      if ((individualObject.amount !== 0 || individualObject.account !== "")) {
         const obj = {
-          accountId: individualObject.account._id,
+          accountId: individualObject.accountId,
           amount: individualObject.amount,
         };
         properFormatArray.push(obj);
         console.log(properFormatArray);
       }
+
     }
     // // save the entry
 
@@ -316,21 +381,21 @@ function JournalEntry(props: PropsFromRedux) {
         // navigate(`/${organisationId}/journal-entry/add`);
         // focusOnDate();
       }
-      console.log({
-        organisationId,
-        date: date.date,
-        receivedAmount: total,
-        receivedAccountId: receivedInAccountId,
-        entries: properFormatArray,
-        narration,
-        year: currentYear
-      });
+      // console.log({
+      //   organisationId,
+      //   date: date.date,
+      //   receivedAmount: Number(total),
+      //   receivedAccountId: receivedInAccountId,
+      //   entries: properFormatArray,
+      //   narration,
+      //   year: currentYear
+      // });
 
       agent.ReceiptEntry.add(
         organisationId,
         date.date,
         receivedInAccountId,
-        total,
+        Number(total),
         properFormatArray,
         narration,
         currentYear
@@ -634,8 +699,6 @@ function JournalEntry(props: PropsFromRedux) {
             </div>
           </div>
           {arr.map((item: any, i: any) => {
-            console.log(item);
-            
             return (
               <div key={i} className="grid grid-cols-1 sm:grid-cols-9 -my-2 ">
 
@@ -654,8 +717,9 @@ function JournalEntry(props: PropsFromRedux) {
                       onSelection={onAccountSelection}
                       id={item.id}
                       // this will update account when a row is deleted
-                      newAccount={item[2] ? item[2] : ""}
-                      filterByNature={["Capital", "Creditors", "Current Assets", "Current Liabilities", "Debtors", "Deposits - Assets", "Direct Expense", "Direct Income", "Duties & Taxes", "Fixed Asset", 'Indirect Expense', "Indirect Income", "Investments", "Loans and Advances - Asset", "Miscellaneous Assets", "Miscellaneous Liabilities", "Provisions", "Reserves", "Secured Loan", "Suspense", "Unsecured Loan"]}
+                      newAccount={item.accountId ? item.accountId : ""}
+                      filterByNature={["All"]}
+                    // filterByNature={["Capital", "Creditors", "Current Assets", "Current Liabilities", "Debtors", "Deposits - Assets", "Direct Expense", "Direct Income", "Duties & Taxes", "Fixed Asset", 'Indirect Expense', "Indirect Income", "Investments", "Loans and Advances - Asset", "Miscellaneous Assets", "Miscellaneous Liabilities", "Provisions", "Reserves", "Secured Loan", "Suspense", "Unsecured Loan"]}
                     />
                   </div>
                 </div>
@@ -667,7 +731,7 @@ function JournalEntry(props: PropsFromRedux) {
                       onChange={handleChange}
                       // id={item[1].id}
                       id={item.id}
-                      newValue={item.value}
+                      newValue={item.amount}
                     />
                   </div>
                 </div>
