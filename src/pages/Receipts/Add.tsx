@@ -23,6 +23,7 @@ import useEffectAfterInitialRender from "../../helpers/useEffectAfterInitialRend
 import AmountBox from "../../components/AmountBox";
 import { convertDateToString } from "../../helpers/Convertdate";
 import { format } from "date-fns";
+import { string } from "prop-types";
 
 const tagManagerArgs = {
   dataLayer: {
@@ -112,7 +113,7 @@ function JournalEntry(props: PropsFromRedux) {
   }, [(props as any).location.pathname]);
 
   const [arr, setArr] = useState(initialInput);
-  const [total, setTotal] = useState(0);
+  const [total, setTotal] = useState('0.00');
 
   // focus on date on second render
   useEffectAfterInitialRender(
@@ -142,8 +143,8 @@ function JournalEntry(props: PropsFromRedux) {
               date: convertDateToString(data.entryDetails.date),
               error: "",
             });
-            setNarration(data.entryDetails.narration);
-            setArr(changeArrayFormatToShowData(data.entryDetails.entries));
+            // setNarration(data.entryDetails.narration);
+            // setArr(changeArrayFormatToShowData(data.entryDetails.entries));
             setTimeout(() => {
               focusOnNarration();
               focusOnDate();
@@ -160,28 +161,28 @@ function JournalEntry(props: PropsFromRedux) {
     0
   );
 
-  const changeArrayFormatToShowData = (array: any) => {
-    let properFormatArray = [];
-    for (let i = 0; i < array.length; i++) {
-      properFormatArray.push({
-        accountId: array[i].accountId,
-        debitAmount:
-          array[i].debitAmount > 0
-            ? new Intl.NumberFormat("en-IN", {
-              minimumFractionDigits: 2,
-            }).format(array[i].debitAmount)
-            : "",
-        creditAmount:
-          array[i].creditAmount > 0
-            ? new Intl.NumberFormat("en-IN", {
-              minimumFractionDigits: 2,
-            }).format(array[i].creditAmount)
-            : "",
-        id: i + 1,
-      });
-    }
-    return properFormatArray;
-  };
+  // const changeArrayFormatToShowData = (array: any) => {
+  //   let properFormatArray = [];
+  //   for (let i = 0; i < array.length; i++) {
+  //     properFormatArray.push({
+  //       accountId: array[i].accountId,
+  //       debitAmount:
+  //         array[i].debitAmount > 0
+  //           ? new Intl.NumberFormat("en-IN", {
+  //             minimumFractionDigits: 2,
+  //           }).format(array[i].debitAmount)
+  //           : "",
+  //       creditAmount:
+  //         array[i].creditAmount > 0
+  //           ? new Intl.NumberFormat("en-IN", {
+  //             minimumFractionDigits: 2,
+  //           }).format(array[i].creditAmount)
+  //           : "",
+  //       id: i + 1,
+  //     });
+  //   }
+  //   return properFormatArray;
+  // };
 
   useEffect(() => {
     if (id > numberOfInitialRows) {
@@ -226,9 +227,9 @@ function JournalEntry(props: PropsFromRedux) {
     arr.forEach((item: any) => {
       totalAmount += item.amount;
     });
-    totalAmount = new Intl.NumberFormat("en-IN", {
+    totalAmount = (new Intl.NumberFormat("en-IN", {
       minimumFractionDigits: 2,
-    }).format(totalAmount);
+    }).format(totalAmount));
     setTotal(totalAmount);
   };
 
@@ -324,7 +325,6 @@ function JournalEntry(props: PropsFromRedux) {
           amount: individualObject.amount,
         };
         properFormatArray.push(obj);
-        console.log(properFormatArray);
       }
     }
     // // save the entry
@@ -336,28 +336,23 @@ function JournalEntry(props: PropsFromRedux) {
       buttonClicked === "Save & Duplicate" ||
       buttonClicked === "Save & Close"
     ) {
-      // if (buttonClicked === "Save & New") {
-      //   setNarration("");
-      //   setArr(initialInput);
-      //   setTotal(0);
-      //   // navigate(`/${organisationId}/journal-entry/add`);
-      //   // focusOnDate();
-      // }
+      
       console.log({
         organisationId,
-        date: date.date,
-        receivedAmount: Number(total),
-        receivedAccountId: receivedInAccountId,
-        entries: properFormatArray,
+        date:date.date,
+        receivedInAccountId,
+        total:parseInt(total),
+        properFormatArray,
         narration,
-        year: currentYear
+        currentYear
       });
+      
 
       agent.ReceiptEntry.add(
         organisationId,
         date.date,
         receivedInAccountId,
-        Number(total),
+        parseInt(total),
         properFormatArray,
         narration,
         currentYear
@@ -366,7 +361,7 @@ function JournalEntry(props: PropsFromRedux) {
           if (buttonClicked === "Save & New") {
             setNarration("");
             setArr(initialInput);
-            setTotal(0);
+            setTotal('0.00');
             console.log(response);
             (props as any).onNotify(
               "Receipt Entry Saved Successfully",
@@ -394,7 +389,7 @@ function JournalEntry(props: PropsFromRedux) {
             setNarration("");
             setDate({ date: "", error: "" });
             setArr(initialInput);
-            setTotal(0);
+            setTotal('0.00');
             (props as any).onNotify(
               "Journal Entry Saved Successfully",
               "",
