@@ -6,30 +6,19 @@ function classNames(...classes: any) {
 
 type Props = {
   onChange: (item: any) => void;
-  defaultValue: number;
+
   id: string;
   newValue: string;
   negativeAllowed?: boolean | false;
 };
 
 export default function AmountBox(props: Props) {
-  const [amount, setAmount] = useState("");
   const [amountToShow, setAmountToShow] = useState("");
 
   // this will update amount when a row is deleted
   useEffect(() => {
     setAmountToShow(props.newValue);
   }, [props.newValue]);
-
-  useEffect(() => {
-    setAmount(props.defaultValue.toString());
-    if (props.defaultValue > 0) {
-      let newValue: any = new Intl.NumberFormat("en-IN", {
-        minimumFractionDigits: 2,
-      }).format(props.defaultValue);
-      setAmountToShow(newValue);
-    }
-  }, []);
 
   const handleChange = (e: any) => {
     e.preventDefault();
@@ -57,7 +46,7 @@ export default function AmountBox(props: Props) {
       newValue =
         splitNewValue[0] + "." + splitNewValue[1].toString().slice(0, 2);
     }
-    setAmount(newValue);
+    // setAmount(newValue);
     setAmountToShow(newValue);
     props.onChange({ newValue, id: props.id });
   };

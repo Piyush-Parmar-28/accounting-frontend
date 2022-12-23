@@ -590,7 +590,7 @@ function JournalEntry(props: PropsFromRedux) {
                 </td>
                 <td>
                   <AmountBox
-                    defaultValue={0}
+                    // defaultValue={0}
                     onChange={handleDebitChange}
                     id={row.id.toString()}
                     newValue={row.debitAmount}
@@ -598,7 +598,7 @@ function JournalEntry(props: PropsFromRedux) {
                 </td>
                 <td>
                   <AmountBox
-                    defaultValue={0}
+                    // defaultValue={0}
                     onChange={handleCreditChange}
                     id={row.id.toString()}
                     newValue={row.creditAmount}

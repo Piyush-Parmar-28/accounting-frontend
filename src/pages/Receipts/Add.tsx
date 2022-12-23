@@ -67,7 +67,7 @@ function JournalEntry(props: PropsFromRedux) {
   const [id, setId] = useState(numberOfInitialRows);
   const inputArray = {
     accountId: "",
-    amount: 0,
+    amount: "",
     id: id,
   };
 
@@ -76,18 +76,17 @@ function JournalEntry(props: PropsFromRedux) {
   for (let i = 0; i < numberOfInitialRows; i++) {
     initialInput.push({
       accountId: "",
-      amount: 0,
+      amount: "",
       id: i,
     });
   }
-
 
   // set pagetype on basis of url
   const [pageType, setPageType] = useState("");
   const currentYear = (props as any).currentYear;
   const [date, setDate] = useState({ date: "", error: "" });
   const [narration, setNarration] = useState("");
-  const [receivedInAccountId, setreceivedInAccountId] = useState('');
+  const [receivedInAccountId, setreceivedInAccountId] = useState("");
 
   useEffect(() => {
     setPageCount(pageCount + 1);
@@ -169,14 +168,14 @@ function JournalEntry(props: PropsFromRedux) {
         debitAmount:
           array[i].debitAmount > 0
             ? new Intl.NumberFormat("en-IN", {
-              minimumFractionDigits: 2,
-            }).format(array[i].debitAmount)
+                minimumFractionDigits: 2,
+              }).format(array[i].debitAmount)
             : "",
         creditAmount:
           array[i].creditAmount > 0
             ? new Intl.NumberFormat("en-IN", {
-              minimumFractionDigits: 2,
-            }).format(array[i].creditAmount)
+                minimumFractionDigits: 2,
+              }).format(array[i].creditAmount)
             : "",
         id: i + 1,
       });
@@ -209,8 +208,8 @@ function JournalEntry(props: PropsFromRedux) {
     setArr((s: any) => {
       const newArr = s.slice();
       newArr.map((item: any) => {
-        return item.id === index ? item.amount = Number(newValue) : null
-      })
+        return item.id === index ? (item.amount = Number(newValue)) : null;
+      });
       return newArr;
     });
   };
@@ -228,9 +227,11 @@ function JournalEntry(props: PropsFromRedux) {
     arr.forEach((item: any) => {
       totalAmount += item.amount;
     });
-    totalAmount = new Intl.NumberFormat("en-IN", { minimumFractionDigits: 2, }).format(totalAmount);
+    totalAmount = new Intl.NumberFormat("en-IN", {
+      minimumFractionDigits: 2,
+    }).format(totalAmount);
     setTotal(totalAmount);
-  }
+  };
 
   const onAccountSelection = (e: any) => {
     console.log(arr);
@@ -246,8 +247,7 @@ function JournalEntry(props: PropsFromRedux) {
         }
       }
       return newArr;
-    }
-    );
+    });
   };
 
   const addInput = async () => {
@@ -271,15 +271,14 @@ function JournalEntry(props: PropsFromRedux) {
     setDate(data);
   };
 
-
   function validateData(): string {
-    let error = '';
+    let error = "";
     let totalAmount = 0;
 
     // Check if there is at least one row with both an account and an amount
     let hasAccountAndAmount = false;
     arr.forEach((input: any) => {
-      console.log(input)
+      console.log(input);
       if (input.accountId && input.amount) {
         hasAccountAndAmount = true;
       }
@@ -291,12 +290,14 @@ function JournalEntry(props: PropsFromRedux) {
 
     // Check if there is an account selected in any row, then the amount is compulsory and vice-versa
     arr.forEach((input: any) => {
+      console.log(input.accountId, input.amount);
       if (input.accountId && !input.amount) {
-        error = ("Amount is required when an account is selected");
+        console.log("error occured");
+        error = "Amount is required when an account is selected";
         return error;
       }
       if (!input.accountId && input.amount) {
-        error = ("Account is required when an amount is entered");
+        error = "Account is required when an amount is entered";
         return error;
       }
     });
@@ -308,23 +309,20 @@ function JournalEntry(props: PropsFromRedux) {
 
     // Check if the total amount is positive and not equal to zero
     if (totalAmount <= 0) {
-      error = ("Total amount must be positive and not equal to zero");
+      error = "Total amount must be positive and not equal to zero";
       return error;
     }
 
-    return '';
+    return "";
     // return !hasError;
   }
 
-
   const onButtonClick = (buttonClicked: any) => {
     let error = validateData();
-    if (error !== '') {
-      (props as any).onNotify(
-        error,
-        "",
-        "danger"
-      );
+    if (error !== "") {
+      console.log("error notify");
+
+      (props as any).onNotify(error, "", "danger");
       return;
     }
     // let count = 0;
@@ -355,7 +353,7 @@ function JournalEntry(props: PropsFromRedux) {
 
     for (const obj of arr) {
       let individualObject: any = obj;
-      if ((individualObject.amount !== 0 || individualObject.account !== "")) {
+      if (individualObject.amount !== 0 || individualObject.account !== "") {
         const obj = {
           accountId: individualObject.accountId,
           amount: individualObject.amount,
@@ -363,7 +361,6 @@ function JournalEntry(props: PropsFromRedux) {
         properFormatArray.push(obj);
         console.log(properFormatArray);
       }
-
     }
     // // save the entry
 
@@ -374,13 +371,13 @@ function JournalEntry(props: PropsFromRedux) {
       buttonClicked === "Save & Duplicate" ||
       buttonClicked === "Save & Close"
     ) {
-      if (buttonClicked === "Save & New") {
-        setNarration("");
-        setArr(initialInput);
-        setTotal(0);
-        // navigate(`/${organisationId}/journal-entry/add`);
-        // focusOnDate();
-      }
+      // if (buttonClicked === "Save & New") {
+      //   setNarration("");
+      //   setArr(initialInput);
+      //   setTotal(0);
+      //   // navigate(`/${organisationId}/journal-entry/add`);
+      //   // focusOnDate();
+      // }
       // console.log({
       //   organisationId,
       //   date: date.date,
@@ -399,48 +396,49 @@ function JournalEntry(props: PropsFromRedux) {
         properFormatArray,
         narration,
         currentYear
-      ).then((response: any) => {
-        if (buttonClicked === "Save & New") {
-          setNarration("");
-          setArr(initialInput);
-          setTotal(0);
-          console.log(response);
-          (props as any).onNotify(
-            "Receipt Entry Saved Successfully",
-            "",
-            "success"
-          );
-          // navigate(`/${organisationId}/journal-entry/add`);
-          focusOnDate();
-        }
+      )
+        .then((response: any) => {
+          if (buttonClicked === "Save & New") {
+            setNarration("");
+            setArr(initialInput);
+            setTotal(0);
+            console.log(response);
+            (props as any).onNotify(
+              "Receipt Entry Saved Successfully",
+              "",
+              "success"
+            );
+            // navigate(`/${organisationId}/journal-entry/add`);
+            focusOnDate();
+          }
 
-        // if (buttonClicked === "Save & Duplicate") {
-        //     (props as any).onNotify(
-        //         "Receipt Entry Added and Copied",
-        //         "Entry is already saved and copied. You can now edit and save again.",
-        //         "success"
-        //     );
-        //     navigate(
-        //         `/${organisationId}/${(props as any).currentYear
-        //         }/receipt-entry/duplicate/${response.entryId}`
-        //     );
-        //     focusOnDate();
-        // }
+          // if (buttonClicked === "Save & Duplicate") {
+          //     (props as any).onNotify(
+          //         "Receipt Entry Added and Copied",
+          //         "Entry is already saved and copied. You can now edit and save again.",
+          //         "success"
+          //     );
+          //     navigate(
+          //         `/${organisationId}/${(props as any).currentYear
+          //         }/receipt-entry/duplicate/${response.entryId}`
+          //     );
+          //     focusOnDate();
+          // }
 
-        if (buttonClicked === "Save & Close") {
-          setNarration("");
-          setDate({ date: "", error: "" });
-          setArr(initialInput);
-          setTotal(0);
-          (props as any).onNotify(
-            "Journal Entry Saved Successfully",
-            "",
-            "success"
-          );
+          if (buttonClicked === "Save & Close") {
+            setNarration("");
+            setDate({ date: "", error: "" });
+            setArr(initialInput);
+            setTotal(0);
+            (props as any).onNotify(
+              "Journal Entry Saved Successfully",
+              "",
+              "success"
+            );
 
-          navigate(-1);
-        }
-      })
+            navigate(-1);
+          }
+        })
         .catch((err: any) => {
           (props as any).onNotify(
             "Could not add Receipt Entry",
@@ -561,7 +559,6 @@ function JournalEntry(props: PropsFromRedux) {
       //   //         );
       //   //     });
 
-
       // }
       //     // if (
       //     //     buttonClicked === "Update & New" ||
@@ -627,8 +624,8 @@ function JournalEntry(props: PropsFromRedux) {
       //     //             );
       //     //         });
       //     // }
-    };
-  }
+    }
+  };
 
   const focusOnDate = () => {
     document.getElementById("date")?.focus();
@@ -662,7 +659,6 @@ function JournalEntry(props: PropsFromRedux) {
                     newDate={date.date}
                     currentYear={currentYear}
                     onBlurrFunction={dateFunction}
-
                   />
                 </div>
               </div>
@@ -701,15 +697,17 @@ function JournalEntry(props: PropsFromRedux) {
           {arr.map((item: any, i: any) => {
             return (
               <div key={i} className="grid grid-cols-1 sm:grid-cols-9 -my-2 ">
-
                 <div className="sm:col-span-2">
-                  {i === 0 ? <label
-                    htmlFor="Received For"
-                    className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2 sm:col-span-2"
-                  >
-                    Received For
-                  </label> : <></>
-                  }
+                  {i === 0 ? (
+                    <label
+                      htmlFor="Received For"
+                      className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2 sm:col-span-2"
+                    >
+                      Received For
+                    </label>
+                  ) : (
+                    <></>
+                  )}
                 </div>
                 <div className="sm:col-span-4">
                   <div className="mt-1">
@@ -719,7 +717,7 @@ function JournalEntry(props: PropsFromRedux) {
                       // this will update account when a row is deleted
                       newAccount={item.accountId ? item.accountId : ""}
                       filterByNature={["All"]}
-                    // filterByNature={["Capital", "Creditors", "Current Assets", "Current Liabilities", "Debtors", "Deposits - Assets", "Direct Expense", "Direct Income", "Duties & Taxes", "Fixed Asset", 'Indirect Expense', "Indirect Income", "Investments", "Loans and Advances - Asset", "Miscellaneous Assets", "Miscellaneous Liabilities", "Provisions", "Reserves", "Secured Loan", "Suspense", "Unsecured Loan"]}
+                      // filterByNature={["Capital", "Creditors", "Current Assets", "Current Liabilities", "Debtors", "Deposits - Assets", "Direct Expense", "Direct Income", "Duties & Taxes", "Fixed Asset", 'Indirect Expense', "Indirect Income", "Investments", "Loans and Advances - Asset", "Miscellaneous Assets", "Miscellaneous Liabilities", "Provisions", "Reserves", "Secured Loan", "Suspense", "Unsecured Loan"]}
                     />
                   </div>
                 </div>
@@ -727,7 +725,7 @@ function JournalEntry(props: PropsFromRedux) {
                   <div className="mt-1">
                     <AmountBox
                       negativeAllowed={true}
-                      defaultValue={0}
+                      // defaultValue={0}
                       onChange={handleChange}
                       // id={item[1].id}
                       id={item.id}
@@ -752,10 +750,11 @@ function JournalEntry(props: PropsFromRedux) {
             );
           })}
           <div className="grid grid-cols-1 sm:grid-cols-9 my-2">
+            <div className="sm:col-span-2 text-left text-blue-700 pr-2 sm:text-sm mx-2"></div>
             <div className="sm:col-span-2 text-left text-blue-700 pr-2 sm:text-sm mx-2">
-            </div>
-            <div className="sm:col-span-2 text-left text-blue-700 pr-2 sm:text-sm mx-2">
-              <button type='button' onClick={addInput}>+Add Row</button>
+              <button type="button" onClick={addInput}>
+                +Add Row
+              </button>
             </div>
             <div className="sm:col-span-2 text-right pr-2 sm:text-sm">
               Total
@@ -780,7 +779,9 @@ function JournalEntry(props: PropsFromRedux) {
                 name="narration"
                 rows={5}
                 className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 mt-1 block w-full sm:text-sm border-gray-300 rounded-md"
-                onChange={(e: { target: { value: any; }; }) => setNarration(e.target.value)}
+                onChange={(e: { target: { value: any } }) =>
+                  setNarration(e.target.value)
+                }
                 value={narration}
               />
             </div>

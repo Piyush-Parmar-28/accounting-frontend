@@ -516,7 +516,7 @@ function AddAccount(props: Props & PropsFromRedux) {
                           </label>
                           <div className="mt-1 sm:col-span-2 sm:mt-0">
                             <AmountBox
-                              defaultValue={state.openingBalance}
+                              // defaultValue={state.openingBalance}
                               onChange={openingBalanceHandler}
                               id="openingBalance"
                               key="openingBalance"
