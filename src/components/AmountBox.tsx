@@ -6,7 +6,6 @@ function classNames(...classes: any) {
 
 type Props = {
   onChange: (item: any) => void;
-
   id: string;
   newValue: string;
   negativeAllowed?: boolean | false;
@@ -22,7 +21,7 @@ export default function AmountBox(props: Props) {
 
   const handleChange = (e: any) => {
     e.preventDefault();
-
+    console.log("handleChange", e.target.value);
     // do not allow anything other othan numbers and dot .
     let newValue = !props.negativeAllowed
       ? e.target.value.replace(
@@ -47,8 +46,11 @@ export default function AmountBox(props: Props) {
         splitNewValue[0] + "." + splitNewValue[1].toString().slice(0, 2);
     }
     // setAmount(newValue);
+    console.log("newValue", newValue);
     setAmountToShow(newValue);
-    props.onChange({ newValue, id: props.id });
+    if (newValue !== "-") {
+      props.onChange({ newValue, id: props.id });
+    }
   };
 
   const handleBlur = (e: any) => {
@@ -57,10 +59,13 @@ export default function AmountBox(props: Props) {
 
     // convert to 00,00,000.00 format and change 5 to 5.00 and 5.1 to 5.10
 
-    if (newValue !== "") {
+    if (newValue !== "" && newValue !== "-") {
       newValue = new Intl.NumberFormat("en-IN", {
         minimumFractionDigits: 2,
       }).format(newValue);
+    }
+    if (newValue === "-") {
+      newValue = "";
     }
 
     setAmountToShow(newValue);
@@ -71,7 +76,7 @@ export default function AmountBox(props: Props) {
     e.target.select();
     let newValue = e.target.value;
 
-    if (newValue !== "") {
+    if (newValue !== "" && newValue !== "-") {
       newValue = e.target.value.replace(/,/g, "");
 
       newValue = Number(newValue).toFixed(2);

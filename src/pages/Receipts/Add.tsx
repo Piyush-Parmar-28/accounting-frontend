@@ -328,7 +328,7 @@ function JournalEntry(props: PropsFromRedux) {
     }
     console.log("PFA");
     console.log(properFormatArray);
-    console.log(parseInt(total.replace(/[,.-]/g, '')),);
+    console.log(parseInt(total.replace(/[,.-]/g, "")));
     // // save the entry
 
     const organisationId = (props as any).params?.organisationId;
@@ -346,7 +346,7 @@ function JournalEntry(props: PropsFromRedux) {
         organisationId,
         date.date,
         receivedInAccountId,
-        parseInt(total.replace(/[,]/g, '')),
+        parseInt(total.replace(/[,]/g, "")),
         properFormatArray,
         narration,
         currentYear
