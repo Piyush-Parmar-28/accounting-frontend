@@ -177,7 +177,6 @@ class Organisations extends React.Component<any, PropsFromRedux> {
         });
       })
       .catch((err: any) => {
-        console.log("posdpsod sent", { err });
         this.setState({ sentLoading: false });
         (this.props as any).onNotify(
           "Could not load Sent Invitaion Lists",
@@ -203,7 +202,6 @@ class Organisations extends React.Component<any, PropsFromRedux> {
         });
       })
       .catch((err: any) => {
-        console.log("posdpsod resceived", { err });
         this.setState({ recieveLoading: false });
         (this.props as any).onNotify(
           "Could not load Received Invitaion Lists",

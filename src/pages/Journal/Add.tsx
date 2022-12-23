@@ -526,7 +526,7 @@ function JournalEntry(props: PropsFromRedux) {
   const focusOnNarration = () => {
     document.getElementById("narration")?.focus();
   };
-  console.log(pageCount);
+
   return (
     <Dashboard>
       <div>

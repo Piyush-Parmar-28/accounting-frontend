@@ -103,7 +103,6 @@ class AddClient extends React.Component<any, PropsFromRedux> {
       this.setState({ logging: true });
       agent.User.addUser(organisation, email, role, userRightsList)
         .then((response: any) => {
-          console.log({ response });
           this.setState({ logging: false });
           (this.props as any).onNotify(
             "Invitation sent",

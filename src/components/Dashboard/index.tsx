@@ -154,12 +154,8 @@ class Dashboard extends React.Component<DashboardProps, PropsFromRedux> {
         });
       }
     }
-    console.log((this.props as any).params.year);
-    console.log("updatecurrentyear");
+
     if (!(this.props as any).params.year) {
-      {
-        console.log("defaultyear");
-      }
       (this.props as any).updateCommon({
         currentYear: getCurrentFinYear(),
       });
@@ -204,7 +200,6 @@ class Dashboard extends React.Component<DashboardProps, PropsFromRedux> {
     if (organisationId) {
       agent.User.getUserRights(organisationId)
         .then((response: any) => {
-          console.log({ righstsss: response });
           if (response.hasOwnProperty("allRights") && response.allRights) {
             (this.props as any).updateCommon({ rights: adminRights });
           } else {
@@ -237,7 +232,6 @@ class Dashboard extends React.Component<DashboardProps, PropsFromRedux> {
         ""
       )
         .then((response: any) => {
-          console.log(response);
           (this.props as any).updateCommon({ accounts: response.accounts });
         })
         .catch((err: any) => {
@@ -337,12 +331,8 @@ class Dashboard extends React.Component<DashboardProps, PropsFromRedux> {
 
     const prevCurrentYear = prevProps.params.year;
     const currCurrentYear = (this.props as any).params.year;
-    console.log("prevProps", prevProps);
-    console.log("currProps", (this.props as any).params);
+
     if (prevCurrentYear !== currCurrentYear) {
-      {
-        console.log("current year changed");
-      }
       (this.props as any).updateCommon({
         currentYear: currCurrentYear,
       });
@@ -358,7 +348,7 @@ class Dashboard extends React.Component<DashboardProps, PropsFromRedux> {
     setTimeout(() => {
       if (!this.state.loading) {
         const path = (this.props as any).location.pathname;
-        console.log("path", path);
+
         if (path !== "/organisations") {
           if ((this.props as any).currentOrganisation) {
             let formattedYear =

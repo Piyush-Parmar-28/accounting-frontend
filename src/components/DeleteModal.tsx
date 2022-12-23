@@ -163,7 +163,7 @@ class DeleteModal extends React.Component<Props, PropsFromRedux> {
     const organisationId = (this.props as any)?.currentOrganisation._id;
 
     let entryIds: any[] = [];
-    console.log(this.props.state.selectedRows);
+
     for (const entry of this.props.state.selectedRow) {
       entryIds.push(entry._id);
     }
