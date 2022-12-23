@@ -79,7 +79,6 @@ function EntriesList(props: PropsFromRedux) {
   // Selected pagination value
   let currPage = 0;
 
-  console.log("currentYear", currentYear);
   interface state {
     loading: boolean;
     posX: any;
@@ -133,7 +132,6 @@ function EntriesList(props: PropsFromRedux) {
   //Get Organisation Data
 
   const getEntriesList = (forSearch: boolean, searchText = "") => {
-    console.log("getEntriesList");
     const organisationId = (props as any).params?.organisationId;
     const year = (props as any).currentYear;
 
@@ -167,7 +165,6 @@ function EntriesList(props: PropsFromRedux) {
       searchText
     )
       .then((response: any) => {
-        console.log("response", response);
         setState((prevState) => ({
           ...prevState,
           loading: false,
@@ -195,7 +192,7 @@ function EntriesList(props: PropsFromRedux) {
   const downloadEntriesList = () => {
     const organisationId = (props as any).params?.organisationId;
     const year = (props as any).currentYear;
-    console.log("props", props);
+
     let searchText = state.searchText || "";
     let skip = state.skip;
     let limit = state.limit;
@@ -222,7 +219,6 @@ function EntriesList(props: PropsFromRedux) {
       searchText
     )
       .then((response: any) => {
-        console.log("response1", response.headers);
         downloadFile(response, `Journal Entries - ${year}.xlsx`);
         (props as any).onNotify(
           "Download",
@@ -245,13 +241,11 @@ function EntriesList(props: PropsFromRedux) {
   };
 
   useEffect(() => {
-    console.log("initial use effect");
     getEntriesList(false);
   }, [(props as any).currentYear]);
 
   useEffectAfterInitialRender(
     () => {
-      console.log(2);
       getEntriesList(false);
     },
     [(props as any).location.pathname],
@@ -260,7 +254,6 @@ function EntriesList(props: PropsFromRedux) {
 
   useEffectAfterInitialRender(
     () => {
-      console.log(3);
       getEntriesList(false);
     },
     [(props as any).currentModal],
@@ -269,7 +262,6 @@ function EntriesList(props: PropsFromRedux) {
 
   useEffectAfterInitialRender(
     () => {
-      console.log(4);
       setState((prevState) => ({
         ...prevState,
         searchText: "",
@@ -283,7 +275,6 @@ function EntriesList(props: PropsFromRedux) {
 
   useEffectAfterInitialRender(
     () => {
-      console.log(5);
       getEntriesList(false);
     },
     [state.skip],
@@ -291,7 +282,6 @@ function EntriesList(props: PropsFromRedux) {
   );
   useEffectAfterInitialRender(
     () => {
-      console.log(6);
       getEntriesList(false);
     },
     [state.sortBy],
@@ -330,7 +320,7 @@ function EntriesList(props: PropsFromRedux) {
     if (state.typingTimeout) {
       clearTimeout(state.typingTimeout);
     }
-    console.log("searchText", ev.target.value);
+
     setState((prevState) => ({
       ...prevState,
       searchText: ev.target.value,
@@ -357,7 +347,6 @@ function EntriesList(props: PropsFromRedux) {
   };
 
   const openDeleteModal = (entry: any[]) => {
-    console.log("entry", entry);
     setState((prevState) => ({
       ...prevState,
       selectedRow: entry,
@@ -404,13 +393,12 @@ function EntriesList(props: PropsFromRedux) {
   };
 
   const onEntryCheckBoxChange = (entry: any) => {
-    console.log("entry", entry);
     const { selectedEntries } = state;
-    console.log("selectedEntries", selectedEntries);
+
     const clientIndex = selectedEntries.findIndex(
       (c: any) => c._id === entry._id
     );
-    console.log("clientIndex", clientIndex);
+
     if (clientIndex === -1) {
       setState((prevState: any) => {
         return {
@@ -449,8 +437,7 @@ function EntriesList(props: PropsFromRedux) {
       });
     }
   };
-  console.log("selected entries", state.selectedEntries);
-  console.log("state", state);
+
   return (
     <Dashboard>
       <div className="gsts">

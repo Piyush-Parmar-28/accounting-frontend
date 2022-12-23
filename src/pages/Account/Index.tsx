@@ -144,10 +144,9 @@ function AccountsList(props: PropsFromRedux) {
       ...prevState,
       loading: true,
     }));
-    console.log("statefrom function", state);
-    console.log("forSearch", forSearch);
+
     // const searchText = forSearch ? state.searchText : "";
-    console.log("searchTextfromgetaccountlist function", state.searchText);
+
     if (!organisationId) {
       (props as any).onNotify(
         "Could not load Organisation Details",
@@ -382,7 +381,7 @@ function AccountsList(props: PropsFromRedux) {
     if (state.typingTimeout) {
       clearTimeout(state.typingTimeout);
     }
-    console.log("searchText", ev.target.value);
+
     setState((prevState) => ({
       ...prevState,
       searchText: ev.target.value,

@@ -113,7 +113,7 @@ function JournalEntry(props: PropsFromRedux) {
   }, [(props as any).location.pathname]);
 
   const [arr, setArr] = useState(initialInput);
-  const [total, setTotal] = useState('0.00');
+  const [total, setTotal] = useState("0.00");
 
   // focus on date on second render
   useEffectAfterInitialRender(
@@ -227,9 +227,9 @@ function JournalEntry(props: PropsFromRedux) {
     arr.forEach((item: any) => {
       totalAmount += item.amount;
     });
-    totalAmount = (new Intl.NumberFormat("en-IN", {
+    totalAmount = new Intl.NumberFormat("en-IN", {
       minimumFractionDigits: 2,
-    }).format(totalAmount));
+    }).format(totalAmount);
     setTotal(totalAmount);
   };
 
@@ -239,7 +239,6 @@ function JournalEntry(props: PropsFromRedux) {
     object.accountId = e.account._id;
     // console.log(newData);
     setArr(newData);
-
   };
 
   const addInput = async () => {
@@ -319,17 +318,17 @@ function JournalEntry(props: PropsFromRedux) {
 
     for (const obj of arr) {
       let individualObject: any = obj;
-      if (individualObject.amount !== '' && individualObject.account !== "") {
+      if (individualObject.amount !== "" && individualObject.account !== "") {
         const obj = {
           accountId: individualObject.accountId,
           amount: individualObject.amount,
         };
         properFormatArray.push(obj);
       }
-    }    
+    }
     console.log("PFA");
     console.log(properFormatArray);
-    
+    console.log(parseFloat(total));
     // // save the entry
 
     const organisationId = (props as any).params?.organisationId;
@@ -339,7 +338,6 @@ function JournalEntry(props: PropsFromRedux) {
       buttonClicked === "Save & Duplicate" ||
       buttonClicked === "Save & Close"
     ) {
-
       // const removeEmptyEntries = () => {
       //   let newArr = arr.map((item: any) => item.amount && item.accountId);
       // }
@@ -357,7 +355,7 @@ function JournalEntry(props: PropsFromRedux) {
           if (buttonClicked === "Save & New") {
             setNarration("");
             setArr(initialInput);
-            setTotal('0.00');
+            setTotal("0.00");
             console.log(response);
             (props as any).onNotify(
               "Receipt Entry Saved Successfully",
@@ -385,7 +383,7 @@ function JournalEntry(props: PropsFromRedux) {
             setNarration("");
             setDate({ date: "", error: "" });
             setArr(initialInput);
-            setTotal('0.00');
+            setTotal("0.00");
             (props as any).onNotify(
               "Journal Entry Saved Successfully",
               "",
@@ -673,7 +671,29 @@ function JournalEntry(props: PropsFromRedux) {
                       // this will update account when a row is deleted
                       newAccount={item.accountId ? item.accountId : ""}
                       // filterByNature={["All"]}
-                      filterByNature={["Capital", "Creditors", "Current Assets", "Current Liabilities", "Debtors", "Deposits - Assets", "Direct Expense", "Direct Income", "Duties & Taxes", "Fixed Asset", 'Indirect Expense', "Indirect Income", "Investments", "Loans and Advances - Asset", "Miscellaneous Assets", "Miscellaneous Liabilities", "Provisions", "Reserves", "Secured Loan", "Suspense", "Unsecured Loan"]}
+                      filterByNature={[
+                        "Capital",
+                        "Creditors",
+                        "Current Assets",
+                        "Current Liabilities",
+                        "Debtors",
+                        "Deposits - Assets",
+                        "Direct Expense",
+                        "Direct Income",
+                        "Duties & Taxes",
+                        "Fixed Asset",
+                        "Indirect Expense",
+                        "Indirect Income",
+                        "Investments",
+                        "Loans and Advances - Asset",
+                        "Miscellaneous Assets",
+                        "Miscellaneous Liabilities",
+                        "Provisions",
+                        "Reserves",
+                        "Secured Loan",
+                        "Suspense",
+                        "Unsecured Loan",
+                      ]}
                     />
                   </div>
                 </div>

@@ -58,7 +58,7 @@ function AccountList(props: Props & PropsFromRedux) {
       let account = accounts.find((account: any) => {
         return account._id === props.newAccount;
       });
-      console.log("props.newAccount", props.newAccount);
+
       if (!account) {
         setSelectedAccount({});
       } else {
@@ -102,7 +102,6 @@ function AccountList(props: Props & PropsFromRedux) {
       return;
     }
     if (e === "Add New Account") {
-      console.log("open new account");
       openAddAccountModal();
       return;
     }

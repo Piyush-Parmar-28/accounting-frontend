@@ -45,9 +45,8 @@ interface LogsModalProps {
 }
 
 function LogsModal(props: LogsModalProps & PropsFromRedux) {
-  console.log("logs modal");
   const { type, showLogsModal, selectedRow, setOpen } = props;
-  console.log("props", props);
+
   const organisationId = (props as any).currentOrganisation._id;
 
   const closeButtonRef = useRef<HTMLButtonElement>(null);
@@ -66,13 +65,9 @@ function LogsModal(props: LogsModalProps & PropsFromRedux) {
   const headers = ["Type", "From", "To", "Date", "User"];
 
   const getAccountLogs = () => {
-    console.log("accountlog popup");
-    console.log("selectedRow", selectedRow);
-    console.log("workSpaceId", organisationId);
     setLoading(true);
     agent.Logs.getAccountLogs(organisationId, selectedRow._id)
       .then((response: any) => {
-        console.log("response", response);
         const res =
           sorting === "Oldest First" ? response.data : response.data.reverse();
         setLogList(res);
@@ -108,7 +103,6 @@ function LogsModal(props: LogsModalProps & PropsFromRedux) {
 
   useEffectAfterInitialRender(
     () => {
-      console.log("useEffect");
       type !== "user" && getLogsList();
       closeButtonRef.current!.focus();
       document.addEventListener("keydown", onKeyUpFunction, false);
