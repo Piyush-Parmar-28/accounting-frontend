@@ -634,8 +634,6 @@ function JournalEntry(props: PropsFromRedux) {
             </div>
           </div>
           {arr.map((item: any, i: any) => {
-            console.log(item);
-            
             return (
               <div key={i} className="grid grid-cols-1 sm:grid-cols-9 -my-2 ">
 
@@ -654,7 +652,7 @@ function JournalEntry(props: PropsFromRedux) {
                       onSelection={onAccountSelection}
                       id={item.id}
                       // this will update account when a row is deleted
-                      newAccount={item[2] ? item[2] : ""}
+                      newAccount={item.accountId ? item.accountId : ""}
                       filterByNature={["Capital", "Creditors", "Current Assets", "Current Liabilities", "Debtors", "Deposits - Assets", "Direct Expense", "Direct Income", "Duties & Taxes", "Fixed Asset", 'Indirect Expense', "Indirect Income", "Investments", "Loans and Advances - Asset", "Miscellaneous Assets", "Miscellaneous Liabilities", "Provisions", "Reserves", "Secured Loan", "Suspense", "Unsecured Loan"]}
                     />
                   </div>
@@ -667,7 +665,7 @@ function JournalEntry(props: PropsFromRedux) {
                       onChange={handleChange}
                       // id={item[1].id}
                       id={item.id}
-                      newValue={item.value}
+                      newValue={item.amount}
                     />
                   </div>
                 </div>
