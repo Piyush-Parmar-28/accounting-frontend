@@ -319,14 +319,17 @@ function JournalEntry(props: PropsFromRedux) {
 
     for (const obj of arr) {
       let individualObject: any = obj;
-      if (individualObject.amount !== 0 || individualObject.account !== "") {
+      if (individualObject.amount !== '' && individualObject.account !== "") {
         const obj = {
           accountId: individualObject.accountId,
           amount: individualObject.amount,
         };
         properFormatArray.push(obj);
       }
-    }
+    }    
+    console.log("PFA");
+    console.log(properFormatArray);
+    
     // // save the entry
 
     const organisationId = (props as any).params?.organisationId;
@@ -336,17 +339,10 @@ function JournalEntry(props: PropsFromRedux) {
       buttonClicked === "Save & Duplicate" ||
       buttonClicked === "Save & Close"
     ) {
-      
-      console.log({
-        organisationId,
-        date:date.date,
-        receivedInAccountId,
-        total:parseInt(total),
-        properFormatArray,
-        narration,
-        currentYear
-      });
-      
+
+      // const removeEmptyEntries = () => {
+      //   let newArr = arr.map((item: any) => item.amount && item.accountId);
+      // }
 
       agent.ReceiptEntry.add(
         organisationId,
