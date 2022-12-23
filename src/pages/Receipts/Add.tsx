@@ -23,6 +23,7 @@ import useEffectAfterInitialRender from "../../helpers/useEffectAfterInitialRend
 import AmountBox from "../../components/AmountBox";
 import { convertDateToString } from "../../helpers/Convertdate";
 import { format } from "date-fns";
+import { string } from "prop-types";
 
 const tagManagerArgs = {
   dataLayer: {
@@ -112,7 +113,7 @@ function JournalEntry(props: PropsFromRedux) {
   }, [(props as any).location.pathname]);
 
   const [arr, setArr] = useState(initialInput);
-  const [total, setTotal] = useState(0);
+  const [total, setTotal] = useState('0.00');
 
   // focus on date on second render
   useEffectAfterInitialRender(
@@ -142,8 +143,8 @@ function JournalEntry(props: PropsFromRedux) {
               date: convertDateToString(data.entryDetails.date),
               error: "",
             });
-            setNarration(data.entryDetails.narration);
-            setArr(changeArrayFormatToShowData(data.entryDetails.entries));
+            // setNarration(data.entryDetails.narration);
+            // setArr(changeArrayFormatToShowData(data.entryDetails.entries));
             setTimeout(() => {
               focusOnNarration();
               focusOnDate();
@@ -160,28 +161,28 @@ function JournalEntry(props: PropsFromRedux) {
     0
   );
 
-  const changeArrayFormatToShowData = (array: any) => {
-    let properFormatArray = [];
-    for (let i = 0; i < array.length; i++) {
-      properFormatArray.push({
-        accountId: array[i].accountId,
-        debitAmount:
-          array[i].debitAmount > 0
-            ? new Intl.NumberFormat("en-IN", {
-                minimumFractionDigits: 2,
-              }).format(array[i].debitAmount)
-            : "",
-        creditAmount:
-          array[i].creditAmount > 0
-            ? new Intl.NumberFormat("en-IN", {
-                minimumFractionDigits: 2,
-              }).format(array[i].creditAmount)
-            : "",
-        id: i + 1,
-      });
-    }
-    return properFormatArray;
-  };
+  // const changeArrayFormatToShowData = (array: any) => {
+  //   let properFormatArray = [];
+  //   for (let i = 0; i < array.length; i++) {
+  //     properFormatArray.push({
+  //       accountId: array[i].accountId,
+  //       debitAmount:
+  //         array[i].debitAmount > 0
+  //           ? new Intl.NumberFormat("en-IN", {
+  //             minimumFractionDigits: 2,
+  //           }).format(array[i].debitAmount)
+  //           : "",
+  //       creditAmount:
+  //         array[i].creditAmount > 0
+  //           ? new Intl.NumberFormat("en-IN", {
+  //             minimumFractionDigits: 2,
+  //           }).format(array[i].creditAmount)
+  //           : "",
+  //       id: i + 1,
+  //     });
+  //   }
+  //   return properFormatArray;
+  // };
 
   useEffect(() => {
     if (id > numberOfInitialRows) {
@@ -202,11 +203,10 @@ function JournalEntry(props: PropsFromRedux) {
   }, [arr]);
 
   const changeValue = (id: string, newValue: any, totalChange = true) => {
-    // set value in state
     const index = id;
 
     setArr((s: any) => {
-      const newArr = s.slice();
+      const newArr = arr.map((obj: any) => ({ ...obj }));
       newArr.map((item: any) => {
         return item.id === index ? (item.amount = Number(newValue)) : null;
       });
@@ -227,27 +227,19 @@ function JournalEntry(props: PropsFromRedux) {
     arr.forEach((item: any) => {
       totalAmount += item.amount;
     });
-    totalAmount = new Intl.NumberFormat("en-IN", {
+    totalAmount = (new Intl.NumberFormat("en-IN", {
       minimumFractionDigits: 2,
-    }).format(totalAmount);
+    }).format(totalAmount));
     setTotal(totalAmount);
   };
 
   const onAccountSelection = (e: any) => {
-    console.log(arr);
+    const newData = [...arr];
+    let object: any = newData.find((item: any) => item.id === e.account.id);
+    object.accountId = e.account._id;
+    // console.log(newData);
+    setArr(newData);
 
-    setArr((s: any): [] => {
-      const newArr = s.slice();
-      for (let obj of newArr) {
-        if (obj.id === e.account.id) {
-          let index = newArr.indexOf(obj);
-          if (index !== -1) {
-            newArr.splice(index, 1, { ...obj, accountId: e.account._id });
-          }
-        }
-      }
-      return newArr;
-    });
   };
 
   const addInput = async () => {
@@ -257,8 +249,6 @@ function JournalEntry(props: PropsFromRedux) {
   };
 
   const deleteRow = (id: any) => {
-    console.log(arr, id);
-
     let newArr = arr.slice();
     newArr.splice(id, 1);
     changeTotal();
@@ -325,43 +315,21 @@ function JournalEntry(props: PropsFromRedux) {
       (props as any).onNotify(error, "", "danger");
       return;
     }
-    // let count = 0;
-    // for (const obj of arr) {
-    //   // For atleat one entry
-    //   // if ((obj.amount === 0 || obj.account === "") && !(obj.amount === 0 && obj.account === "")) {
-    //   //   (props as any).onNotify(
-    //   //     "Please fill atleast one field in received for.",
-    //   //     "",
-    //   //     "danger"
-    //   //   );
-    //   //   return;
-    //   // }
-    //   if (obj.amount === 0 && obj.account === "") {
-    //     count++;
-    //   }
-    // }
-    // if (count === 0) {
-    //   (props as any).onNotify(
-    //     "Please fill the both fields amount and account if either one of them is filled.",
-    //     "",
-    //     "danger"
-    //   );
-    //   return;
-    // }
-    // set data in proper format which backend can process
     const properFormatArray = [];
 
     for (const obj of arr) {
       let individualObject: any = obj;
-      if (individualObject.amount !== 0 || individualObject.account !== "") {
+      if (individualObject.amount !== '' && individualObject.account !== "") {
         const obj = {
           accountId: individualObject.accountId,
           amount: individualObject.amount,
         };
         properFormatArray.push(obj);
-        console.log(properFormatArray);
       }
-    }
+    }    
+    console.log("PFA");
+    console.log(properFormatArray);
+    
     // // save the entry
 
     const organisationId = (props as any).params?.organisationId;
@@ -371,28 +339,16 @@ function JournalEntry(props: PropsFromRedux) {
       buttonClicked === "Save & Duplicate" ||
       buttonClicked === "Save & Close"
     ) {
-      // if (buttonClicked === "Save & New") {
-      //   setNarration("");
-      //   setArr(initialInput);
-      //   setTotal(0);
-      //   // navigate(`/${organisationId}/journal-entry/add`);
-      //   // focusOnDate();
+
+      // const removeEmptyEntries = () => {
+      //   let newArr = arr.map((item: any) => item.amount && item.accountId);
       // }
-      // console.log({
-      //   organisationId,
-      //   date: date.date,
-      //   receivedAmount: Number(total),
-      //   receivedAccountId: receivedInAccountId,
-      //   entries: properFormatArray,
-      //   narration,
-      //   year: currentYear
-      // });
 
       agent.ReceiptEntry.add(
         organisationId,
         date.date,
         receivedInAccountId,
-        Number(total),
+        parseInt(total),
         properFormatArray,
         narration,
         currentYear
@@ -401,7 +357,7 @@ function JournalEntry(props: PropsFromRedux) {
           if (buttonClicked === "Save & New") {
             setNarration("");
             setArr(initialInput);
-            setTotal(0);
+            setTotal('0.00');
             console.log(response);
             (props as any).onNotify(
               "Receipt Entry Saved Successfully",
@@ -429,7 +385,7 @@ function JournalEntry(props: PropsFromRedux) {
             setNarration("");
             setDate({ date: "", error: "" });
             setArr(initialInput);
-            setTotal(0);
+            setTotal('0.00');
             (props as any).onNotify(
               "Journal Entry Saved Successfully",
               "",
@@ -716,8 +672,8 @@ function JournalEntry(props: PropsFromRedux) {
                       id={item.id}
                       // this will update account when a row is deleted
                       newAccount={item.accountId ? item.accountId : ""}
-                      filterByNature={["All"]}
-                      // filterByNature={["Capital", "Creditors", "Current Assets", "Current Liabilities", "Debtors", "Deposits - Assets", "Direct Expense", "Direct Income", "Duties & Taxes", "Fixed Asset", 'Indirect Expense', "Indirect Income", "Investments", "Loans and Advances - Asset", "Miscellaneous Assets", "Miscellaneous Liabilities", "Provisions", "Reserves", "Secured Loan", "Suspense", "Unsecured Loan"]}
+                      // filterByNature={["All"]}
+                      filterByNature={["Capital", "Creditors", "Current Assets", "Current Liabilities", "Debtors", "Deposits - Assets", "Direct Expense", "Direct Income", "Duties & Taxes", "Fixed Asset", 'Indirect Expense', "Indirect Income", "Investments", "Loans and Advances - Asset", "Miscellaneous Assets", "Miscellaneous Liabilities", "Provisions", "Reserves", "Secured Loan", "Suspense", "Unsecured Loan"]}
                     />
                   </div>
                 </div>
