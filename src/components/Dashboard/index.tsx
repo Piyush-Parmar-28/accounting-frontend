@@ -17,6 +17,7 @@ import {
 import Icon from "../Icon";
 import MultiSelect from "../MultiSelect";
 import SearchNavigation from "../SearchNavigation";
+import { ChevronDoubleLeftIcon } from "@heroicons/react/24/outline";
 
 const getCurrentFinYear = () => {
   const todayDate5 = new Date();
@@ -153,10 +154,18 @@ class Dashboard extends React.Component<DashboardProps, PropsFromRedux> {
         });
       }
     }
-    if (!(this.props as any).currentYear) {
-      console.log("updatecurrentyear");
+    console.log((this.props as any).params.year);
+    console.log("updatecurrentyear");
+    if (!(this.props as any).params.year) {
+      {
+        console.log("defaultyear");
+      }
       (this.props as any).updateCommon({
         currentYear: getCurrentFinYear(),
+      });
+    } else {
+      (this.props as any).updateCommon({
+        currentYear: (this.props as any).params.year,
       });
     }
   };
@@ -324,6 +333,19 @@ class Dashboard extends React.Component<DashboardProps, PropsFromRedux> {
       });
       // this.getUserRights();
       this.getAccountList();
+    }
+
+    const prevCurrentYear = prevProps.params.year;
+    const currCurrentYear = (this.props as any).params.year;
+    console.log("prevProps", prevProps);
+    console.log("currProps", (this.props as any).params);
+    if (prevCurrentYear !== currCurrentYear) {
+      {
+        console.log("current year changed");
+      }
+      (this.props as any).updateCommon({
+        currentYear: currCurrentYear,
+      });
     }
 
     if ((this.props as any).updateAccounts === true) {
@@ -635,7 +657,7 @@ class Dashboard extends React.Component<DashboardProps, PropsFromRedux> {
                               key={menuItem.name}
                               className={
                                 (this.props as any).location.pathname ===
-                                  menuItem.route
+                                menuItem.route
                                   ? "bg-gray-900 text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md"
                                   : "text-gray-300 hover:bg-gray-700 hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md"
                               }
@@ -771,7 +793,7 @@ class Dashboard extends React.Component<DashboardProps, PropsFromRedux> {
                                                                   .props as any
                                                               ).location
                                                                 .pathname ===
-                                                                subSubItem.route
+                                                              subSubItem.route
                                                                 ? "bg-gray-900 text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md"
                                                                 : "text-gray-300 hover:bg-gray-700 hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md"
                                                             }
@@ -837,7 +859,7 @@ class Dashboard extends React.Component<DashboardProps, PropsFromRedux> {
                           key={menuItem.name}
                           className={
                             (this.props as any).location.pathname ===
-                              menuItem.route
+                            menuItem.route
                               ? "bg-gray-900 text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md"
                               : "text-gray-300 hover:bg-gray-700 hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md"
                           }
@@ -975,7 +997,7 @@ class Dashboard extends React.Component<DashboardProps, PropsFromRedux> {
                                                           (this.props as any)
                                                             .location
                                                             .pathname ===
-                                                            subSubItem.route
+                                                          subSubItem.route
                                                             ? "bg-gray-900 text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md"
                                                             : "text-gray-300 hover:bg-gray-700 hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md"
                                                         }

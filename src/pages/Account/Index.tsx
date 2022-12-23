@@ -169,6 +169,9 @@ function AccountsList(props: PropsFromRedux) {
       type = "openingbalance";
       year = "";
     }
+    if (!currentYear) {
+      return;
+    }
     agent.Account.getAccountList(
       organisationId,
       active,
@@ -258,7 +261,13 @@ function AccountsList(props: PropsFromRedux) {
   );
 
   // if page refreshed and current year not availabe then rerender on getting current year to show in heading and also change list if year changes
-  useEffectAfterInitialRender(() => {}, [currentYear], 0);
+  useEffectAfterInitialRender(
+    () => {
+      getAccountList(false);
+    },
+    [currentYear],
+    0
+  );
 
   useEffectAfterInitialRender(
     () => {
@@ -425,24 +434,24 @@ function AccountsList(props: PropsFromRedux) {
   };
 
   const openAddAccountModal = () => {
-    const statusRights = (props as any)?.rights?.statusRights;
-    const createRight = statusRights.create;
-    if (createRight) {
-      (props as any).updateCommon({
-        currentModal: {
-          modalName: "ADD_ACCOUNT_MODAL",
-          fetchAgain: false,
-          type: "add",
-          data: "",
-        },
-      });
-    } else {
-      (props as any).onNotify(
-        "Rights Not Available",
-        "Ask Admin to change your user rights.",
-        "danger"
-      );
-    }
+    // const statusRights = (props as any)?.rights?.statusRights;
+    // const createRight = statusRights.create;
+    // if (createRight) {
+    (props as any).updateCommon({
+      currentModal: {
+        modalName: "ADD_ACCOUNT_MODAL",
+        fetchAgain: false,
+        type: "add",
+        data: "",
+      },
+    });
+    // } else {
+    //   (props as any).onNotify(
+    //     "Rights Not Available",
+    //     "Ask Admin to change your user rights.",
+    //     "danger"
+    //   );
+    // }
   };
 
   const openEditAccountModal = (account: any) => {

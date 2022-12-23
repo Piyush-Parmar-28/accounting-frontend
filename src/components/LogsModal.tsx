@@ -170,7 +170,7 @@ function LogsModal(props: LogsModalProps & PropsFromRedux) {
                     <div className="flex justify-between pb-6">
                       <div className="rounded-md">
                         <h2 className="text-lg leading-6 font-medium text-gray-900 capitalize">
-                          Activity for '{selectedRow.name}'
+                          Logs for '{selectedRow.name}'
                         </h2>
                       </div>
                       <div className="flex items-center gap-x-4">
@@ -403,8 +403,8 @@ function LogsModal(props: LogsModalProps & PropsFromRedux) {
                                         !endDate &&
                                         type === "user" ? (
                                         <div className="px-6 py-3 whitespace-nowrap text-sm font-medium text-gray-900 w-full bg-white">
-                                          Choose Start and End date to view
-                                          Activity for user '{selectedRow.name}
+                                          Choose Start and End date to view Logs
+                                          for user '{selectedRow.name}
                                           '.
                                         </div>
                                       ) : (
