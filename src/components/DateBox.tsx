@@ -307,7 +307,7 @@ export default function DateComponent(props: Props) {
             <span className="text-gray-500 sm:text-sm">Rs.</span>
           </div>
         } */}
-        <div className="mx-2">
+        <div>
           <input
             autoFocus
             autoComplete="off"

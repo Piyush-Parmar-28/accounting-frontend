@@ -529,9 +529,9 @@ function JournalEntry(props: PropsFromRedux) {
 
   return (
     <Dashboard>
-      <div>
+      <div className="bg-white pl-14 pt-8">
         <div>
-          <h3 className="text-xl font-medium leading-6 text-gray-900">
+          <h3 className="text-xl  font-medium leading-6 text-gray-900">
             {pageType === "add" && "Journal Entry - Add"}
             {pageType === "edit" && "Journal Entry - Edit"}
             {pageType === "duplicate" && "Journal Entry - Duplicate"}
@@ -559,122 +559,124 @@ function JournalEntry(props: PropsFromRedux) {
             </div>
           </div>
         </div>
-      </div>
 
-      <div className="space-y-1  divide-gray-200 sm:grid-cols-9 mr-96 mt-12">
-        <table>
-          <thead>
-            <tr>
-              <th className="sm:col-span-4   pr-2 sm:text-sm border border-gray-300 bg-gray-200 rounded py-1">
-                Account
-              </th>
-              <th className="sm:col-span-2  pr-2 sm:text-sm border border-gray-300 bg-gray-200 rounded py-1">
-                Debit{" "}
-              </th>
-              <th className="sm:col-span-2  pr-2 sm:text-sm border border-gray-300 bg-gray-200 rounded py-1">
-                Credit
-              </th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            {arr.map((row: any) => (
-              <tr key={row.id}>
-                <td>
-                  <AccountList
-                    onSelection={onAccountSelection}
-                    id={row.id}
-                    newAccount={row.accountId !== "" ? row.accountId : ""}
-                    filterByNature={["All"]}
-                  />
-                </td>
-                <td>
-                  <AmountBox
-                    // defaultValue={0}
-                    onChange={handleDebitChange}
-                    id={row.id.toString()}
-                    newValue={row.debitAmount}
-                  />
-                </td>
-                <td>
-                  <AmountBox
-                    // defaultValue={0}
-                    onChange={handleCreditChange}
-                    id={row.id.toString()}
-                    newValue={row.creditAmount}
-                  />
-                </td>
-                <td>
-                  <TrashIcon
-                    id={row.id.toString()}
-                    key={row.id.toString()}
-                    className="h-4 w-4"
-                    aria-hidden="true"
-                    color="gray"
-                    onClick={(e) => deleteRow(row.id)}
-                  />
-                </td>
+        <div className="space-y-1  divide-gray-200 sm:grid-cols-9 mr-96 mt-12">
+          <table>
+            <thead>
+              <tr>
+                <th className="sm:col-span-4  pr-2 sm:text-sm border border-gray-300 bg-gray-200 rounded py-1">
+                  Account
+                </th>
+                <th className="sm:col-span-2  pr-2 sm:text-sm border border-gray-300 bg-gray-200 rounded py-1">
+                  Debit{" "}
+                </th>
+                <th className="sm:col-span-2  pr-2 sm:text-sm border border-gray-300 bg-gray-200 rounded py-1">
+                  Credit
+                </th>
+                <th></th>
               </tr>
-            ))}
-            <tr>
-              <td className="text-left text-blue-700 pr-2 sm:text-sm mx-2">
-                <button onClick={addRow}>+Add row</button>
-              </td>
-              <td>
-                <p className="text-right pr-2 sm:text-sm">{total.debitTotal}</p>
-              </td>
-              <td>
-                <p className="text-right pr-2 sm:text-sm">
-                  {total.creditTotal}
-                </p>
-              </td>
-              <td></td>
-            </tr>
-          </tbody>
-        </table>
-        {/* narration */}
-        <div className="sm:grid sm:grid-cols-9 sm:items-start sm:gap-4 sm:border-gray-200 sm:pt-5">
-          <label
-            htmlFor="narration"
-            className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2 sm:col-span-2"
-          >
-            Narration
-          </label>
-          <div className="mt-1 sm:col-span-5 sm:mt-0">
-            <textarea
-              id="narration"
-              name="narration"
-              rows={5}
-              className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 mt-1 block w-full sm:text-sm border-gray-300 rounded-md"
-              onChange={(e) => setNarration(e.target.value)}
-              value={narration}
-              autoComplete="off"
-            />
-          </div>
-        </div>
-        <div className="mt-5 sm:mt-4 sm:flex sm:justify-end py-12 pr-24">
-          <div className="pr-4">
-            <button
-              type="button"
-              className="inline-flex mx-4 items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-100 focus:outline-none"
-              onClick={() => navigate(-pageCount)}
+            </thead>
+            <tbody>
+              {arr.map((row: any) => (
+                <tr key={row.id}>
+                  <td>
+                    <AccountList
+                      onSelection={onAccountSelection}
+                      id={row.id}
+                      newAccount={row.accountId !== "" ? row.accountId : ""}
+                      filterByNature={["All"]}
+                    />
+                  </td>
+                  <td>
+                    <AmountBox
+                      // defaultValue={0}
+                      onChange={handleDebitChange}
+                      id={row.id.toString()}
+                      newValue={row.debitAmount}
+                    />
+                  </td>
+                  <td>
+                    <AmountBox
+                      // defaultValue={0}
+                      onChange={handleCreditChange}
+                      id={row.id.toString()}
+                      newValue={row.creditAmount}
+                    />
+                  </td>
+                  <td>
+                    <TrashIcon
+                      id={row.id.toString()}
+                      key={row.id.toString()}
+                      className="h-4 w-4"
+                      aria-hidden="true"
+                      color="gray"
+                      onClick={(e) => deleteRow(row.id)}
+                    />
+                  </td>
+                </tr>
+              ))}
+              <tr>
+                <td className="text-left text-blue-700 pr-2 sm:text-sm mx-2">
+                  <button onClick={addRow}>+Add row</button>
+                </td>
+                <td>
+                  <p className="text-right pr-2 sm:text-sm">
+                    {total.debitTotal}
+                  </p>
+                </td>
+                <td>
+                  <p className="text-right pr-2 sm:text-sm">
+                    {total.creditTotal}
+                  </p>
+                </td>
+                <td></td>
+              </tr>
+            </tbody>
+          </table>
+          {/* narration */}
+          <div className="sm:grid sm:grid-cols-9 sm:items-start sm:gap-4 sm:border-gray-200 sm:pt-5">
+            <label
+              htmlFor="narration"
+              className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2 sm:col-span-2"
             >
-              Cancel
-            </button>
+              Narration
+            </label>
+            <div className="mt-1 sm:col-span-5 sm:mt-0">
+              <textarea
+                id="narration"
+                name="narration"
+                rows={5}
+                className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 mt-1 block w-full sm:text-sm border-gray-300 rounded-md"
+                onChange={(e) => setNarration(e.target.value)}
+                value={narration}
+                autoComplete="off"
+              />
+            </div>
           </div>
-          {pageType === "edit" ? (
-            <SaveButton
-              type="update"
-              options={["new", "close", "duplicate"]}
-              onButtonClick={onButtonClick}
-            />
-          ) : (
-            <SaveButton
-              type="save"
-              options={["new", "close", "duplicate"]}
-              onButtonClick={onButtonClick}
-            />
-          )}
+          <div className="mt-5 sm:mt-4 sm:flex sm:justify-end py-12 pr-24">
+            <div className="pr-4">
+              <button
+                type="button"
+                className="inline-flex mx-4 items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-100 focus:outline-none"
+                onClick={() => navigate(-pageCount)}
+              >
+                Cancel
+              </button>
+            </div>
+            {pageType === "edit" ? (
+              <SaveButton
+                type="update"
+                options={["new", "close", "duplicate"]}
+                onButtonClick={onButtonClick}
+              />
+            ) : (
+              <SaveButton
+                type="save"
+                options={["new", "close", "duplicate"]}
+                onButtonClick={onButtonClick}
+              />
+            )}
+          </div>
         </div>
       </div>
     </Dashboard>

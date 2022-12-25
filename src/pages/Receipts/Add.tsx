@@ -591,193 +591,192 @@ function JournalEntry(props: PropsFromRedux) {
 
   return (
     <Dashboard>
-      <form className="divide-y divide-gray-200">
+      <div className="bg-white pl-14 pt-8">
         <div>
+          <h3 className="text-xl font-medium leading-6 text-gray-900">
+            Receipt Add
+          </h3>
+
           <div>
-            <h3 className="text-xl font-medium leading-6 text-gray-900">
-              Receipt Add
-            </h3>
+            {/* Date */}
 
-            <div>
-              {/* Date */}
-
-              <div className="sm:grid sm:grid-cols-9 sm:items-start sm:gap-4 sm:border-gray-200 sm:pt-5">
-                <label
-                  htmlFor="date"
-                  className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2 sm:col-span-2"
-                >
-                  Date*
-                </label>
-                <div className="mt-1 sm:col-span-2 sm:mt-0">
-                  <DateBox
-                    newDate={date.date}
-                    currentYear={currentYear}
-                    onBlurrFunction={dateFunction}
-                  />
-                </div>
+            <div className="sm:grid sm:grid-cols-9 sm:items-start sm:gap-4 sm:border-gray-200 sm:pt-5">
+              <label
+                htmlFor="date"
+                className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2 sm:col-span-2"
+              >
+                Date*
+              </label>
+              <div className="mt-1 sm:col-span-2 w-full sm:mt-0">
+                <DateBox
+                  newDate={date.date}
+                  currentYear={currentYear}
+                  onBlurrFunction={dateFunction}
+                />
               </div>
-              <div className="sm:grid sm:grid-cols-9 sm:items-start sm:gap-4 sm:border-gray-200 sm:pt-5">
-                <label
-                  htmlFor="received For"
-                  className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2 sm:col-span-2"
-                >
-                  Received In
-                </label>
-                <div className="mt-1 sm:col-span-2 sm:mt-0">
-                  <AccountList
-                    onSelection={setReceivedAccount}
-                    // this will update account when a row is deleted
-                    filterByNature={["Cash", "Bank", "Bank OD/CC"]}
-                  />
-                </div>
+            </div>
+            <div className="sm:grid sm:grid-cols-9 sm:items-start sm:gap-4 sm:border-gray-200 sm:pt-5">
+              <label
+                htmlFor="received For"
+                className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2 sm:col-span-2"
+              >
+                Received In
+              </label>
+              <div className="mt-1 justify-start sm:col-span-2 sm:mt-0">
+                <AccountList
+                  onSelection={setReceivedAccount}
+                  // this will update account when a row is deleted
+                  filterByNature={["Cash", "Bank", "Bank OD/CC"]}
+                />
               </div>
             </div>
           </div>
         </div>
-      </form>
-      <div className="space-y-1 divide-y divide-gray-200 sm:grid-cols-9 mr-96">
-        <div className="pt-8 sm:col-span-4">
-          <div className="grid font-bold text-center sm:grid-cols-9 my-1 ">
-            <div className="sm:col-span-2   pr-2  py-1">
-              {/* Received For */}
-            </div>
-            <div className="sm:col-span-4  pr-2 sm:text-sm border border-gray-300 bg-gray-200 rounded py-1">
-              Account
-            </div>
-            <div className="sm:col-span-2  pr-2 sm:text-sm border border-gray-300 bg-gray-200 rounded py-1">
-              Amount Received
-            </div>
-          </div>
-          {arr.map((item: any, i: any) => {
-            return (
-              <div key={i} className="grid grid-cols-1 sm:grid-cols-9 -my-2 ">
-                <div className="sm:col-span-2">
-                  {i === 0 ? (
-                    <label
-                      htmlFor="Received For"
-                      className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2 sm:col-span-2"
-                    >
-                      Received For
-                    </label>
-                  ) : (
-                    <></>
-                  )}
-                </div>
-                <div className="sm:col-span-4">
-                  <div className="mt-1">
-                    <AccountList
-                      onSelection={onAccountSelection}
-                      id={item.id}
-                      // this will update account when a row is deleted
-                      newAccount={item.accountId ? item.accountId : ""}
-                      // filterByNature={["All"]}
-                      filterByNature={[
-                        "Capital",
-                        "Creditors",
-                        "Current Assets",
-                        "Current Liabilities",
-                        "Debtors",
-                        "Deposits - Assets",
-                        "Direct Expense",
-                        "Direct Income",
-                        "Duties & Taxes",
-                        "Fixed Asset",
-                        "Indirect Expense",
-                        "Indirect Income",
-                        "Investments",
-                        "Loans and Advances - Asset",
-                        "Miscellaneous Assets",
-                        "Miscellaneous Liabilities",
-                        "Provisions",
-                        "Reserves",
-                        "Secured Loan",
-                        "Suspense",
-                        "Unsecured Loan",
-                      ]}
-                    />
-                  </div>
-                </div>
-                <div className="sm:col-span-2">
-                  <div className="mt-1">
-                    <AmountBox
-                      negativeAllowed={true}
-                      // defaultValue={0}
-                      onChange={handleChange}
-                      // id={item[1].id}
-                      id={item.id}
-                      newValue={item.amount}
-                    />
-                  </div>
-                </div>
-                <div className="sm:col-span-1 my-4 mx-1">
-                  <TrashIcon
-                    // id={item[0].id.replace("b", "z")}
-                    // key={item[0].id.replace("b", "z")}
-                    id={item.id}
-                    key={item.id}
-                    className="h-4 w-4"
-                    aria-hidden="true"
-                    color="gray"
-                    onClick={() => deleteRow(item.id)}
-                  />
-                  <div />
-                </div>
-              </div>
-            );
-          })}
-          <div className="grid grid-cols-1 sm:grid-cols-9 my-2">
-            <div className="sm:col-span-2 text-left text-blue-700 pr-2 sm:text-sm mx-2"></div>
-            <div className="sm:col-span-2 text-left text-blue-700 pr-2 sm:text-sm mx-2">
-              <button type="button" onClick={addInput}>
-                +Add Row
-              </button>
-            </div>
-            <div className="sm:col-span-2 text-right pr-2 sm:text-sm">
-              Total
-            </div>
-            <div className="sm:col-span-2 text-right pr-2 sm:text-sm">
-              {total}
-            </div>
-          </div>
-          <br />
 
-          {/* narration */}
-          <div className="sm:grid sm:grid-cols-9 sm:items-start sm:gap-4 sm:border-gray-200 sm:pt-5">
-            <label
-              htmlFor="narration"
-              className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2 sm:col-span-2"
-            >
-              Narration
-            </label>
-            <div className="mt-1 sm:col-span-5 sm:mt-0">
-              <textarea
-                id="narration"
-                name="narration"
-                rows={5}
-                className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 mt-1 block w-full sm:text-sm border-gray-300 rounded-md"
-                onChange={(e: { target: { value: any } }) =>
-                  setNarration(e.target.value)
-                }
-                value={narration}
+        <div className="space-y-1 divide-y divide-gray-200 sm:grid-cols-9 mr-96">
+          <div className="pt-8 sm:col-span-4">
+            <div className="grid font-bold text-center sm:grid-cols-9 my-1 ">
+              <div className="sm:col-span-2   pr-2  py-1">
+                {/* Received For */}
+              </div>
+              <div className="sm:col-span-4  pr-2 sm:text-sm border border-gray-300 bg-gray-200 rounded py-1">
+                Account
+              </div>
+              <div className="sm:col-span-2  pr-2 sm:text-sm border border-gray-300 bg-gray-200 rounded py-1">
+                Amount Received
+              </div>
+            </div>
+            {arr.map((item: any, i: any) => {
+              return (
+                <div key={i} className="grid grid-cols-1 sm:grid-cols-9 -my-2 ">
+                  <div className="sm:col-span-2">
+                    {i === 0 ? (
+                      <label
+                        htmlFor="Received For"
+                        className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2 sm:col-span-2"
+                      >
+                        Received For
+                      </label>
+                    ) : (
+                      <></>
+                    )}
+                  </div>
+                  <div className="sm:col-span-4">
+                    <div className="mt-1">
+                      <AccountList
+                        onSelection={onAccountSelection}
+                        id={item.id}
+                        // this will update account when a row is deleted
+                        newAccount={item.accountId ? item.accountId : ""}
+                        // filterByNature={["All"]}
+                        filterByNature={[
+                          "Capital",
+                          "Creditors",
+                          "Current Assets",
+                          "Current Liabilities",
+                          "Debtors",
+                          "Deposits - Assets",
+                          "Direct Expense",
+                          "Direct Income",
+                          "Duties & Taxes",
+                          "Fixed Asset",
+                          "Indirect Expense",
+                          "Indirect Income",
+                          "Investments",
+                          "Loans and Advances - Asset",
+                          "Miscellaneous Assets",
+                          "Miscellaneous Liabilities",
+                          "Provisions",
+                          "Reserves",
+                          "Secured Loan",
+                          "Suspense",
+                          "Unsecured Loan",
+                        ]}
+                      />
+                    </div>
+                  </div>
+                  <div className="sm:col-span-2">
+                    <div className="mt-1">
+                      <AmountBox
+                        negativeAllowed={true}
+                        // defaultValue={0}
+                        onChange={handleChange}
+                        // id={item[1].id}
+                        id={item.id}
+                        newValue={item.amount}
+                      />
+                    </div>
+                  </div>
+                  <div className="sm:col-span-1 my-4 mx-1">
+                    <TrashIcon
+                      // id={item[0].id.replace("b", "z")}
+                      // key={item[0].id.replace("b", "z")}
+                      id={item.id}
+                      key={item.id}
+                      className="h-4 w-4"
+                      aria-hidden="true"
+                      color="gray"
+                      onClick={() => deleteRow(item.id)}
+                    />
+                    <div />
+                  </div>
+                </div>
+              );
+            })}
+            <div className="grid grid-cols-1 sm:grid-cols-9 my-2">
+              <div className="sm:col-span-2 text-left text-blue-700 pr-2 sm:text-sm mx-2"></div>
+              <div className="sm:col-span-2 text-left text-blue-700 pr-2 sm:text-sm mx-2">
+                <button type="button" onClick={addInput}>
+                  +Add Row
+                </button>
+              </div>
+              <div className="sm:col-span-2 text-right pr-2 sm:text-sm">
+                Total
+              </div>
+              <div className="sm:col-span-2 text-right pr-2 sm:text-sm">
+                {total}
+              </div>
+            </div>
+            <br />
+
+            {/* narration */}
+            <div className="sm:grid sm:grid-cols-9 sm:items-start sm:gap-4 sm:border-gray-200 sm:pt-5">
+              <label
+                htmlFor="narration"
+                className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2 sm:col-span-2"
+              >
+                Narration
+              </label>
+              <div className="mt-1 sm:col-span-5 sm:mt-0">
+                <textarea
+                  id="narration"
+                  name="narration"
+                  rows={5}
+                  className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 mt-1 block w-full sm:text-sm border-gray-300 rounded-md"
+                  onChange={(e: { target: { value: any } }) =>
+                    setNarration(e.target.value)
+                  }
+                  value={narration}
+                />
+              </div>
+            </div>
+
+            <div className="mt-5 sm:mt-4 sm:flex sm:justify-end py-4 pr-24">
+              <div className="pr-4">
+                <button
+                  type="button"
+                  className="inline-flex mx-4 items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-100 focus:outline-none"
+                  onClick={() => navigate(-1)}
+                >
+                  Cancel
+                </button>
+              </div>
+              <SaveButton
+                type="save"
+                options={["new", "close", "duplicate"]}
+                onButtonClick={onButtonClick}
               />
             </div>
-          </div>
-
-          <div className="mt-5 sm:mt-4 sm:flex sm:justify-start py-4 pr-24">
-            <div className="pr-4">
-              <button
-                type="button"
-                className="inline-flex mx-4 items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-100 focus:outline-none"
-                onClick={() => navigate(-1)}
-              >
-                Cancel
-              </button>
-            </div>
-            <SaveButton
-              type="save"
-              options={["new", "close", "duplicate"]}
-              onButtonClick={onButtonClick}
-            />
           </div>
         </div>
       </div>
