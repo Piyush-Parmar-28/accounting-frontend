@@ -154,14 +154,13 @@ function EntriesList(props: PropsFromRedux) {
             return;
         }
 
-        agent.JournalEntry.journalentrylist(
+        agent.ReceiptEntry.receiptentrylist(
             organisationId,
             year,
             skip,
             limit,
             false,
             state.sortBy,
-
             searchText
         )
             .then((response: any) => {
