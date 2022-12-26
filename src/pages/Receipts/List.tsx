@@ -450,7 +450,7 @@ function EntriesList(props: PropsFromRedux) {
 
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
                     <h1 className="text-2xl font-semibold text-gray-900">
-                        Journal Entries
+                        Receipts Entries
                     </h1>
                 </div>
                 <div className="px-4 sm:px-6 md:px-8 grid grid-cols-12 gap-4 mt-6">
@@ -461,7 +461,7 @@ function EntriesList(props: PropsFromRedux) {
                             onClick={() =>
                                 navigate(
                                     `/${(props as any).params.organisationId}/${(props as any).currentYear
-                                    }/journal-entry/add`
+                                    }/receipts/add`
                                 )
                             }
                         >
