@@ -356,6 +356,7 @@ function JournalEntry(props: PropsFromRedux) {
             setNarration("");
             setArr(initialInput);
             setTotal("0.00");
+            setreceivedInAccountId('');
             console.log(response);
             (props as any).onNotify(
               "Receipt Entry Saved Successfully",
@@ -625,6 +626,8 @@ function JournalEntry(props: PropsFromRedux) {
               <div className="mt-1 justify-start sm:col-span-2 sm:mt-0">
                 <AccountList
                   onSelection={setReceivedAccount}
+                  // this will update account when a row is deleted
+                  newAccount={receivedInAccountId}
                   // this will update account when a row is deleted
                   filterByNature={["Cash", "Bank", "Bank OD/CC"]}
                 />
