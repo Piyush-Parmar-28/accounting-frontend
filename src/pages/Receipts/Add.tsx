@@ -261,13 +261,17 @@ function JournalEntry(props: PropsFromRedux) {
   };
 
   function validateData(): string {
-    let error = "";
-    let totalAmount = 0;
+    let error: string = "";
+    let totalAmount: number = 0;
+
+    if (receivedInAccountId === '') {
+      error = "Received In Field is mandatory";
+      return error;
+    }
 
     // Check if there is at least one row with both an account and an amount
     let hasAccountAndAmount = false;
     arr.forEach((input: any) => {
-      console.log(input);
       if (input.accountId && input.amount) {
         hasAccountAndAmount = true;
       }
@@ -279,17 +283,16 @@ function JournalEntry(props: PropsFromRedux) {
 
     // Check if there is an account selected in any row, then the amount is compulsory and vice-versa
     arr.forEach((input: any) => {
-      console.log(input.accountId, input.amount);
       if (input.accountId && !input.amount) {
         console.log("error occured");
         error = "Amount is required when an account is selected";
-        return error;
-      }
-      if (!input.accountId && input.amount) {
+      } else if (!input.accountId && input.amount) {
         error = "Account is required when an amount is entered";
-        return error;
       }
     });
+    if (error !== '') {
+      return error;
+    }
 
     // Calculate the total amount
     arr.forEach((input: any) => {
@@ -310,7 +313,6 @@ function JournalEntry(props: PropsFromRedux) {
     let error = validateData();
     if (error !== "") {
       console.log("error notify");
-
       (props as any).onNotify(error, "", "danger");
       return;
     }
@@ -356,6 +358,7 @@ function JournalEntry(props: PropsFromRedux) {
             setNarration("");
             setArr(initialInput);
             setTotal("0.00");
+            setreceivedInAccountId('');
             console.log(response);
             (props as any).onNotify(
               "Receipt Entry Saved Successfully",
@@ -625,6 +628,8 @@ function JournalEntry(props: PropsFromRedux) {
               <div className="mt-1 justify-start sm:col-span-2 sm:mt-0">
                 <AccountList
                   onSelection={setReceivedAccount}
+                  // this will update account when a row is deleted
+                  newAccount={receivedInAccountId}
                   // this will update account when a row is deleted
                   filterByNature={["Cash", "Bank", "Bank OD/CC"]}
                 />

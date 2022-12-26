@@ -58,7 +58,7 @@ const menuItems = (organisationId: string, year: string) => {
     {
       name: "Receipts",
       iconName: "outline/settings",
-      route: `/${organisationId}/${year}/receipts`,
+      route: `/${organisationId}/${year}/receipts/list`,
     },
   ];
 };

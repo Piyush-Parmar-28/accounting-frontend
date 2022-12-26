@@ -385,6 +385,29 @@ const ReceiptEntry = {
       narration,
       year,
     }),
+  // getsingleentrydetails: (organisationId: string, entryId: string) =>
+  //   requests.get(
+  //     `/journalentry/getsingleentrydetails?organisationId=${organisationId}&entryId=${entryId}`
+  //   ),
+  receiptentrylist: (
+    organisationId: string,
+    year: string,
+    skip: number,
+    limit: number,
+    download: boolean,
+    sortBy: string,
+    searchText: string
+  ) =>
+    download === false
+      ? requests.get(
+        `/receipts/receiptslist?organisationId=${organisationId}&skip=${skip}&limit=${limit}&year=${year}&sortBy=${sortBy}&download=false`
+      )
+      : requests.getBlob(
+        `/journalentry/journalentrylist?organisationId=${organisationId}&year=${year}&skip=${skip}&limit=${limit}&sortBy=${sortBy}&download=${download}&searchText=${searchText}`,
+        {
+          responseType: "blob",
+        }
+      ),
 }
 
 let agent = {
