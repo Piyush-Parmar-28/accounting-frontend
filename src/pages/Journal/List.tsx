@@ -240,17 +240,21 @@ function EntriesList(props: PropsFromRedux) {
       });
   };
 
-  useEffect(() => {
-    getEntriesList(false);
-  }, [(props as any).currentYear]);
-
   useEffectAfterInitialRender(
     () => {
       getEntriesList(false);
     },
-    [(props as any).location.pathname],
-    1
+    [(props as any).currentYear],
+    0
   );
+
+  // useEffectAfterInitialRender(
+  //   () => {
+  //     getEntriesList(false);
+  //   },
+  //   [(props as any).location.pathname],
+  //   1
+  // );
 
   useEffectAfterInitialRender(
     () => {
