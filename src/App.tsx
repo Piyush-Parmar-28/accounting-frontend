@@ -41,6 +41,8 @@ import ResetToken from "./pages/Verify/ResetToken";
 // Receipts Import
 import ReceiptHome from "./pages/Receipts/Index";
 import AddReceipt from "./pages/Receipts/Add";
+import ListReceipt from './pages/Receipts/List'
+
 // Connect to redux
 import { TOKEN_PRESENT, UPDATE_COMMON } from "./store/types";
 import { connect, ConnectedProps } from "react-redux";
@@ -151,6 +153,14 @@ class App extends React.Component<PropsFromRedux> {
                 element={
                   <this.PrivateRoute>
                     <AddReceipt />
+                  </this.PrivateRoute>
+                }
+              />
+              <Route
+                path="/:organisationId/:year/receipts/list"
+                element={
+                  <this.PrivateRoute>
+                    <ListReceipt />
                   </this.PrivateRoute>
                 }
               />

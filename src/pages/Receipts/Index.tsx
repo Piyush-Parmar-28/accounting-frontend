@@ -25,6 +25,16 @@ const ReceiptHome: React.FC<Props> = (props) => {
                         <Icon name="add" className="h-4 w-4 mr-2" />
                         Add New
                     </button>
+                    <button
+                        type="button"
+                        className="relative inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none mt-2"
+                        onClick={() =>
+                            navigate(`${location.pathname}/list`)
+                        }
+                    >
+                        <Icon name="add" className="h-4 w-4 mr-2" />
+                        Show Receipts
+                    </button>
                 </div>
             </div>
         </Dashboard>
