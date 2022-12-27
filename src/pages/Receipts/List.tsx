@@ -167,7 +167,7 @@ function EntriesList(props: PropsFromRedux) {
                 setState((prevState) => ({
                     ...prevState,
                     loading: false,
-                    displayEntryDetails: response.jounralEntries,
+                    displayEntryDetails: response.receiptEntries,
                     totalRecords: response.count,
                     entries: response.jounralEntries,
                     pageTotal: response.pageTotal,
@@ -208,7 +208,7 @@ function EntriesList(props: PropsFromRedux) {
             return;
         }
 
-        agent.JournalEntry.journalentrylist(
+        agent.ReceiptEntry.receiptentrylist(
             organisationId,
             year,
             skip,
@@ -912,7 +912,7 @@ function EntriesList(props: PropsFromRedux) {
                         </div>
                     )
                 ) : (
-                    <div className={"max-w-7xl mx-auto px-4 sm:px-6 md:px-8"}>
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
                         <div className="py-6">
                             <div className="flex flex-col">
                                 <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
