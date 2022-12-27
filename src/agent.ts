@@ -385,10 +385,26 @@ const ReceiptEntry = {
       narration,
       year,
     }),
-  // getsingleentrydetails: (organisationId: string, entryId: string) =>
-  //   requests.get(
-  //     `/journalentry/getsingleentrydetails?organisationId=${organisationId}&entryId=${entryId}`
-  //   ),
+  edit: (
+    organisationId: string,
+    entryId: string,
+    date: string,
+    entries: any,
+    narration: string,
+    year: string
+  ) =>
+    requests.post("/receipts/edit", {
+      organisationId,
+      entryId,
+      date,
+      entries,
+      narration,
+      year,
+    }),
+  getsingleentrydetails: (organisationId: string, entryId: string) =>
+    requests.get(
+      `/receipts/getsingleentrydetails?organisationId=${organisationId}&entryId=${entryId}`
+    ),
   receiptentrylist: (
     organisationId: string,
     year: string,
