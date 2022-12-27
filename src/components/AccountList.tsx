@@ -5,13 +5,6 @@ import agent from "../agent";
 import { connect, ConnectedProps } from "react-redux";
 import { ADD_NOTIFICATION, UPDATE_COMMON } from "../store/types";
 
-// should open on click on anywhere in dropdown
-// first option of add new account
-// remove static companyId
-// filter account list on basis of nature
-// open when focused
-// if i selected an account, i cannot remove it
-
 function classNames(...classes: any) {
   return classes.filter(Boolean).join(" ");
 }
@@ -98,6 +91,11 @@ function AccountList(props: Props & PropsFromRedux) {
   };
 
   const onChangeHandler = (e: any) => {
+    if (e === null) {
+      setSelectedAccount({});
+      (props as any).onSelection({ account: { id: (props as any).id } });
+      return;
+    }
     if (e === "No Account Found") {
       return;
     }
@@ -106,6 +104,7 @@ function AccountList(props: Props & PropsFromRedux) {
       return;
     }
     setSelectedAccount(e);
+    // adding id of row number to e
     e.id = (props as any).id;
     (props as any).onSelection({ account: e });
   };
@@ -120,17 +119,33 @@ function AccountList(props: Props & PropsFromRedux) {
       },
     });
   };
+  const [isStatic, setIsStatic] = useState(false);
 
   return (
-    <Combobox as="div" value={selectedAccount} onChange={onChangeHandler}>
+    <Combobox
+      as="div"
+      value={selectedAccount}
+      onChange={onChangeHandler}
+      nullable
+      onFocus={() => {
+        setIsStatic(true);
+      }}
+      onBlur={() => {
+        setIsStatic(false);
+      }}
+    >
       <div className="relative mt-1">
         <Combobox.Input
           className="w-full rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm"
-          onChange={(event) => setQuery(event.target.value)}
+          onChange={(event) => setQuery(event.target.value.trim())}
           displayValue={(account: any) => account?.name}
           placeholder="Select Account"
+          autoComplete="off"
         />
-        <Combobox.Button className="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
+        <Combobox.Button
+          as="div"
+          className="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none"
+        >
           <ChevronUpDownIcon
             className="h-5 w-5 text-gray-400"
             aria-hidden="true"
@@ -139,7 +154,11 @@ function AccountList(props: Props & PropsFromRedux) {
         </Combobox.Button>
 
         {filteredAccounts.length > 0 && (
-          <Combobox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+          <Combobox.Options
+            // static prop closes or open popup on focus and blur
+            static={isStatic}
+            className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm"
+          >
             <Combobox.Option
               key={2}
               value={"Add New Account"}
@@ -197,6 +216,18 @@ function AccountList(props: Props & PropsFromRedux) {
                 )}
               </Combobox.Option>
             ))}
+            <Combobox.Option
+              key={2}
+              value={"Add New Account"}
+              className={({ active }) =>
+                classNames(
+                  "relative cursor-default select-none py-2 pl-3 pr-9",
+                  active ? "bg-indigo-600 text-white" : "text-gray-900"
+                )
+              }
+            >
+              + Add New Account
+            </Combobox.Option>
           </Combobox.Options>
         )}
 

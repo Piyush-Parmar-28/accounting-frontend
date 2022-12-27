@@ -275,9 +275,13 @@ function JournalEntry(props: PropsFromRedux) {
 
   const onAccountSelection = (e: any) => {
     const newData = [...arr];
-    let object: any = newData.find((item: any) => item.id === e.account.id);
 
-    object.accountId = e.account._id;
+    let object: any = newData.find((item: any) => item.id === e.account.id);
+    if (e.account._id) {
+      object.accountId = e.account._id;
+    } else {
+      object.accountId = "";
+    }
 
     setArr(newData);
 
@@ -526,7 +530,7 @@ function JournalEntry(props: PropsFromRedux) {
   const focusOnNarration = () => {
     document.getElementById("narration")?.focus();
   };
-
+  console.log("arr", arr);
   return (
     <Dashboard>
       <div className="bg-white pl-14 pt-8">

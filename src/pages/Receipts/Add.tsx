@@ -147,7 +147,6 @@ function ReceiptEntry(props: PropsFromRedux) {
             setNarration(data.entryDetails.narration);
             setArr(changeArrayFormatToShowData(data.entryDetails.entries));
             setreceivedInAccountId(data.entryDetails.receivedAccountId);
-            
 
             let formattedTotal = new Intl.NumberFormat("en-IN", {
               minimumFractionDigits: 2,
@@ -175,12 +174,9 @@ function ReceiptEntry(props: PropsFromRedux) {
     for (let i = 0; i < array.length; i++) {
       properFormatArray.push({
         accountId: array[i].accountId,
-        amount:
-          array[i].amount
-          = new Intl.NumberFormat("en-IN", {
-            minimumFractionDigits: 2,
-          }).format(array[i].amount)
-        ,
+        amount: (array[i].amount = new Intl.NumberFormat("en-IN", {
+          minimumFractionDigits: 2,
+        }).format(array[i].amount)),
         id: i,
       });
     }
@@ -205,7 +201,7 @@ function ReceiptEntry(props: PropsFromRedux) {
   };
 
   // useEffect(() => {
-  //   changeTotal();    
+  //   changeTotal();
   // }, [arr]);
 
   const changeValue = (id: string, newValue: any, totalChange = true) => {
@@ -230,7 +226,7 @@ function ReceiptEntry(props: PropsFromRedux) {
 
   const changeTotal = () => {
     // console.log("called");
-    
+
     let totalAmount: any = 0;
     arr.forEach((item: any) => {
       totalAmount += item.amount;
@@ -238,16 +234,20 @@ function ReceiptEntry(props: PropsFromRedux) {
     totalAmount = new Intl.NumberFormat("en-IN", {
       minimumFractionDigits: 2,
     }).format(totalAmount);
-    console.log(typeof(totalAmount),totalAmount);
-    
+    console.log(typeof totalAmount, totalAmount);
+
     setTotal(totalAmount);
   };
 
   const onAccountSelection = (e: any) => {
     const newData = [...arr];
     let object: any = newData.find((item: any) => item.id === e.account.id);
-    object.accountId = e.account._id;
-    // console.log(newData);
+    if (e.account._id) {
+      object.accountId = e.account._id;
+    } else {
+      object.accountId = "";
+    }
+
     setArr(newData);
   };
 
@@ -274,7 +274,7 @@ function ReceiptEntry(props: PropsFromRedux) {
     let error: string = "";
     let totalAmount: number = 0;
 
-    if (receivedInAccountId === '') {
+    if (receivedInAccountId === "") {
       error = "Received In Field is mandatory";
       return error;
     }
@@ -300,7 +300,7 @@ function ReceiptEntry(props: PropsFromRedux) {
         error = "Account is required when an amount is entered";
       }
     });
-    if (error !== '') {
+    if (error !== "") {
       return error;
     }
 
@@ -368,7 +368,7 @@ function ReceiptEntry(props: PropsFromRedux) {
             setNarration("");
             setArr(initialInput);
             setTotal("0.00");
-            setreceivedInAccountId('');
+            setreceivedInAccountId("");
             (props as any).onNotify(
               "Receipt Entry Saved Successfully",
               "",
@@ -385,7 +385,8 @@ function ReceiptEntry(props: PropsFromRedux) {
               "success"
             );
             navigate(
-              `/${organisationId}/${(props as any).currentYear
+              `/${organisationId}/${
+                (props as any).currentYear
               }/receipt-entry/duplicate/${response.entryId}`
             );
             focusOnDate();
@@ -396,7 +397,7 @@ function ReceiptEntry(props: PropsFromRedux) {
             setDate({ date: "", error: "" });
             setArr(initialInput);
             setTotal("0.00");
-            setreceivedInAccountId('');
+            setreceivedInAccountId("");
             (props as any).onNotify(
               "Receipt Entry Saved Successfully",
               "",
@@ -546,7 +547,7 @@ function ReceiptEntry(props: PropsFromRedux) {
               setNarration("");
               setArr(initialInput);
               setTotal("0.00");
-              setreceivedInAccountId('');
+              setreceivedInAccountId("");
               (props as any).onNotify(
                 "Receipt Entry Updated Successfully",
                 "",
@@ -563,7 +564,8 @@ function ReceiptEntry(props: PropsFromRedux) {
                 "success"
               );
               navigate(
-                `/${organisationId}/${(props as any).currentYear
+                `/${organisationId}/${
+                  (props as any).currentYear
                 }/receipt-entry/duplicate/${response.entryId}`
               );
               focusOnDate();
@@ -573,7 +575,7 @@ function ReceiptEntry(props: PropsFromRedux) {
               setNarration("");
               setArr(initialInput);
               setTotal("0.00");
-              setreceivedInAccountId('');
+              setreceivedInAccountId("");
               (props as any).onNotify(
                 "Receipt Entry Updated Successfully",
                 "",
@@ -639,7 +641,9 @@ function ReceiptEntry(props: PropsFromRedux) {
                 <AccountList
                   onSelection={setReceivedAccount}
                   id={receivedInAccountId}
-                  newAccount={receivedInAccountId !== "" ? receivedInAccountId : ""}
+                  newAccount={
+                    receivedInAccountId !== "" ? receivedInAccountId : ""
+                  }
                   // this will update account when a row is deleted
                   filterByNature={["Cash", "Bank", "Bank OD/CC"]}
                 />
