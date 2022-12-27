@@ -57,7 +57,7 @@ const connector = connect(mapStateToProps, mapDispatchToProps);
 
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
-function JournalEntry(props: PropsFromRedux) {
+function ReceiptEntry(props: PropsFromRedux) {
   const navigate = useNavigate();
 
   // get no. of times user is on add/edit/duplicate page, so that we can determine how much to navigate back to go back to previous page which is not of this component
@@ -135,16 +135,25 @@ function JournalEntry(props: PropsFromRedux) {
       ) {
         if (pageURL[4] === "edit" || pageURL[4] === "duplicate") {
           const organisationId = (props as any).params?.organisationId;
-          agent.JournalEntry.getsingleentrydetails(
+          agent.ReceiptEntry.getsingleentrydetails(
             organisationId,
             (props as any).params?.id
           ).then((data: any) => {
+            console.log(data);
             setDate({
               date: convertDateToString(data.entryDetails.date),
               error: "",
             });
-            // setNarration(data.entryDetails.narration);
-            // setArr(changeArrayFormatToShowData(data.entryDetails.entries));
+            setNarration(data.entryDetails.narration);
+            setArr(changeArrayFormatToShowData(data.entryDetails.entries));
+            setreceivedInAccountId(data.entryDetails.receivedAccountId);
+            
+
+            let formattedTotal = new Intl.NumberFormat("en-IN", {
+              minimumFractionDigits: 2,
+            }).format(data.entryDetails.amountToShow);
+            setTotal(formattedTotal);
+
             setTimeout(() => {
               focusOnNarration();
               focusOnDate();
@@ -161,28 +170,25 @@ function JournalEntry(props: PropsFromRedux) {
     0
   );
 
-  // const changeArrayFormatToShowData = (array: any) => {
-  //   let properFormatArray = [];
-  //   for (let i = 0; i < array.length; i++) {
-  //     properFormatArray.push({
-  //       accountId: array[i].accountId,
-  //       debitAmount:
-  //         array[i].debitAmount > 0
-  //           ? new Intl.NumberFormat("en-IN", {
-  //             minimumFractionDigits: 2,
-  //           }).format(array[i].debitAmount)
-  //           : "",
-  //       creditAmount:
-  //         array[i].creditAmount > 0
-  //           ? new Intl.NumberFormat("en-IN", {
-  //             minimumFractionDigits: 2,
-  //           }).format(array[i].creditAmount)
-  //           : "",
-  //       id: i + 1,
-  //     });
-  //   }
-  //   return properFormatArray;
-  // };
+  const changeArrayFormatToShowData = (array: any) => {
+    let properFormatArray = [];
+    for (let i = 0; i < array.length; i++) {
+      properFormatArray.push({
+        accountId: array[i].accountId,
+        amount:
+          array[i].amount
+          = new Intl.NumberFormat("en-IN", {
+            minimumFractionDigits: 2,
+          }).format(array[i].amount)
+        ,
+        id: i,
+      });
+    }
+    console.log("PFA");
+    console.log(properFormatArray);
+
+    return properFormatArray;
+  };
 
   useEffect(() => {
     if (id > numberOfInitialRows) {
@@ -198,9 +204,9 @@ function JournalEntry(props: PropsFromRedux) {
     });
   };
 
-  useEffect(() => {
-    changeTotal();
-  }, [arr]);
+  // useEffect(() => {
+  //   changeTotal();    
+  // }, [arr]);
 
   const changeValue = (id: string, newValue: any, totalChange = true) => {
     const index = id;
@@ -223,6 +229,8 @@ function JournalEntry(props: PropsFromRedux) {
   };
 
   const changeTotal = () => {
+    // console.log("called");
+    
     let totalAmount: any = 0;
     arr.forEach((item: any) => {
       totalAmount += item.amount;
@@ -230,6 +238,8 @@ function JournalEntry(props: PropsFromRedux) {
     totalAmount = new Intl.NumberFormat("en-IN", {
       minimumFractionDigits: 2,
     }).format(totalAmount);
+    console.log(typeof(totalAmount),totalAmount);
+    
     setTotal(totalAmount);
   };
 
@@ -359,36 +369,36 @@ function JournalEntry(props: PropsFromRedux) {
             setArr(initialInput);
             setTotal("0.00");
             setreceivedInAccountId('');
-            console.log(response);
             (props as any).onNotify(
               "Receipt Entry Saved Successfully",
               "",
               "success"
             );
-            // navigate(`/${organisationId}/journal-entry/add`);
+            navigate(`/${organisationId}/receipt-entry/add`);
             focusOnDate();
           }
 
-          // if (buttonClicked === "Save & Duplicate") {
-          //     (props as any).onNotify(
-          //         "Receipt Entry Added and Copied",
-          //         "Entry is already saved and copied. You can now edit and save again.",
-          //         "success"
-          //     );
-          //     navigate(
-          //         `/${organisationId}/${(props as any).currentYear
-          //         }/receipt-entry/duplicate/${response.entryId}`
-          //     );
-          //     focusOnDate();
-          // }
+          if (buttonClicked === "Save & Duplicate") {
+            (props as any).onNotify(
+              "Receipt Entry Added and Copied",
+              "Entry is already saved and copied. You can now edit and save again.",
+              "success"
+            );
+            navigate(
+              `/${organisationId}/${(props as any).currentYear
+              }/receipt-entry/duplicate/${response.entryId}`
+            );
+            focusOnDate();
+          }
 
           if (buttonClicked === "Save & Close") {
             setNarration("");
             setDate({ date: "", error: "" });
             setArr(initialInput);
             setTotal("0.00");
+            setreceivedInAccountId('');
             (props as any).onNotify(
-              "Journal Entry Saved Successfully",
+              "Receipt Entry Saved Successfully",
               "",
               "success"
             );
@@ -494,93 +504,93 @@ function JournalEntry(props: PropsFromRedux) {
       //   //     //     focusOnDate();
       //   //     // }
 
-      //   //     // if (buttonClicked === "Save & Close") {
-      //   //     //     setNarration("");
-      //   //     //     setDate({ date: "", error: "" });
-      //   //     //     setArr(initialInput);
-      //   //     //     setTotal(0);
-      //   //     //     (props as any).onNotify(
-      //   //     //         "Journal Entry Saved Successfully",
-      //   //     //         "",
-      //   //     //         "success"
-      //   //     //     );
+      //     // if (buttonClicked === "Save & Close") {
+      //     //     setNarration("");
+      //     //     setDate({ date: "", error: "" });
+      //     //     setArr(initialInput);
+      //     //     setTotal(0);
+      //     //     (props as any).onNotify(
+      //     //         "Journal Entry Saved Successfully",
+      //     //         "",
+      //     //         "success"
+      //     //     );
 
-      //   //     //     navigate(-1);
-      //   //     // }
-      //   // })
-      //   //     .catch((err: any) => {
-      //   //         (props as any).onNotify(
-      //   //             "Could not add Receipt Entry",
-      //   //             err?.response?.data?.message || err?.message || err,
-      //   //             "danger"
-      //   //         );
-      //   //     });
+      //     //     navigate(-1);
+      //     // }
+      // })
+      //     .catch((err: any) => {
+      //         (props as any).onNotify(
+      //             "Could not add Receipt Entry",
+      //             err?.response?.data?.message || err?.message || err,
+      //             "danger"
+      //         );
+      //     });
 
       // }
-      //     // if (
-      //     //     buttonClicked === "Update & New" ||
-      //     //     buttonClicked === "Update & Duplicate" ||
-      //     //     buttonClicked === "Update & Close"
-      //     // ) {
-      //     //     console.log((props as any).params?.id);
-      //     //     agent.JournalEntry.edit(
-      //     //         organisationId,
-      //     //         (props as any).params?.id,
-      //     //         date.date,
-      //     //         properFormatArray,
-      //     //         narration,
-      //     //         currentYear
-      //     //     )
-      //     //         .then((response: any) => {
-      //     //             if (buttonClicked === "Update & New") {
-      //     //                 setNarration("");
+      if (
+        buttonClicked === "Update & New" ||
+        buttonClicked === "Update & Duplicate" ||
+        buttonClicked === "Update & Close"
+      ) {
+        console.log((props as any).params?.id);
+        agent.ReceiptEntry.edit(
+          organisationId,
+          (props as any).params?.id,
+          date.date,
+          properFormatArray,
+          narration,
+          currentYear
+        )
+          .then((response: any) => {
+            if (buttonClicked === "Update & New") {
+              setNarration("");
+              setArr(initialInput);
+              setTotal("0.00");
+              setreceivedInAccountId('');
+              (props as any).onNotify(
+                "Receipt Entry Updated Successfully",
+                "",
+                "success"
+              );
+              // navigate(`/${organisationId}/journal-entry/add`);
+              focusOnDate();
+            }
 
-      //     //                 setArr(initialInput);
-      //     //                 setTotal({ b: 0, c: 0 });
-      //     //                 (props as any).onNotify(
-      //     //                     "Journal Entry Updated Successfully",
-      //     //                     "",
-      //     //                     "success"
-      //     //                 );
-      //     //                 // navigate(`/${organisationId}/journal-entry/add`);
-      //     //                 focusOnDate();
-      //     //             }
+            if (buttonClicked === "Update & Duplicate") {
+              (props as any).onNotify(
+                "Receipt Entry Updated and Copied",
+                "Entry is already updated and copied. You can now edit and save again.",
+                "success"
+              );
+              navigate(
+                `/${organisationId}/${(props as any).currentYear
+                }/receipt-entry/duplicate/${response.entryId}`
+              );
+              focusOnDate();
+            }
 
-      //     //             if (buttonClicked === "Update & Duplicate") {
-      //     //                 (props as any).onNotify(
-      //     //                     "Journal Entry Updated and Copied",
-      //     //                     "Entry is already updated and copied. You can now edit and save again.",
-      //     //                     "success"
-      //     //                 );
-      //     //                 navigate(
-      //     //                     `/${organisationId}/${(props as any).currentYear
-      //     //                     }/journal-entry/duplicate/${response.entryId}`
-      //     //                 );
-      //     //                 focusOnDate();
-      //     //             }
+            if (buttonClicked === "Update & Close") {
+              setNarration("");
+              setArr(initialInput);
+              setTotal("0.00");
+              setreceivedInAccountId('');
+              (props as any).onNotify(
+                "Receipt Entry Updated Successfully",
+                "",
+                "success"
+              );
 
-      //     //             if (buttonClicked === "Update & Close") {
-      //     //                 setNarration("");
-      //     //                 setDate({ date: "", error: "" });
-      //     //                 setArr(initialInput);
-      //     //                 setTotal({ b: 0, c: 0 });
-      //     //                 (props as any).onNotify(
-      //     //                     "Journal Entry Updated Successfully",
-      //     //                     "",
-      //     //                     "success"
-      //     //                 );
-
-      //     //                 navigate(-1);
-      //     //             }
-      //     //         })
-      //     //         .catch((err: any) => {
-      //     //             (props as any).onNotify(
-      //     //                 "Could not add Journal Entry",
-      //     //                 err?.response?.data?.message || err?.message || err,
-      //     //                 "danger"
-      //     //             );
-      //     //         });
-      //     // }
+              navigate(-1);
+            }
+          })
+          .catch((err: any) => {
+            (props as any).onNotify(
+              "Could not add Receipt Entry",
+              err?.response?.data?.message || err?.message || err,
+              "danger"
+            );
+          });
+      }
     }
   };
 
@@ -628,8 +638,8 @@ function JournalEntry(props: PropsFromRedux) {
               <div className="mt-1 justify-start sm:col-span-2 sm:mt-0">
                 <AccountList
                   onSelection={setReceivedAccount}
-                  // this will update account when a row is deleted
-                  newAccount={receivedInAccountId}
+                  id={receivedInAccountId}
+                  newAccount={receivedInAccountId !== "" ? receivedInAccountId : ""}
                   // this will update account when a row is deleted
                   filterByNature={["Cash", "Bank", "Bank OD/CC"]}
                 />
@@ -776,11 +786,19 @@ function JournalEntry(props: PropsFromRedux) {
                   Cancel
                 </button>
               </div>
-              <SaveButton
-                type="save"
-                options={["new", "close", "duplicate"]}
-                onButtonClick={onButtonClick}
-              />
+              {pageType === "edit" ? (
+                <SaveButton
+                  type="update"
+                  options={["new", "close", "duplicate"]}
+                  onButtonClick={onButtonClick}
+                />
+              ) : (
+                <SaveButton
+                  type="save"
+                  options={["new", "close", "duplicate"]}
+                  onButtonClick={onButtonClick}
+                />
+              )}
             </div>
           </div>
         </div>
@@ -794,4 +812,4 @@ function JournalEntry(props: PropsFromRedux) {
 export default compose(
   connector,
   withRouter
-)(JournalEntry) as React.ComponentType;
+)(ReceiptEntry) as React.ComponentType;

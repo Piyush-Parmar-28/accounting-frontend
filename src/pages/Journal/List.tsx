@@ -161,7 +161,6 @@ function EntriesList(props: PropsFromRedux) {
       limit,
       false,
       state.sortBy,
-
       searchText
     )
       .then((response: any) => {

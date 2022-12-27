@@ -385,10 +385,26 @@ const ReceiptEntry = {
       narration,
       year,
     }),
-  // getsingleentrydetails: (organisationId: string, entryId: string) =>
-  //   requests.get(
-  //     `/journalentry/getsingleentrydetails?organisationId=${organisationId}&entryId=${entryId}`
-  //   ),
+  edit: (
+    organisationId: string,
+    entryId: string,
+    date: string,
+    entries: any,
+    narration: string,
+    year: string
+  ) =>
+    requests.post("/receipts/edit", {
+      organisationId,
+      entryId,
+      date,
+      entries,
+      narration,
+      year,
+    }),
+  getsingleentrydetails: (organisationId: string, entryId: string) =>
+    requests.get(
+      `/receipts/getsingleentrydetails?organisationId=${organisationId}&entryId=${entryId}`
+    ),
   receiptentrylist: (
     organisationId: string,
     year: string,
@@ -400,10 +416,10 @@ const ReceiptEntry = {
   ) =>
     download === false
       ? requests.get(
-        `/receipts/receiptslist?organisationId=${organisationId}&skip=${skip}&limit=${limit}&year=${year}&sortBy=${sortBy}&download=false`
+        `/receipts/receiptslist?organisationId=${organisationId}&skip=${skip}&limit=${limit}&year=${year}&sortBy=${sortBy}&download=false&searchText=${searchText}`
       )
       : requests.getBlob(
-        `/journalentry/journalentrylist?organisationId=${organisationId}&year=${year}&skip=${skip}&limit=${limit}&sortBy=${sortBy}&download=${download}&searchText=${searchText}`,
+        `/receipts/receiptslist?organisationId=${organisationId}&year=${year}&skip=${skip}&limit=${limit}&sortBy=${sortBy}&download=${download}&searchText=${searchText}`,
         {
           responseType: "blob",
         }
