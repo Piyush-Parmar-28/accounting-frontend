@@ -400,10 +400,10 @@ const ReceiptEntry = {
   ) =>
     download === false
       ? requests.get(
-        `/receipts/receiptslist?organisationId=${organisationId}&skip=${skip}&limit=${limit}&year=${year}&sortBy=${sortBy}&download=false`
+        `/receipts/receiptslist?organisationId=${organisationId}&skip=${skip}&limit=${limit}&year=${year}&sortBy=${sortBy}&download=false&searchText=${searchText}`
       )
       : requests.getBlob(
-        `/journalentry/journalentrylist?organisationId=${organisationId}&year=${year}&skip=${skip}&limit=${limit}&sortBy=${sortBy}&download=${download}&searchText=${searchText}`,
+        `/receipts/receiptslist?organisationId=${organisationId}&year=${year}&skip=${skip}&limit=${limit}&sortBy=${sortBy}&download=${download}&searchText=${searchText}`,
         {
           responseType: "blob",
         }

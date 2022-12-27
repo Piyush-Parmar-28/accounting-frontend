@@ -147,6 +147,7 @@ class App extends React.Component<PropsFromRedux> {
                   </this.PrivateRoute>
                 }
               />
+
               {/* Receipts Add Receipt Page */}
               <Route
                 path="/:organisationId/:year/receipts/add"
@@ -156,11 +157,21 @@ class App extends React.Component<PropsFromRedux> {
                   </this.PrivateRoute>
                 }
               />
+              {/* Receipts list showing Page */}
               <Route
                 path="/:organisationId/:year/receipts/list"
                 element={
                   <this.PrivateRoute>
                     <ListReceipt />
+                  </this.PrivateRoute>
+                }
+              />
+              {/* Edit Receipt Entry */}
+              <Route
+                path="/:organisationId/:year/receipt-entry/edit/:id"
+                element={
+                  <this.PrivateRoute>
+                    <AddReceipt />
                   </this.PrivateRoute>
                 }
               />
