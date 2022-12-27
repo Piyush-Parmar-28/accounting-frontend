@@ -39,7 +39,6 @@ import ResetOTP from "./pages/Verify/ResetOTP";
 import ResetToken from "./pages/Verify/ResetToken";
 
 // Receipts Import
-import ReceiptHome from "./pages/Receipts/Index";
 import AddReceipt from "./pages/Receipts/Add";
 import ListReceipt from './pages/Receipts/List'
 
@@ -138,16 +137,6 @@ class App extends React.Component<PropsFromRedux> {
         {!this.state.loading ? (
           <Router>
             <Routes>
-              {/* Receipts Home Page */}
-              <Route
-                path="/:organisationId/:year/receipts/"
-                element={
-                  <this.PrivateRoute>
-                    <ReceiptHome />
-                  </this.PrivateRoute>
-                }
-              />
-
               {/* Receipts Add Receipt Page */}
               <Route
                 path="/:organisationId/:year/receipts/add"
