@@ -385,8 +385,7 @@ function ReceiptEntry(props: PropsFromRedux) {
               "success"
             );
             navigate(
-              `/${organisationId}/${
-                (props as any).currentYear
+              `/${organisationId}/${(props as any).currentYear
               }/receipt-entry/duplicate/${response.entryId}`
             );
             focusOnDate();
@@ -564,8 +563,7 @@ function ReceiptEntry(props: PropsFromRedux) {
                 "success"
               );
               navigate(
-                `/${organisationId}/${
-                  (props as any).currentYear
+                `/${organisationId}/${(props as any).currentYear
                 }/receipt-entry/duplicate/${response.entryId}`
               );
               focusOnDate();
@@ -608,8 +606,12 @@ function ReceiptEntry(props: PropsFromRedux) {
     <Dashboard>
       <div className="bg-white pl-14 pt-8">
         <div>
-          <h3 className="text-xl font-medium leading-6 text-gray-900">
-            Receipt Add
+          <h3 className="text-xl  font-medium leading-6 text-gray-900">
+            {pageType === "add" && "Receipt Entry - Add"}
+            {pageType === "edit" && "Receipt Entry - Edit"}
+            {pageType === "duplicate" && "Receipt Entry - Duplicate"}
+            <br />
+            <br />
           </h3>
 
           <div>
@@ -622,30 +624,11 @@ function ReceiptEntry(props: PropsFromRedux) {
               >
                 Date*
               </label>
-              <div className="mt-1 sm:col-span-2 w-full sm:mt-0">
+              <div className="mt-1 sm:col-span-2 sm:mt-0">
                 <DateBox
                   newDate={date.date}
                   currentYear={currentYear}
                   onBlurrFunction={dateFunction}
-                />
-              </div>
-            </div>
-            <div className="sm:grid sm:grid-cols-9 sm:items-start sm:gap-4 sm:border-gray-200 sm:pt-5">
-              <label
-                htmlFor="received For"
-                className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2 sm:col-span-2"
-              >
-                Received In
-              </label>
-              <div className="mt-1 justify-start sm:col-span-2 sm:mt-0">
-                <AccountList
-                  onSelection={setReceivedAccount}
-                  id={receivedInAccountId}
-                  newAccount={
-                    receivedInAccountId !== "" ? receivedInAccountId : ""
-                  }
-                  // this will update account when a row is deleted
-                  filterByNature={["Cash", "Bank", "Bank OD/CC"]}
                 />
               </div>
             </div>
