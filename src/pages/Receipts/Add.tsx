@@ -82,6 +82,7 @@ function ReceiptEntry(props: PropsFromRedux) {
     });
   }
 
+
   // set pagetype on basis of url
   const [pageType, setPageType] = useState("");
   const currentYear = (props as any).currentYear;
@@ -218,6 +219,7 @@ function ReceiptEntry(props: PropsFromRedux) {
 
   const handleChange = (e: any) => {
     changeValue(e.id, +e.newValue);
+    changeTotal();
   };
 
   const setReceivedAccount = (e: any) => {
@@ -225,19 +227,22 @@ function ReceiptEntry(props: PropsFromRedux) {
   };
 
   const changeTotal = () => {
-    // console.log("called");
+    let totalAmount: number = 0;
 
-    let totalAmount: any = 0;
     arr.forEach((item: any) => {
-      totalAmount += item.amount;
+      totalAmount += parseFloat(item.amount);
     });
-    totalAmount = new Intl.NumberFormat("en-IN", {
+
+    let formattedtotal = new Intl.NumberFormat("en-IN", {
       minimumFractionDigits: 2,
     }).format(totalAmount);
-    console.log(typeof totalAmount, totalAmount);
 
-    setTotal(totalAmount);
+    setTotal(formattedtotal);
   };
+
+  useEffect(() => {
+    changeTotal();
+  }, [arr]);
 
   const onAccountSelection = (e: any) => {
     const newData = [...arr];
@@ -609,7 +614,7 @@ function ReceiptEntry(props: PropsFromRedux) {
           <h3 className="text-xl  font-medium leading-6 text-gray-900">
             {pageType === "add" && "Receipt Entry - Add"}
             {pageType === "edit" && "Receipt Entry - Edit"}
-            {pageType === "duplicate" && "Receipt Entry - Duplicate"}
+            {pageType === "duplicate" && " Entry - Duplicate"}
             <br />
             <br />
           </h3>
@@ -703,7 +708,6 @@ function ReceiptEntry(props: PropsFromRedux) {
                         negativeAllowed={true}
                         // defaultValue={0}
                         onChange={handleChange}
-                        // id={item[1].id}
                         id={item.id}
                         newValue={item.amount}
                       />
