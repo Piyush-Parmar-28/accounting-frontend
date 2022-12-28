@@ -209,7 +209,6 @@ function EntriesList(props: PropsFromRedux) {
             );
             return;
         }
-
         agent.ReceiptEntry.receiptentrylist(
             organisationId,
             year,
@@ -226,13 +225,16 @@ function EntriesList(props: PropsFromRedux) {
                     "Report has been successfully exported in excel",
                     "success"
                 );
+                setState((prevState) => ({
+                    ...prevState,
+                    loading: false,
+                }));
             })
             .catch((err: any) => {
                 setState((prevState) => ({
                     ...prevState,
                     loading: false,
                 }));
-
                 (props as any).onNotify(
                     "Could not load Organisation Details1",
                     err?.response?.data?.message || err?.message || err,
@@ -249,13 +251,13 @@ function EntriesList(props: PropsFromRedux) {
         0
     );
 
-    //   useEffectAfterInitialRender(
-    //     () => {
-    //       getEntriesList(false);
-    //     },
-    //     [(props as any).location.pathname],
-    //     1
-    //   );
+    useEffectAfterInitialRender(
+        () => {
+            getEntriesList(false);
+        },
+        [(props as any).location.pathname],
+        1
+    );
 
     useEffectAfterInitialRender(
         () => {
@@ -355,26 +357,32 @@ function EntriesList(props: PropsFromRedux) {
     };
 
     const openDeleteModal = (entry: any[]) => {
-        setState((prevState) => ({
-            ...prevState,
-            selectedRow: entry,
-            showBackDrop: false,
-        }));
+        console.log(entry);
 
+        setState((prevState) => {
+            return {
+                ...prevState,
+                selectedRow: entry,
+                showBackDrop: false,
+            }
+        });
         deleteModalSetOpen(true);
     };
 
     const deleteModalSetOpen = (open: boolean) => {
-        setState((prevState) => ({
-            ...prevState,
-            showDeleteModal: open,
-        }));
+        setState((prevState) => {
+            console.log(prevState);
+            return {
+                ...prevState,
+                showDeleteModal: open,
+            }
+        });
     };
 
     const editEntryNavigateFunction = (entry: any) => {
         navigate(
             `/${(props as any).params?.organisationId}/${(props as any).currentYear
-            }/receipt-entry/edit/${entry._id}`
+            }/receipts/edit/${entry._id}`
         );
     };
 
@@ -754,7 +762,7 @@ function EntriesList(props: PropsFromRedux) {
                                                                                                                 .organisationId
                                                                                                             }/${(props as any)
                                                                                                                 .currentYear
-                                                                                                            }/receipt-entry/duplicate/${entry._id
+                                                                                                            }/receipts/duplicate/${entry._id
                                                                                                             }`
                                                                                                         )
                                                                                                     }
