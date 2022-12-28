@@ -82,7 +82,6 @@ function ReceiptEntry(props: PropsFromRedux) {
     });
   }
 
-
   // set pagetype on basis of url
   const [pageType, setPageType] = useState("");
   const currentYear = (props as any).currentYear;
@@ -148,10 +147,10 @@ function ReceiptEntry(props: PropsFromRedux) {
             setNarration(data.entryDetails.narration);
             setArr(changeArrayFormatToShowData(data.entryDetails.entries));
             setreceivedInAccountId(data.entryDetails.receivedAccountId);
-            
+
             let formattedTotal = new Intl.NumberFormat("en-IN", {
               minimumFractionDigits: 2,
-            }).format(data.entryDetails.amountToShow);
+            }).format(data.entryDetails.receivedAmount);
             setTotal(formattedTotal);
 
             setTimeout(() => {
@@ -207,12 +206,12 @@ function ReceiptEntry(props: PropsFromRedux) {
 
   const changeValue = (id: string, newValue: any, totalChange = true) => {
     const index = id;
-    console.log(newValue, typeof (newValue));
+    console.log(newValue, typeof newValue);
 
     setArr((s: any) => {
       const newArr = arr.map((obj: any) => ({ ...obj }));
       newArr.map((item: any) => {
-        return item.id === index ? (item.amount = (newValue)) : null;
+        return item.id === index ? (item.amount = newValue) : null;
       });
       return newArr;
     });
@@ -225,7 +224,7 @@ function ReceiptEntry(props: PropsFromRedux) {
 
   const setReceivedAccount = (e: any) => {
     console.log(e.account._id);
-    
+
     setreceivedInAccountId(e.account._id);
   };
 
@@ -233,7 +232,9 @@ function ReceiptEntry(props: PropsFromRedux) {
     let totalAmount: number = 0;
 
     arr.forEach((item: any) => {
-      totalAmount += parseFloat(item.amount);
+      if (item.amount !== "") {
+        totalAmount += parseFloat(item.amount.replace(/,/g, ""));
+      }
     });
     let formattedtotal = new Intl.NumberFormat("en-IN", {
       minimumFractionDigits: 2,
@@ -342,7 +343,7 @@ function ReceiptEntry(props: PropsFromRedux) {
       if (individualObject.amount !== "" && individualObject.account !== "") {
         const obj = {
           accountId: individualObject.accountId,
-          amount: individualObject.amount,
+          amount: individualObject.amount.replace(/,/g, ""),
         };
         properFormatArray.push(obj);
       }
@@ -358,12 +359,12 @@ function ReceiptEntry(props: PropsFromRedux) {
       buttonClicked === "Save & New" ||
       buttonClicked === "Save & Duplicate" ||
       buttonClicked === "Save & Close"
-    ) {      
+    ) {
       agent.ReceiptEntry.add(
         organisationId,
         date.date,
         receivedInAccountId,
-        parseInt(total.replace(/[,]/g, "")),
+        parseFloat(total.replace(/[,]/g, "")),
         properFormatArray,
         narration,
         currentYear
@@ -375,7 +376,7 @@ function ReceiptEntry(props: PropsFromRedux) {
             setTotal("0.00");
             setreceivedInAccountId("");
             (props as any).onNotify(
-              "Receipt Entry Saved Successfully",
+              "Receipt Saved Successfully",
               "",
               "success"
             );
@@ -385,12 +386,13 @@ function ReceiptEntry(props: PropsFromRedux) {
 
           if (buttonClicked === "Save & Duplicate") {
             (props as any).onNotify(
-              "Receipt Entry Added and Copied",
+              "Receipt Added and Copied",
               "Entry is already saved and copied. You can now edit and save again.",
               "success"
             );
             navigate(
-              `/${organisationId}/${(props as any).currentYear
+              `/${organisationId}/${
+                (props as any).currentYear
               }/receipts/duplicate/${response.entryId}`
             );
             focusOnDate();
@@ -403,7 +405,7 @@ function ReceiptEntry(props: PropsFromRedux) {
             setTotal("0.00");
             setreceivedInAccountId("");
             (props as any).onNotify(
-              "Receipt Entry Saved Successfully",
+              "Receipt Saved Successfully",
               "",
               "success"
             );
@@ -413,7 +415,7 @@ function ReceiptEntry(props: PropsFromRedux) {
         })
         .catch((err: any) => {
           (props as any).onNotify(
-            "Could not add Receipt Entry",
+            "Could not add Receipt",
             err?.response?.data?.message || err?.message || err,
             "danger"
           );
@@ -425,16 +427,18 @@ function ReceiptEntry(props: PropsFromRedux) {
       buttonClicked === "Update & Close"
     ) {
       agent.ReceiptEntry.edit(
-        organisationId,
         (props as any).params?.id,
+        organisationId,
         date.date,
+        receivedInAccountId,
+        parseFloat(total.replace(/[,]/g, "")),
         properFormatArray,
         narration,
         currentYear
       )
         .then((response: any) => {
           console.log(response);
-          
+
           console.log(response);
           if (buttonClicked === "Update & New") {
             setNarration("");
@@ -442,7 +446,7 @@ function ReceiptEntry(props: PropsFromRedux) {
             setTotal("0.00");
             setreceivedInAccountId("");
             (props as any).onNotify(
-              "Receipt Entry Updated Successfully",
+              "Receipt Updated Successfully",
               "",
               "success"
             );
@@ -452,12 +456,13 @@ function ReceiptEntry(props: PropsFromRedux) {
 
           if (buttonClicked === "Update & Duplicate") {
             (props as any).onNotify(
-              "Receipt Entry Updated and Copied",
+              "Receipt Updated and Copied",
               "Entry is already updated and copied. You can now edit and save again.",
               "success"
             );
             navigate(
-              `/${organisationId}/${(props as any).currentYear
+              `/${organisationId}/${
+                (props as any).currentYear
               }/receipts/duplicate/${response.entryId}`
             );
             focusOnDate();
@@ -469,7 +474,7 @@ function ReceiptEntry(props: PropsFromRedux) {
             setTotal("0.00");
             setreceivedInAccountId("");
             (props as any).onNotify(
-              "Receipt Entry Updated Successfully",
+              "Receipt Updated Successfully",
               "",
               "success"
             );
@@ -480,7 +485,7 @@ function ReceiptEntry(props: PropsFromRedux) {
         .catch((err: any) => {
           console.log(err);
           (props as any).onNotify(
-            "Could not add Receipt Entry",
+            "Could not add Receipt",
             err?.response?.data?.message || err?.message || err,
             "danger"
           );
@@ -501,9 +506,9 @@ function ReceiptEntry(props: PropsFromRedux) {
       <div className="bg-white pl-14 pt-8">
         <div>
           <h3 className="text-xl  font-medium leading-6 text-gray-900">
-            {pageType === "add" && "Receipt Entry - Add"}
-            {pageType === "edit" && "Receipt Entry - Edit"}
-            {pageType === "duplicate" && "Receipt Entry - Duplicate"}
+            {pageType === "add" && "Receipts - Add"}
+            {pageType === "edit" && "Receipts - Edit"}
+            {pageType === "duplicate" && "Receipts - Duplicate"}
             <br />
             <br />
           </h3>
@@ -525,7 +530,6 @@ function ReceiptEntry(props: PropsFromRedux) {
                   onBlurrFunction={dateFunction}
                 />
               </div>
-
             </div>
             <div className="sm:grid sm:grid-cols-9 sm:items-start sm:gap-4 sm:border-gray-200 sm:pt-5">
               <label

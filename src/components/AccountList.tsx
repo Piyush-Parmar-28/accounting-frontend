@@ -133,9 +133,9 @@ function AccountList(props: Props & PropsFromRedux) {
         onChangeHandler(e);
       }}
       nullable
-      onFocus={() => {
-        setIsStatic(true);
-      }}
+      // onFocus={() => {
+      //   setIsStatic(true);
+      // }}
       // onBlur={(e: any) => {
       //   console.log("onblur");
       //   console.log("e in blur", e);

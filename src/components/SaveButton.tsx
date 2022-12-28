@@ -26,11 +26,12 @@ export default function Example(props: any) {
     }
   }
   if (props.type === "update") {
-    if (props.options.includes("new")) {
-      buttonOptions.push("Update & New");
-    }
+    // close as first option as it is most used case in case of edit
     if (props.options.includes("close")) {
       buttonOptions.push("Update & Close");
+    }
+    if (props.options.includes("new")) {
+      buttonOptions.push("Update & New");
     }
     if (props.options.includes("duplicate")) {
       buttonOptions.push("Update & Duplicate");

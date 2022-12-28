@@ -224,6 +224,10 @@ function EntriesList(props: PropsFromRedux) {
           "Report has been successfully exported in excel",
           "success"
         );
+        setState((prevState) => ({
+          ...prevState,
+          loading: false,
+        }));
       })
       .catch((err: any) => {
         setState((prevState) => ({
