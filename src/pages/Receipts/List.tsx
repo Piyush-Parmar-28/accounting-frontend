@@ -376,7 +376,7 @@ function EntriesList(props: PropsFromRedux) {
     const editEntryNavigateFunction = (entry: any) => {
         navigate(
             `/${(props as any).params?.organisationId}/${(props as any).currentYear
-            }/receipt-entry/edit/${entry._id}`
+            }/receipts/edit/${entry._id}`
         );
     };
 
