@@ -164,7 +164,15 @@ class App extends React.Component<PropsFromRedux> {
                   </this.PrivateRoute>
                 }
               />
-              
+              {/* Duplicate Receipt Entry */}
+              <Route
+                path="/:organisationId/:year/receipts/duplicate/:id"
+                element={
+                  <this.PrivateRoute>
+                    <AddReceipt />
+                  </this.PrivateRoute>
+                }
+              />
               {/* SignUp */}
               <Route
                 path="/signup"
