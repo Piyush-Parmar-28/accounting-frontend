@@ -148,7 +148,7 @@ function ReceiptEntry(props: PropsFromRedux) {
             setNarration(data.entryDetails.narration);
             setArr(changeArrayFormatToShowData(data.entryDetails.entries));
             setreceivedInAccountId(data.entryDetails.receivedAccountId);
-
+            
             let formattedTotal = new Intl.NumberFormat("en-IN", {
               minimumFractionDigits: 2,
             }).format(data.entryDetails.amountToShow);
@@ -207,22 +207,25 @@ function ReceiptEntry(props: PropsFromRedux) {
 
   const changeValue = (id: string, newValue: any, totalChange = true) => {
     const index = id;
+    console.log(newValue, typeof (newValue));
 
     setArr((s: any) => {
       const newArr = arr.map((obj: any) => ({ ...obj }));
       newArr.map((item: any) => {
-        return item.id === index ? (item.amount = Number(newValue)) : null;
+        return item.id === index ? (item.amount = (newValue)) : null;
       });
       return newArr;
     });
   };
 
   const handleChange = (e: any) => {
-    changeValue(e.id, +e.newValue);
+    changeValue(e.id, e.newValue);
     changeTotal();
   };
 
   const setReceivedAccount = (e: any) => {
+    console.log(e.account._id);
+    
     setreceivedInAccountId(e.account._id);
   };
 
@@ -232,7 +235,6 @@ function ReceiptEntry(props: PropsFromRedux) {
     arr.forEach((item: any) => {
       totalAmount += parseFloat(item.amount);
     });
-
     let formattedtotal = new Intl.NumberFormat("en-IN", {
       minimumFractionDigits: 2,
     }).format(totalAmount);
@@ -325,6 +327,8 @@ function ReceiptEntry(props: PropsFromRedux) {
   }
 
   const onButtonClick = (buttonClicked: any) => {
+    console.log(buttonClicked);
+
     let error = validateData();
     if (error !== "") {
       console.log("error notify");
@@ -345,7 +349,7 @@ function ReceiptEntry(props: PropsFromRedux) {
     }
     console.log("PFA");
     console.log(properFormatArray);
-    console.log(parseInt(total.replace(/[,.-]/g, "")));
+    // console.log(parseInt(total.replace(/[,-]/g, "")));
     // // save the entry
 
     const organisationId = (props as any).params?.organisationId;
@@ -354,11 +358,7 @@ function ReceiptEntry(props: PropsFromRedux) {
       buttonClicked === "Save & New" ||
       buttonClicked === "Save & Duplicate" ||
       buttonClicked === "Save & Close"
-    ) {
-      // const removeEmptyEntries = () => {
-      //   let newArr = arr.map((item: any) => item.amount && item.accountId);
-      // }
-
+    ) {      
       agent.ReceiptEntry.add(
         organisationId,
         date.date,
@@ -418,184 +418,73 @@ function ReceiptEntry(props: PropsFromRedux) {
             "danger"
           );
         });
-
-      // for (const indArray of arr) {
-      //   console.log(indArray);
-
-      //   if (indArray.value === "0" || indArray.account === "") {
-      //     (props as any).onNotify(
-      //       "Please enter amount and account.",
-      //       "If account is selected in any row, then amount should exists in debit side or credit side.",
-      //       "danger"
-      //     );
-      //     return;
-      //   }
-      // }
-      // // set data in proper format which backend can process
-      // const properFormatArray = [];
-
-      // for (const obj of arr) {
-      //   let individualObject: any = obj;
-      //   if (
-      //     (individualObject.value !== "" || individualObject.account !== "")
-      //   ) {
-      //     const obj = {
-      //       accountId: individualObject.account._id,
-      //       amount: individualObject.value = Number(individualObject.value),
-      //     };
-      //     properFormatArray.push(obj);
-      //     console.log(properFormatArray);
-      //   }
-      // }
-      // // // save the entry
-
-      // const organisationId = (props as any).params?.organisationId;
-      // const currentYear = (props as any).currentYear;
-      // if (
-      //   buttonClicked === "Save & New" ||
-      //   buttonClicked === "Save & Duplicate" ||
-      //   buttonClicked === "Save & Close"
-      // ) {
-      //   if (buttonClicked === "Save & New") {
-      //     setNarration("");
-      //     setArr(initialInput);
-      //     setTotal(0);
-      //     // navigate(`/${organisationId}/journal-entry/add`);
-      //     focusOnDate();
-      //   }
-      //   console.log({
-      //     organisationId,
-      //     date: date.date,
-      //     receivedAmount: total,
-      //     receivedAccountId: receivedInAccountId,
-      //     entries: properFormatArray,
-      //     narration,
-      //     year: currentYear
-      //   });
-
-      //   // agent.ReceiptEntry.add(
-      //   //     organisationId,
-      //   //     date.date,
-      //   //     receivedInAccountId,
-      //   //     total,
-      //   //     properFormatArray,
-      //   //     narration,
-      //   //     currentYear
-      //   // ).then((response: any) => {
-      //   //     if (buttonClicked === "Save & New") {
-      //   //         setNarration("");
-      //   //         setArr(initialInput);
-      //   //         setTotal(0);
-      //   //         console.log(response);
-      //   //         (props as any).onNotify(
-      //   //             "Receipt Entry Saved Successfully",
-      //   //             "",
-      //   //             "success"
-      //   //         );
-      //   //         // navigate(`/${organisationId}/journal-entry/add`);
-      //   //         focusOnDate();
-      //   //     }
-
-      //   //     // if (buttonClicked === "Save & Duplicate") {
-      //   //     //     (props as any).onNotify(
-      //   //     //         "Receipt Entry Added and Copied",
-      //   //     //         "Entry is already saved and copied. You can now edit and save again.",
-      //   //     //         "success"
-      //   //     //     );
-      //   //     //     navigate(
-      //   //     //         `/${organisationId}/${(props as any).currentYear
-      //   //     //         }/receipt-entry/duplicate/${response.entryId}`
-      //   //     //     );
-      //   //     //     focusOnDate();
-      //   //     // }
-
-      //     // if (buttonClicked === "Save & Close") {
-      //     //     setNarration("");
-      //     //     setDate({ date: "", error: "" });
-      //     //     setArr(initialInput);
-      //     //     setTotal(0);
-      //     //     (props as any).onNotify(
-      //     //         "Journal Entry Saved Successfully",
-      //     //         "",
-      //     //         "success"
-      //     //     );
-
-      //     //     navigate(-1);
-      //     // }
-      // })
-      //     .catch((err: any) => {
-      //         (props as any).onNotify(
-      //             "Could not add Receipt Entry",
-      //             err?.response?.data?.message || err?.message || err,
-      //             "danger"
-      //         );
-      //     });
-
-      // }
-      if (
-        buttonClicked === "Update & New" ||
-        buttonClicked === "Update & Duplicate" ||
-        buttonClicked === "Update & Close"
-      ) {
-        console.log((props as any).params?.id);
-        agent.ReceiptEntry.edit(
-          organisationId,
-          (props as any).params?.id,
-          date.date,
-          properFormatArray,
-          narration,
-          currentYear
-        )
-          .then((response: any) => {
-            if (buttonClicked === "Update & New") {
-              setNarration("");
-              setArr(initialInput);
-              setTotal("0.00");
-              setreceivedInAccountId("");
-              (props as any).onNotify(
-                "Receipt Entry Updated Successfully",
-                "",
-                "success"
-              );
-              // navigate(`/${organisationId}/journal-entry/add`);
-              focusOnDate();
-            }
-
-            if (buttonClicked === "Update & Duplicate") {
-              (props as any).onNotify(
-                "Receipt Entry Updated and Copied",
-                "Entry is already updated and copied. You can now edit and save again.",
-                "success"
-              );
-              navigate(
-                `/${organisationId}/${(props as any).currentYear
-                }/receipt-entry/duplicate/${response.entryId}`
-              );
-              focusOnDate();
-            }
-
-            if (buttonClicked === "Update & Close") {
-              setNarration("");
-              setArr(initialInput);
-              setTotal("0.00");
-              setreceivedInAccountId("");
-              (props as any).onNotify(
-                "Receipt Entry Updated Successfully",
-                "",
-                "success"
-              );
-
-              navigate(-1);
-            }
-          })
-          .catch((err: any) => {
+    }
+    if (
+      buttonClicked === "Update & New" ||
+      buttonClicked === "Update & Duplicate" ||
+      buttonClicked === "Update & Close"
+    ) {
+      agent.ReceiptEntry.edit(
+        organisationId,
+        (props as any).params?.id,
+        date.date,
+        properFormatArray,
+        narration,
+        currentYear
+      )
+        .then((response: any) => {
+          console.log(response);
+          
+          console.log(response);
+          if (buttonClicked === "Update & New") {
+            setNarration("");
+            setArr(initialInput);
+            setTotal("0.00");
+            setreceivedInAccountId("");
             (props as any).onNotify(
-              "Could not add Receipt Entry",
-              err?.response?.data?.message || err?.message || err,
-              "danger"
+              "Receipt Entry Updated Successfully",
+              "",
+              "success"
             );
-          });
-      }
+            // navigate(`/${organisationId}/journal-entry/add`);
+            focusOnDate();
+          }
+
+          if (buttonClicked === "Update & Duplicate") {
+            (props as any).onNotify(
+              "Receipt Entry Updated and Copied",
+              "Entry is already updated and copied. You can now edit and save again.",
+              "success"
+            );
+            navigate(
+              `/${organisationId}/${(props as any).currentYear
+              }/receipt-entry/duplicate/${response.entryId}`
+            );
+            focusOnDate();
+          }
+
+          if (buttonClicked === "Update & Close") {
+            setNarration("");
+            setArr(initialInput);
+            setTotal("0.00");
+            setreceivedInAccountId("");
+            (props as any).onNotify(
+              "Receipt Entry Updated Successfully",
+              "",
+              "success"
+            );
+
+            navigate(-1);
+          }
+        })
+        .catch((err: any) => {
+          console.log(err);
+          (props as any).onNotify(
+            "Could not add Receipt Entry",
+            err?.response?.data?.message || err?.message || err,
+            "danger"
+          );
+        });
     }
   };
 
@@ -634,6 +523,26 @@ function ReceiptEntry(props: PropsFromRedux) {
                   newDate={date.date}
                   currentYear={currentYear}
                   onBlurrFunction={dateFunction}
+                />
+              </div>
+
+            </div>
+            <div className="sm:grid sm:grid-cols-9 sm:items-start sm:gap-4 sm:border-gray-200 sm:pt-5">
+              <label
+                htmlFor="received For"
+                className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2 sm:col-span-2"
+              >
+                Received In
+              </label>
+              <div className="mt-1 justify-start sm:col-span-2 sm:mt-0">
+                <AccountList
+                  onSelection={setReceivedAccount}
+                  id={receivedInAccountId}
+                  newAccount={
+                    receivedInAccountId !== "" ? receivedInAccountId : ""
+                  }
+                  // this will update account when a row is deleted
+                  filterByNature={["Cash", "Bank", "Bank OD/CC"]}
                 />
               </div>
             </div>
