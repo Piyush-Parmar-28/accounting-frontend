@@ -91,6 +91,8 @@ function AccountList(props: Props & PropsFromRedux) {
   };
 
   const onChangeHandler = (e: any) => {
+    console.log("evalue", e);
+
     if (e === null) {
       setSelectedAccount({});
       (props as any).onSelection({ account: { id: (props as any).id } });
@@ -107,6 +109,7 @@ function AccountList(props: Props & PropsFromRedux) {
     // adding id of row number to e
     e.id = (props as any).id;
     (props as any).onSelection({ account: e });
+    setIsStatic(false);
   };
 
   const openAddAccountModal = () => {
@@ -125,14 +128,20 @@ function AccountList(props: Props & PropsFromRedux) {
     <Combobox
       as="div"
       value={selectedAccount}
-      onChange={onChangeHandler}
+      onChange={(e: any) => {
+        console.log("e in change", e);
+        onChangeHandler(e);
+      }}
       nullable
       onFocus={() => {
         setIsStatic(true);
       }}
-      onBlur={() => {
-        setIsStatic(false);
-      }}
+      // onBlur={(e: any) => {
+      //   console.log("onblur");
+      //   console.log("e in blur", e);
+      //   // onChangeHandler(e.target.value);
+      //   setIsStatic(false);
+      // }}
     >
       <div className="relative mt-1">
         <Combobox.Input
@@ -159,7 +168,7 @@ function AccountList(props: Props & PropsFromRedux) {
             static={isStatic}
             className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm"
           >
-            <Combobox.Option
+            {/* <Combobox.Option
               key={2}
               value={"Add New Account"}
               className={({ active }) =>
@@ -170,7 +179,7 @@ function AccountList(props: Props & PropsFromRedux) {
               }
             >
               + Add New Account
-            </Combobox.Option>
+            </Combobox.Option> */}
             {filteredAccounts.map((account: any) => (
               <Combobox.Option
                 key={account._id}
@@ -248,6 +257,7 @@ function AccountList(props: Props & PropsFromRedux) {
             </Combobox.Option>
             <Combobox.Option
               key={1}
+              disabled={true}
               value={"No Account Found"}
               className={({ active }) =>
                 classNames(
