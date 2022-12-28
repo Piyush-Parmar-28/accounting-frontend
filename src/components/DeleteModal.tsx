@@ -173,8 +173,39 @@ class DeleteModal extends React.Component<Props, PropsFromRedux> {
       .then(() => {
         (this.props as any).addNotification(
           "Success!",
-          `${entryIds.length} ${
-            entryIds.length === 1 ? "entry" : "entries"
+          `${entryIds.length} ${entryIds.length === 1 ? "entry" : "entries"
+          } Deleted Successfully.`,
+          "success"
+        );
+        this.setState({ logging: false });
+        this.setOpen(false);
+        this.onLoad();
+      })
+      .catch((err: any) => {
+        this.setState({ logging: false });
+        (this.props as any).addNotification(
+          "Error",
+          err?.response?.data?.message || err?.message || err,
+          "danger"
+        );
+      });
+  };
+
+  deleteReceiptEntry = () => {
+    const organisationId = (this.props as any)?.currentOrganisation._id;
+
+    let entryIds: any[] = [];
+
+    for (const entry of this.props.state.selectedRow) {
+      entryIds.push(entry._id);
+    }
+
+    this.setState({ logging: true });
+    agent.ReceiptEntry.delete(organisationId, entryIds)
+      .then(() => {
+        (this.props as any).addNotification(
+          "Success!",
+          `${entryIds.length} ${entryIds.length === 1 ? "entry" : "entries"
           } Deleted Successfully.`,
           "success"
         );
@@ -193,10 +224,9 @@ class DeleteModal extends React.Component<Props, PropsFromRedux> {
   };
 
   messageToShow = () => {
-    if (this.props.type === "journalentry") {
-      return `Are you sure you want to delete selected ${
-        this.props.state.selectedRow.length
-      } ${this.props.state.selectedRow.length === 1 ? "entry" : "entries"} ?`;
+    if (this.props.type === "journalentry" || this.props.type === "receipts") {
+      return `Are you sure you want to delete selected ${this.props.state.selectedRow.length
+        } ${this.props.state.selectedRow.length === 1 ? "entry" : "entries"} ?`;
     } else {
       return `Are you sure you want to delete ${this.props.state.selectedRow.name} ?`;
     }
@@ -212,6 +242,8 @@ class DeleteModal extends React.Component<Props, PropsFromRedux> {
         return this.deleteAccount();
       case "journalentry":
         return this.deleteJournalEntry();
+      case "receipts":
+        return this.deleteReceiptEntry();
       default:
         return;
     }
