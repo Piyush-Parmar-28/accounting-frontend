@@ -209,7 +209,6 @@ function EntriesList(props: PropsFromRedux) {
             );
             return;
         }
-
         agent.ReceiptEntry.receiptentrylist(
             organisationId,
             year,
@@ -226,13 +225,16 @@ function EntriesList(props: PropsFromRedux) {
                     "Report has been successfully exported in excel",
                     "success"
                 );
+                setState((prevState) => ({
+                    ...prevState,
+                    loading: false,
+                }));
             })
             .catch((err: any) => {
                 setState((prevState) => ({
                     ...prevState,
                     loading: false,
                 }));
-
                 (props as any).onNotify(
                     "Could not load Organisation Details1",
                     err?.response?.data?.message || err?.message || err,
@@ -249,13 +251,13 @@ function EntriesList(props: PropsFromRedux) {
         0
     );
 
-    //   useEffectAfterInitialRender(
-    //     () => {
-    //       getEntriesList(false);
-    //     },
-    //     [(props as any).location.pathname],
-    //     1
-    //   );
+    useEffectAfterInitialRender(
+        () => {
+            getEntriesList(false);
+        },
+        [(props as any).location.pathname],
+        1
+    );
 
     useEffectAfterInitialRender(
         () => {
