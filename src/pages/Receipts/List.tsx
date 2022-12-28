@@ -357,20 +357,26 @@ function EntriesList(props: PropsFromRedux) {
     };
 
     const openDeleteModal = (entry: any[]) => {
-        setState((prevState) => ({
-            ...prevState,
-            selectedRow: entry,
-            showBackDrop: false,
-        }));
+        console.log(entry);
 
+        setState((prevState) => {
+            return {
+                ...prevState,
+                selectedRow: entry,
+                showBackDrop: false,
+            }
+        });
         deleteModalSetOpen(true);
     };
 
     const deleteModalSetOpen = (open: boolean) => {
-        setState((prevState) => ({
-            ...prevState,
-            showDeleteModal: open,
-        }));
+        setState((prevState) => {
+            console.log(prevState);
+            return {
+                ...prevState,
+                showDeleteModal: open,
+            }
+        });
     };
 
     const editEntryNavigateFunction = (entry: any) => {
@@ -756,7 +762,7 @@ function EntriesList(props: PropsFromRedux) {
                                                                                                                 .organisationId
                                                                                                             }/${(props as any)
                                                                                                                 .currentYear
-                                                                                                            }/receipt-entry/duplicate/${entry._id
+                                                                                                            }/receipts/duplicate/${entry._id
                                                                                                             }`
                                                                                                         )
                                                                                                     }

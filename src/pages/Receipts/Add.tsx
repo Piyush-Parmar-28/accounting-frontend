@@ -379,7 +379,7 @@ function ReceiptEntry(props: PropsFromRedux) {
               "",
               "success"
             );
-            navigate(`/${organisationId}/receipt-entry/add`);
+            navigate(`/${organisationId}/${currentYear}/receipts/add`);
             focusOnDate();
           }
 
@@ -391,7 +391,7 @@ function ReceiptEntry(props: PropsFromRedux) {
             );
             navigate(
               `/${organisationId}/${(props as any).currentYear
-              }/receipt-entry/duplicate/${response.entryId}`
+              }/receipts/duplicate/${response.entryId}`
             );
             focusOnDate();
           }
@@ -458,7 +458,7 @@ function ReceiptEntry(props: PropsFromRedux) {
             );
             navigate(
               `/${organisationId}/${(props as any).currentYear
-              }/receipt-entry/duplicate/${response.entryId}`
+              }/receipts/duplicate/${response.entryId}`
             );
             focusOnDate();
           }
@@ -503,7 +503,7 @@ function ReceiptEntry(props: PropsFromRedux) {
           <h3 className="text-xl  font-medium leading-6 text-gray-900">
             {pageType === "add" && "Receipt Entry - Add"}
             {pageType === "edit" && "Receipt Entry - Edit"}
-            {pageType === "duplicate" && " Entry - Duplicate"}
+            {pageType === "duplicate" && "Receipt Entry - Duplicate"}
             <br />
             <br />
           </h3>
