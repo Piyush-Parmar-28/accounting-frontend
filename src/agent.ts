@@ -190,14 +190,14 @@ const JournalEntry = {
   ) =>
     download === false
       ? requests.get(
-          `/journalentry/journalentrylist?organisationId=${organisationId}&year=${year}&skip=${skip}&limit=${limit}&sortBy=${sortBy}&download=${download}&searchText=${searchText}`
-        )
+        `/journalentry/journalentrylist?organisationId=${organisationId}&year=${year}&skip=${skip}&limit=${limit}&sortBy=${sortBy}&download=${download}&searchText=${searchText}`
+      )
       : requests.getBlob(
-          `/journalentry/journalentrylist?organisationId=${organisationId}&year=${year}&skip=${skip}&limit=${limit}&sortBy=${sortBy}&download=${download}&searchText=${searchText}`,
-          {
-            responseType: "blob",
-          }
-        ),
+        `/journalentry/journalentrylist?organisationId=${organisationId}&year=${year}&skip=${skip}&limit=${limit}&sortBy=${sortBy}&download=${download}&searchText=${searchText}`,
+        {
+          responseType: "blob",
+        }
+      ),
   delete: (organisationId: string, entryIds: string[]) =>
     requests.delete(
       `/journalentry/delete?organisationId=${organisationId}${selectedEntryUrl(
@@ -340,8 +340,7 @@ const User = {
     }),
   getUserRights: (organisationId: string, userId?: string) =>
     requests.get(
-      `/user/rights?organisationId=${organisationId}${
-        userId ? `&userId=${userId}` : ""
+      `/user/rights?organisationId=${organisationId}${userId ? `&userId=${userId}` : ""
       }`
     ),
   makeUserInactive: (organisationId: string, userId: string) =>
@@ -406,6 +405,12 @@ const ReceiptEntry = {
       narration,
       year,
     }),
+  delete: (organisationId: string, entryIds: string[]) =>
+    requests.delete(
+      `/receipts/delete?organisationId=${organisationId}${selectedEntryUrl(
+        entryIds
+      )}`
+    ),
   getsingleentrydetails: (organisationId: string, entryId: string) =>
     requests.get(
       `/receipts/getsingleentrydetails?organisationId=${organisationId}&entryId=${entryId}`
@@ -421,14 +426,14 @@ const ReceiptEntry = {
   ) =>
     download === false
       ? requests.get(
-          `/receipts/receiptslist?organisationId=${organisationId}&skip=${skip}&limit=${limit}&year=${year}&sortBy=${sortBy}&download=false&searchText=${searchText}`
-        )
+        `/receipts/receiptslist?organisationId=${organisationId}&skip=${skip}&limit=${limit}&year=${year}&sortBy=${sortBy}&download=false&searchText=${searchText}`
+      )
       : requests.getBlob(
-          `/receipts/receiptslist?organisationId=${organisationId}&year=${year}&skip=${skip}&limit=${limit}&sortBy=${sortBy}&download=${download}&searchText=${searchText}`,
-          {
-            responseType: "blob",
-          }
-        ),
+        `/receipts/receiptslist?organisationId=${organisationId}&year=${year}&skip=${skip}&limit=${limit}&sortBy=${sortBy}&download=${download}&searchText=${searchText}`,
+        {
+          responseType: "blob",
+        }
+      ),
 };
 
 let agent = {
