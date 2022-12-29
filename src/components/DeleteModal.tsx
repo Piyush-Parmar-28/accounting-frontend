@@ -29,6 +29,7 @@ const mapDispatchToProps = (dispatch: any) => ({
 
 type Props = {
   onLoad?: (forSearch: boolean) => void;
+  onUnLoad?: any;
   deleteModalSetOpen?: (open: boolean) => void;
   state?: any;
   type?: any;
@@ -173,13 +174,15 @@ class DeleteModal extends React.Component<Props, PropsFromRedux> {
       .then(() => {
         (this.props as any).addNotification(
           "Success!",
-          `${entryIds.length} ${entryIds.length === 1 ? "entry" : "entries"
+          `${entryIds.length} ${
+            entryIds.length === 1 ? "entry" : "entries"
           } Deleted Successfully.`,
           "success"
         );
         this.setState({ logging: false });
         this.setOpen(false);
         this.onLoad();
+        (this.props as any).onUnLoad();
       })
       .catch((err: any) => {
         this.setState({ logging: false });
@@ -205,13 +208,15 @@ class DeleteModal extends React.Component<Props, PropsFromRedux> {
       .then(() => {
         (this.props as any).addNotification(
           "Success!",
-          `${entryIds.length} ${entryIds.length === 1 ? "entry" : "entries"
+          `${entryIds.length} ${
+            entryIds.length === 1 ? "entry" : "entries"
           } Deleted Successfully.`,
           "success"
         );
         this.setState({ logging: false });
         this.setOpen(false);
         this.onLoad();
+        (this.props as any).onUnLoad();
       })
       .catch((err: any) => {
         this.setState({ logging: false });
@@ -225,8 +230,9 @@ class DeleteModal extends React.Component<Props, PropsFromRedux> {
 
   messageToShow = () => {
     if (this.props.type === "journalentry" || this.props.type === "receipts") {
-      return `Are you sure you want to delete selected ${this.props.state.selectedRow.length
-        } ${this.props.state.selectedRow.length === 1 ? "entry" : "entries"} ?`;
+      return `Are you sure you want to delete selected ${
+        this.props.state.selectedRow.length
+      } ${this.props.state.selectedRow.length === 1 ? "entry" : "entries"} ?`;
     } else {
       return `Are you sure you want to delete ${this.props.state.selectedRow.name} ?`;
     }

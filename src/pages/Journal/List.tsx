@@ -369,6 +369,13 @@ function EntriesList(props: PropsFromRedux) {
       showDeleteModal: open,
     }));
   };
+  // this function clear selectedEntries array to blank after deletion
+  const afterDelete = () => {
+    setState((prevState) => ({
+      ...prevState,
+      selectedEntries: [],
+    }));
+  };
 
   const editEntryNavigateFunction = (entry: any) => {
     navigate(
@@ -453,6 +460,7 @@ function EntriesList(props: PropsFromRedux) {
             type={"journalentry"}
             state={state}
             onLoad={getEntriesList}
+            onUnLoad={afterDelete}
             deleteModalSetOpen={deleteModalSetOpen}
           />
         )}
