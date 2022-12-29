@@ -204,6 +204,20 @@ function JournalEntry(props: PropsFromRedux) {
     changeTotal();
   }, [arr]);
 
+  const onKeyUpFunction = (e: any) => {
+    if (e.keyCode === 13) {
+      console.log("dateinkeyfunction", date);
+      onButtonClick("Save & Close");
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener("keydown", onKeyUpFunction);
+    return () => {
+      document.removeEventListener("keydown", onKeyUpFunction);
+    };
+  }, []);
+
   // get balancing figure in last row on selecting account
   // only if value is not entered already
 
@@ -327,10 +341,33 @@ function JournalEntry(props: PropsFromRedux) {
   };
 
   const dateFunction = (date: any) => {
-    setDate(date);
+    console.log("datefunction", date);
+    setDate(() => {
+      return { date: date.date, error: "" };
+    });
   };
 
+  console.log("arr", arr);
+  console.log("date", date);
+
   const onButtonClick = (buttonClicked: any) => {
+    console.log("button clicked", buttonClicked);
+    console.log("just button clicked", date);
+    console.log("arr", arr);
+    // check for date exists and error in date
+    if (date.date === "") {
+      console.log("date not exists");
+
+      (props as any).onNotify("Please select date.", "", "danger");
+      return;
+    }
+    if (date.error !== "" && date.error !== undefined) {
+      console.log(date.error);
+      console.log("date error");
+      (props as any).onNotify(date.error, "", "danger");
+      return;
+    }
+
     if (total.debitTotal !== total.creditTotal) {
       (props as any).onNotify(
         "Debit and Credit total should be equal",
@@ -400,6 +437,7 @@ function JournalEntry(props: PropsFromRedux) {
       buttonClicked === "Save & Duplicate" ||
       buttonClicked === "Save & Close"
     ) {
+      console.log("date before adding", date);
       agent.JournalEntry.add(
         organisationId,
         date.date,

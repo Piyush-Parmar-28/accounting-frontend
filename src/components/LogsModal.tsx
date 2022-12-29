@@ -103,12 +103,10 @@ function LogsModal(props: LogsModalProps & PropsFromRedux) {
 
   useEffectAfterInitialRender(
     () => {
-      type !== "user" && getLogsList();
-      closeButtonRef.current!.focus();
       document.addEventListener("keydown", onKeyUpFunction, false);
       return () => {
         document.removeEventListener("keydown", onKeyUpFunction, false);
-      }; // eslint-disable-next-line
+      };
     },
     [],
     0

@@ -91,8 +91,6 @@ function AccountList(props: Props & PropsFromRedux) {
   };
 
   const onChangeHandler = (e: any) => {
-    console.log("evalue", e);
-
     if (e === null) {
       setSelectedAccount({});
       (props as any).onSelection({ account: { id: (props as any).id } });
@@ -124,24 +122,32 @@ function AccountList(props: Props & PropsFromRedux) {
   };
   const [isStatic, setIsStatic] = useState(false);
 
+  const onKeyUpFunction = (e: any) => {
+    if (e.keyCode === 27 || e.keyCode === 9) {
+      setIsStatic(false);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener("keydown", onKeyUpFunction);
+    return () => {
+      document.removeEventListener("keydown", onKeyUpFunction);
+    };
+  }, []);
+
   return (
     <Combobox
       as="div"
       value={selectedAccount}
       onChange={(e: any) => {
-        console.log("e in change", e);
         onChangeHandler(e);
       }}
       nullable
-      // onFocus={() => {
-      //   setIsStatic(true);
-      // }}
-      // onBlur={(e: any) => {
-      //   console.log("onblur");
-      //   console.log("e in blur", e);
-      //   // onChangeHandler(e.target.value);
-      //   setIsStatic(false);
-      // }}
+      onFocus={() => {
+        if (Object.keys(selectedAccount).length === 0) {
+          setIsStatic(true);
+        }
+      }}
     >
       <div className="relative mt-1">
         <Combobox.Input
