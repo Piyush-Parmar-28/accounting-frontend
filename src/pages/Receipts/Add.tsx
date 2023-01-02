@@ -391,8 +391,7 @@ function ReceiptEntry(props: PropsFromRedux) {
               "success"
             );
             navigate(
-              `/${organisationId}/${
-                (props as any).currentYear
+              `/${organisationId}/${(props as any).currentYear
               }/receipts/duplicate/${response.entryId}`
             );
             focusOnDate();
@@ -461,8 +460,7 @@ function ReceiptEntry(props: PropsFromRedux) {
               "success"
             );
             navigate(
-              `/${organisationId}/${
-                (props as any).currentYear
+              `/${organisationId}/${(props as any).currentYear
               }/receipts/duplicate/${response.entryId}`
             );
             focusOnDate();
@@ -688,6 +686,15 @@ function ReceiptEntry(props: PropsFromRedux) {
                   onClick={() => navigate(-1)}
                 >
                   Cancel
+                </button>
+              </div>
+              <div className="pr-4">
+                <button
+                  type="button"
+                  className="inline-flex mx-4 items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-white bg-red-700 hover:bg-red-500 focus:outline-none"
+                  onClick={() => navigate(-1)}
+                >
+                  Delete
                 </button>
               </div>
               {pageType === "edit" ? (
