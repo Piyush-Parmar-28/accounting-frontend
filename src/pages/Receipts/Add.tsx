@@ -391,7 +391,7 @@ function ReceiptEntry(props: PropsFromRedux) {
               "",
               "success"
             );
-            navigate(`/${organisationId}/${currentYear}/receipts/add`);
+            // navigate(`/${organisationId}/${currentYear}/receipts/add`);
             focusOnDate();
           }
 
@@ -420,7 +420,7 @@ function ReceiptEntry(props: PropsFromRedux) {
               "success"
             );
 
-            navigate(-1);
+            navigate(-pageCount);
           }
         })
         .catch((err: any) => {

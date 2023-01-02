@@ -93,6 +93,7 @@ function JournalEntry(props: PropsFromRedux) {
 
   useEffect(() => {
     setPageCount(pageCount + 1);
+    
     const pageURL = (props as any).location.pathname.split("/");
 
     if (pageURL[4] === "add") {
