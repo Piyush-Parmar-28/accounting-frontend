@@ -91,6 +91,9 @@ function ReceiptEntry(props: PropsFromRedux) {
 
   useEffect(() => {
     setPageCount(pageCount + 1);
+    console.log(pageCount);
+
+
     const pageURL = (props as any).location.pathname.split("/");
 
     if (pageURL[4] === "add") {
@@ -360,6 +363,14 @@ function ReceiptEntry(props: PropsFromRedux) {
       buttonClicked === "Save & Duplicate" ||
       buttonClicked === "Save & Close"
     ) {
+      // console.log(organisationId,
+      //   date.date,
+      //   receivedInAccountId,
+      //   parseFloat(total.replace(/[,]/g, "")),
+      //   properFormatArray,
+      //   narration,
+      //   currentYear);
+
       agent.ReceiptEntry.add(
         organisationId,
         date.date,
@@ -683,20 +694,24 @@ function ReceiptEntry(props: PropsFromRedux) {
                 <button
                   type="button"
                   className="inline-flex mx-4 items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-100 focus:outline-none"
-                  onClick={() => navigate(-1)}
+                  onClick={() => navigate(-pageCount)}
                 >
                   Cancel
                 </button>
               </div>
-              <div className="pr-4">
-                <button
-                  type="button"
-                  className="inline-flex mx-4 items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-white bg-red-700 hover:bg-red-500 focus:outline-none"
-                  onClick={() => navigate(-1)}
-                >
-                  Delete
-                </button>
-              </div>
+              {pageType === "edit" ? (
+                <div className="pr-4">
+                  <button
+                    type="button"
+                    className="inline-flex mx-4 items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-white bg-red-700 hover:bg-red-500 focus:outline-none"
+                    onClick={() => navigate(-1)}
+                  >
+                    Delete
+                  </button>
+                </div>
+              ) : null
+              }
+
               {pageType === "edit" ? (
                 <SaveButton
                   type="update"
