@@ -387,8 +387,7 @@ function EntriesList(props: PropsFromRedux) {
 
   const editEntryNavigateFunction = (entry: any) => {
     navigate(
-      `/${(props as any).params?.organisationId}/${
-        (props as any).currentYear
+      `/${(props as any).params?.organisationId}/${(props as any).currentYear
       }/receipts/edit/${entry._id}`
     );
   };
@@ -483,8 +482,7 @@ function EntriesList(props: PropsFromRedux) {
               className="relative inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none"
               onClick={() =>
                 navigate(
-                  `/${(props as any).params.organisationId}/${
-                    (props as any).currentYear
+                  `/${(props as any).params.organisationId}/${(props as any).currentYear
                   }/receipts/add`
                 )
               }
@@ -623,7 +621,7 @@ function EntriesList(props: PropsFromRedux) {
                                   checked={
                                     state.displayEntryDetails.length > 0 &&
                                     state.displayEntryDetails.length ===
-                                      state.selectedEntries.length
+                                    state.selectedEntries.length
                                   }
                                   onChange={onSelectAllEntry}
                                 />
@@ -641,7 +639,14 @@ function EntriesList(props: PropsFromRedux) {
                               scope="col"
                               className="sticky top-0 border-b border-gray-300 bg-gray-50 px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider sm:pl-6 align-bottom"
                             >
-                              ACCOUNTS
+                              RECEIVED IN
+                            </th>
+                            <th
+                              style={{ zIndex: 6 }}
+                              scope="col"
+                              className="sticky top-0 border-b border-gray-300 bg-gray-50 px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider sm:pl-6 align-bottom"
+                            >
+                              RECEIVED FROM
                             </th>
 
                             <th
@@ -693,7 +698,9 @@ function EntriesList(props: PropsFromRedux) {
                                   <td className="w-3/12 whitespace-nowrap py-4 pl-4 pr-3 text-sm text-black-900 sm:pl-6">
                                     {convertDateToString(entry.date)}
                                   </td>
-
+                                  <td className="w-3/12 whitespace-nowrap py-4 pl-4 pr-3 text-sm text-black-900 sm:pl-6">
+                                    {/* {convertDateToString(entry.date)} */}
+                                  </td>
                                   <td className="w-3/12 whitespace-nowrap py-4 pl-4 pr-3 text-sm text-gray-900 sm:pl-6">
                                     {entry.accountsToShow}
                                   </td>
@@ -765,14 +772,11 @@ function EntriesList(props: PropsFromRedux) {
                                                   className="flex items-center w-full p-1 px-4 py-2 text-sm hover:bg-gray-100 text-gray-900"
                                                   onClick={() =>
                                                     navigate(
-                                                      `/${
-                                                        (props as any).params
-                                                          .organisationId
-                                                      }/${
-                                                        (props as any)
-                                                          .currentYear
-                                                      }/receipts/duplicate/${
-                                                        entry._id
+                                                      `/${(props as any).params
+                                                        .organisationId
+                                                      }/${(props as any)
+                                                        .currentYear
+                                                      }/receipts/duplicate/${entry._id
                                                       }`
                                                     )
                                                   }
@@ -839,6 +843,11 @@ function EntriesList(props: PropsFromRedux) {
                             <th
                               style={{ zIndex: 6 }}
                               scope="col"
+                              className="sticky top-0 border-b border-gray-300 bg-gray-50 px-4 py-3 text-right text-xm font-bold text-gray-900 uppercase tracking-wider sm:pl-6 align-middle"
+                            ></th>
+                            <th
+                              style={{ zIndex: 6 }}
+                              scope="col"
                               className="sticky top-0 border-b border-gray-300 bg-gray-50 px-4 py-3 text-right text-xs font-bold text-gray-900 tracking-wider sm:pl-6 align-middle"
                             >
                               {`Total (${state.displayEntryDetails.length} entries)`}
@@ -853,16 +862,17 @@ function EntriesList(props: PropsFromRedux) {
                                 minimumFractionDigits: 2,
                               }).format(state.pageTotal)}
                             </th>
-                            <th
-                              style={{ zIndex: 6 }}
-                              scope="col"
-                              className="sticky top-0 border-b border-gray-300 bg-gray-50 px-4 py-3 text-right text-xm font-bold text-gray-900 uppercase tracking-wider sm:pl-6 align-middle"
-                            ></th>
+
                           </tr>
                         </thead>
                         {state.totalRecords > chunkSize ? (
                           <thead className="bg-gray-50">
                             <tr>
+                              <th
+                                style={{ zIndex: 6 }}
+                                scope="col"
+                                className="sticky top-0 border-b border-gray-300 bg-gray-50 px-4 py-3 text-right text-xs font-bold text-gray-500 uppercase tracking-wider sm:pl-6 align-middle"
+                              ></th>
                               <th
                                 style={{ zIndex: 6 }}
                                 scope="col"
@@ -890,11 +900,7 @@ function EntriesList(props: PropsFromRedux) {
                                 }).format(state.total)}
                               </th>
 
-                              <th
-                                style={{ zIndex: 6 }}
-                                scope="col"
-                                className="sticky top-0 border-b border-gray-300 bg-gray-50 px-4 py-3 text-right text-xs font-bold text-gray-500 uppercase tracking-wider sm:pl-6 align-middle"
-                              ></th>
+
                             </tr>
                           </thead>
                         ) : null}
@@ -923,8 +929,7 @@ function EntriesList(props: PropsFromRedux) {
                   className="relative inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none"
                   onClick={() => {
                     navigate(
-                      `/${(props as any).params.organisationId}/${
-                        (props as any).currentYear
+                      `/${(props as any).params.organisationId}/${(props as any).currentYear
                       }/receipt-entry/add`
                     );
                   }}
