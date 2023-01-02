@@ -171,14 +171,14 @@ function JournalEntry(props: PropsFromRedux) {
         debitAmount:
           array[i].debitAmount > 0
             ? new Intl.NumberFormat("en-IN", {
-                minimumFractionDigits: 2,
-              }).format(array[i].debitAmount)
+              minimumFractionDigits: 2,
+            }).format(array[i].debitAmount)
             : "",
         creditAmount:
           array[i].creditAmount > 0
             ? new Intl.NumberFormat("en-IN", {
-                minimumFractionDigits: 2,
-              }).format(array[i].creditAmount)
+              minimumFractionDigits: 2,
+            }).format(array[i].creditAmount)
             : "",
         id: i + 1,
       });
@@ -467,8 +467,7 @@ function JournalEntry(props: PropsFromRedux) {
               "success"
             );
             navigate(
-              `/${organisationId}/${
-                (props as any).currentYear
+              `/${organisationId}/${(props as any).currentYear
               }/journal-entry/duplicate/${response.entryId}`
             );
           }
@@ -530,8 +529,7 @@ function JournalEntry(props: PropsFromRedux) {
               "success"
             );
             navigate(
-              `/${organisationId}/${
-                (props as any).currentYear
+              `/${organisationId}/${(props as any).currentYear
               }/journal-entry/duplicate/${response.entryId}`
             );
             focusOnDate();
@@ -705,6 +703,18 @@ function JournalEntry(props: PropsFromRedux) {
                 Cancel
               </button>
             </div>
+            {pageType === "edit" ? (
+              <div className="pr-4">
+                <button
+                  type="button"
+                  className="inline-flex mx-4 items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-white bg-red-700 hover:bg-red-500 focus:outline-none"
+                  onClick={() => navigate(-1)}
+                >
+                  Delete
+                </button>
+              </div>
+            ) : null
+            }
             {pageType === "edit" ? (
               <SaveButton
                 type="update"
