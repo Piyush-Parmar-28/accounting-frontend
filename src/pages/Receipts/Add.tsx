@@ -82,123 +82,6 @@ function ReceiptEntry(props: PropsFromRedux) {
     });
   }
 
-  let chunkSize = 1;
-  interface state {
-    loading: boolean;
-    posX: any;
-    posY: any;
-    hoverX: any;
-    hoverY: any;
-    showBackDrop: boolean;
-    searchText: string;
-    entries: any;
-    totalRecords: number;
-    displayEntryDetails: any;
-    selectedEntries: any;
-    modalOpen: boolean;
-    typingTimeout: any;
-    selectedRow: any;
-    showDeleteModal: boolean;
-    showLogModal: boolean;
-    pageTotal: number;
-    total: number;
-    skip: number;
-    limit: number;
-    sortBy: string;
-  }
-
-
-  let inititalState = {
-    loading: false,
-    posX: null,
-    posY: null,
-    hoverX: null,
-    hoverY: null,
-    showBackDrop: false,
-    searchText: "",
-    entries: [],
-    totalRecords: 0,
-    displayEntryDetails: [],
-    selectedEntries: [],
-    modalOpen: false,
-    typingTimeout: 0,
-    selectedRow: undefined,
-    showDeleteModal: false,
-    showLogModal: false,
-    pageTotal: 0,
-    total: 0,
-    skip: 0,
-    limit: chunkSize,
-    sortBy: "dateAsc",
-  };
-
-
-  const [state, setState] = React.useState<state>(inititalState);
-  const [entryDetails, setEntryDetails] = useState({});
-
-
-  const getEntriesList = (forSearch: boolean, searchText = "") => {
-    const organisationId = (props as any).params?.organisationId;
-    const year = (props as any).currentYear;
-
-    let skip = state.skip;
-    let limit = state.limit;
-    setState((prevState) => ({
-      ...prevState,
-      loading: true,
-    }));
-    if (!organisationId) {
-      (props as any).onNotify(
-        "Could not load Organisation Details",
-        "",
-        "danger"
-      );
-      return;
-    }
-
-    if (currentYear === undefined) {
-      return;
-    }
-
-    agent.ReceiptEntry.delete(
-      organisationId,
-      (props as any).params?.id
-    )
-      .then((response: any) => {
-        console.log(response);
-        // setState((prevState) => ({
-        //   ...prevState,
-        //   loading: false,
-        //   displayEntryDetails: response.jounralEntries,
-        //   totalRecords: response.count,
-        //   entries: response.jounralEntries,
-        //   pageTotal: response.pageTotal,
-        //   total: response.total,
-        // }));
-      })
-      .catch((err: any) => {
-        setState((prevState) => ({
-          ...prevState,
-          loading: false,
-        }));
-
-        (props as any).onNotify(
-          "Could not load Organisation Details1",
-          err?.response?.data?.message || err?.message || err,
-          "danger"
-        );
-      });
-  };
-
-  const afterDelete = () => {
-    setState((prevState) => ({
-      ...prevState,
-      selectedEntries: [],
-    }));
-    navigate(-pageCount);
-  };
-
-
   // set pagetype on basis of url
   const [pageType, setPageType] = useState("");
   const currentYear = (props as any).currentYear;
@@ -209,7 +92,6 @@ function ReceiptEntry(props: PropsFromRedux) {
   useEffect(() => {
     setPageCount(pageCount + 1);
     console.log(pageCount);
-
 
     const pageURL = (props as any).location.pathname.split("/");
 
@@ -256,13 +138,11 @@ function ReceiptEntry(props: PropsFromRedux) {
         if (pageURL[4] === "edit" || pageURL[4] === "duplicate") {
           const organisationId = (props as any).params?.organisationId;
           console.log(organisationId);
-          
+
           agent.ReceiptEntry.getsingleentrydetails(
             organisationId,
             (props as any).params?.id
           ).then((data: any) => {
-            setEntryDetails(data.entryDetails)
-            
             setDate({
               date: convertDateToString(data.entryDetails.date),
               error: "",
@@ -292,17 +172,31 @@ function ReceiptEntry(props: PropsFromRedux) {
     0
   );
 
+  interface state {
+    loading: boolean;
+    showBackDrop: boolean;
+    selectedRow: any;
+    showDeleteModal: boolean;
+  }
+
+  let inititalState = {
+    loading: false,
+    showBackDrop: false,
+    selectedRow: undefined,
+    showDeleteModal: false,
+  };
+
+  const [state, setState] = React.useState<state>(inititalState);
 
   const openDeleteModal = (entry: any[]) => {
     setState((prevState) => ({
       ...prevState,
-      selectedRow: entry,
+      selectedRow: [{ _id: (props as any).params?.id }],
       showBackDrop: false,
     }));
 
     deleteModalSetOpen(true);
   };
-
 
   const deleteModalSetOpen = (open: boolean) => {
     setState((prevState) => ({
@@ -541,7 +435,8 @@ function ReceiptEntry(props: PropsFromRedux) {
               "success"
             );
             navigate(
-              `/${organisationId}/${(props as any).currentYear
+              `/${organisationId}/${
+                (props as any).currentYear
               }/receipts/duplicate/${response.entryId}`
             );
             focusOnDate();
@@ -610,7 +505,8 @@ function ReceiptEntry(props: PropsFromRedux) {
               "success"
             );
             navigate(
-              `/${organisationId}/${(props as any).currentYear
+              `/${organisationId}/${
+                (props as any).currentYear
               }/receipts/duplicate/${response.entryId}`
             );
             focusOnDate();
@@ -655,8 +551,10 @@ function ReceiptEntry(props: PropsFromRedux) {
         <DeleteModal
           type={"receipts"}
           state={state}
-          onLoad={getEntriesList}
-          onUnLoad={afterDelete}
+          onLoad={() => {}}
+          onUnLoad={() => {
+            navigate(-pageCount);
+          }}
           deleteModalSetOpen={deleteModalSetOpen}
         />
       )}
@@ -852,13 +750,12 @@ function ReceiptEntry(props: PropsFromRedux) {
                   <button
                     type="button"
                     className="inline-flex mx-4 items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-white bg-red-700 hover:bg-red-500 focus:outline-none"
-                    onClick={() => openDeleteModal([entryDetails])}
+                    onClick={() => openDeleteModal([])}
                   >
                     Delete
                   </button>
                 </div>
-              ) : null
-              }
+              ) : null}
 
               {pageType === "edit" ? (
                 <SaveButton
