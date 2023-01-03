@@ -93,7 +93,7 @@ function JournalEntry(props: PropsFromRedux) {
 
   useEffect(() => {
     setPageCount(pageCount + 1);
-    
+
     const pageURL = (props as any).location.pathname.split("/");
 
     if (pageURL[4] === "add") {
@@ -172,14 +172,14 @@ function JournalEntry(props: PropsFromRedux) {
         debitAmount:
           array[i].debitAmount > 0
             ? new Intl.NumberFormat("en-IN", {
-              minimumFractionDigits: 2,
-            }).format(array[i].debitAmount)
+                minimumFractionDigits: 2,
+              }).format(array[i].debitAmount)
             : "",
         creditAmount:
           array[i].creditAmount > 0
             ? new Intl.NumberFormat("en-IN", {
-              minimumFractionDigits: 2,
-            }).format(array[i].creditAmount)
+                minimumFractionDigits: 2,
+              }).format(array[i].creditAmount)
             : "",
         id: i + 1,
       });
@@ -457,6 +457,7 @@ function JournalEntry(props: PropsFromRedux) {
               "",
               "success"
             );
+            setId(id + 1);
             // navigate(`/${organisationId}/journal-entry/add`);
             focusOnDate();
           }
@@ -468,7 +469,8 @@ function JournalEntry(props: PropsFromRedux) {
               "success"
             );
             navigate(
-              `/${organisationId}/${(props as any).currentYear
+              `/${organisationId}/${
+                (props as any).currentYear
               }/journal-entry/duplicate/${response.entryId}`
             );
           }
@@ -530,7 +532,8 @@ function JournalEntry(props: PropsFromRedux) {
               "success"
             );
             navigate(
-              `/${organisationId}/${(props as any).currentYear
+              `/${organisationId}/${
+                (props as any).currentYear
               }/journal-entry/duplicate/${response.entryId}`
             );
             focusOnDate();
@@ -714,8 +717,7 @@ function JournalEntry(props: PropsFromRedux) {
                   Delete
                 </button>
               </div>
-            ) : null
-            }
+            ) : null}
             {pageType === "edit" ? (
               <SaveButton
                 type="update"

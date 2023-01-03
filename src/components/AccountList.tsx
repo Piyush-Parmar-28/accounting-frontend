@@ -42,8 +42,10 @@ type PropsFromRedux = ConnectedProps<typeof connector>;
 function AccountList(props: Props & PropsFromRedux) {
   const [query, setQuery] = useState("");
   const [selectedAccount, setSelectedAccount] = useState({});
-
+  console.log("query", query);
   let accounts = (props as any).accounts;
+
+  // this will make query blank as soon as account is selected
 
   // this will update account when a row is deleted
   useEffect(() => {
@@ -58,6 +60,7 @@ function AccountList(props: Props & PropsFromRedux) {
         setSelectedAccount(account);
       }
     }
+    setQuery("");
   }, [props.newAccount]);
 
   let filteredAccounts = [];
