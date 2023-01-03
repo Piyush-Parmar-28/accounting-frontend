@@ -24,6 +24,7 @@ import AmountBox from "../../components/AmountBox";
 import { convertDateToString } from "../../helpers/Convertdate";
 import { format } from "date-fns";
 import { string } from "prop-types";
+import DeleteModal from "../../components/DeleteModal";
 
 const tagManagerArgs = {
   dataLayer: {
@@ -59,7 +60,6 @@ type PropsFromRedux = ConnectedProps<typeof connector>;
 
 function ReceiptEntry(props: PropsFromRedux) {
   const navigate = useNavigate();
-
   // get no. of times user is on add/edit/duplicate page, so that we can determine how much to navigate back to go back to previous page which is not of this component
 
   const [pageCount, setPageCount] = useState(0);
@@ -81,6 +81,123 @@ function ReceiptEntry(props: PropsFromRedux) {
       id: i,
     });
   }
+
+  let chunkSize = 1;
+  interface state {
+    loading: boolean;
+    posX: any;
+    posY: any;
+    hoverX: any;
+    hoverY: any;
+    showBackDrop: boolean;
+    searchText: string;
+    entries: any;
+    totalRecords: number;
+    displayEntryDetails: any;
+    selectedEntries: any;
+    modalOpen: boolean;
+    typingTimeout: any;
+    selectedRow: any;
+    showDeleteModal: boolean;
+    showLogModal: boolean;
+    pageTotal: number;
+    total: number;
+    skip: number;
+    limit: number;
+    sortBy: string;
+  }
+
+
+  let inititalState = {
+    loading: false,
+    posX: null,
+    posY: null,
+    hoverX: null,
+    hoverY: null,
+    showBackDrop: false,
+    searchText: "",
+    entries: [],
+    totalRecords: 0,
+    displayEntryDetails: [],
+    selectedEntries: [],
+    modalOpen: false,
+    typingTimeout: 0,
+    selectedRow: undefined,
+    showDeleteModal: false,
+    showLogModal: false,
+    pageTotal: 0,
+    total: 0,
+    skip: 0,
+    limit: chunkSize,
+    sortBy: "dateAsc",
+  };
+
+
+  const [state, setState] = React.useState<state>(inititalState);
+  const [entryDetails, setEntryDetails] = useState({});
+
+
+  const getEntriesList = (forSearch: boolean, searchText = "") => {
+    const organisationId = (props as any).params?.organisationId;
+    const year = (props as any).currentYear;
+
+    let skip = state.skip;
+    let limit = state.limit;
+    setState((prevState) => ({
+      ...prevState,
+      loading: true,
+    }));
+    if (!organisationId) {
+      (props as any).onNotify(
+        "Could not load Organisation Details",
+        "",
+        "danger"
+      );
+      return;
+    }
+
+    if (currentYear === undefined) {
+      return;
+    }
+
+    agent.ReceiptEntry.delete(
+      organisationId,
+      (props as any).params?.id
+    )
+      .then((response: any) => {
+        console.log(response);
+        // setState((prevState) => ({
+        //   ...prevState,
+        //   loading: false,
+        //   displayEntryDetails: response.jounralEntries,
+        //   totalRecords: response.count,
+        //   entries: response.jounralEntries,
+        //   pageTotal: response.pageTotal,
+        //   total: response.total,
+        // }));
+      })
+      .catch((err: any) => {
+        setState((prevState) => ({
+          ...prevState,
+          loading: false,
+        }));
+
+        (props as any).onNotify(
+          "Could not load Organisation Details1",
+          err?.response?.data?.message || err?.message || err,
+          "danger"
+        );
+      });
+  };
+
+  const afterDelete = () => {
+    setState((prevState) => ({
+      ...prevState,
+      selectedEntries: [],
+    }));
+    navigate(-pageCount);
+  };
+
 
   // set pagetype on basis of url
   const [pageType, setPageType] = useState("");
@@ -138,11 +255,14 @@ function ReceiptEntry(props: PropsFromRedux) {
       ) {
         if (pageURL[4] === "edit" || pageURL[4] === "duplicate") {
           const organisationId = (props as any).params?.organisationId;
+          console.log(organisationId);
+          
           agent.ReceiptEntry.getsingleentrydetails(
             organisationId,
             (props as any).params?.id
           ).then((data: any) => {
-            console.log(data);
+            setEntryDetails(data.entryDetails)
+            
             setDate({
               date: convertDateToString(data.entryDetails.date),
               error: "",
@@ -171,6 +291,25 @@ function ReceiptEntry(props: PropsFromRedux) {
     ],
     0
   );
+
+
+  const openDeleteModal = (entry: any[]) => {
+    setState((prevState) => ({
+      ...prevState,
+      selectedRow: entry,
+      showBackDrop: false,
+    }));
+
+    deleteModalSetOpen(true);
+  };
+
+
+  const deleteModalSetOpen = (open: boolean) => {
+    setState((prevState) => ({
+      ...prevState,
+      showDeleteModal: open,
+    }));
+  };
 
   const changeArrayFormatToShowData = (array: any) => {
     let properFormatArray = [];
@@ -512,6 +651,15 @@ function ReceiptEntry(props: PropsFromRedux) {
 
   return (
     <Dashboard>
+      {state.showDeleteModal && (
+        <DeleteModal
+          type={"receipts"}
+          state={state}
+          onLoad={getEntriesList}
+          onUnLoad={afterDelete}
+          deleteModalSetOpen={deleteModalSetOpen}
+        />
+      )}
       <div className="bg-white pl-14 pt-8">
         <div>
           <h3 className="text-xl  font-medium leading-6 text-gray-900">
@@ -704,7 +852,7 @@ function ReceiptEntry(props: PropsFromRedux) {
                   <button
                     type="button"
                     className="inline-flex mx-4 items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-white bg-red-700 hover:bg-red-500 focus:outline-none"
-                    onClick={() => navigate(-1)}
+                    onClick={() => openDeleteModal([entryDetails])}
                   >
                     Delete
                   </button>

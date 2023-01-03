@@ -379,8 +379,7 @@ function EntriesList(props: PropsFromRedux) {
 
   const editEntryNavigateFunction = (entry: any) => {
     navigate(
-      `/${(props as any).params?.organisationId}/${
-        (props as any).currentYear
+      `/${(props as any).params?.organisationId}/${(props as any).currentYear
       }/journal-entry/edit/${entry._id}`
     );
   };
@@ -408,6 +407,7 @@ function EntriesList(props: PropsFromRedux) {
 
   const onEntryCheckBoxChange = (entry: any) => {
     const { selectedEntries } = state;
+    console.log(entry);
 
     const clientIndex = selectedEntries.findIndex(
       (c: any) => c._id === entry._id
@@ -477,8 +477,7 @@ function EntriesList(props: PropsFromRedux) {
               className="relative inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none"
               onClick={() =>
                 navigate(
-                  `/${(props as any).params.organisationId}/${
-                    (props as any).currentYear
+                  `/${(props as any).params.organisationId}/${(props as any).currentYear
                   }/journal-entry/add`
                 )
               }
@@ -617,7 +616,7 @@ function EntriesList(props: PropsFromRedux) {
                                   checked={
                                     state.displayEntryDetails.length > 0 &&
                                     state.displayEntryDetails.length ===
-                                      state.selectedEntries.length
+                                    state.selectedEntries.length
                                   }
                                   onChange={onSelectAllEntry}
                                 />
@@ -664,6 +663,7 @@ function EntriesList(props: PropsFromRedux) {
                           <tbody className="bg-white">
                             {state.displayEntryDetails?.map(
                               (entry: any, index: any) => (
+
                                 <tr
                                   key={entry._id}
                                   className={
@@ -759,14 +759,11 @@ function EntriesList(props: PropsFromRedux) {
                                                   className="flex items-center w-full p-1 px-4 py-2 text-sm hover:bg-gray-100 text-gray-900"
                                                   onClick={() =>
                                                     navigate(
-                                                      `/${
-                                                        (props as any).params
-                                                          .organisationId
-                                                      }/${
-                                                        (props as any)
-                                                          .currentYear
-                                                      }/journal-entry/duplicate/${
-                                                        entry._id
+                                                      `/${(props as any).params
+                                                        .organisationId
+                                                      }/${(props as any)
+                                                        .currentYear
+                                                      }/journal-entry/duplicate/${entry._id
                                                       }`
                                                     )
                                                   }
@@ -782,8 +779,10 @@ function EntriesList(props: PropsFromRedux) {
                                               <Menu.Item>
                                                 <button
                                                   className="flex items-center w-full p-1 px-4 py-2 text-sm hover:bg-gray-100 text-gray-900"
-                                                  onClick={() =>
-                                                    openDeleteModal([entry])
+                                                  onClick={() => {
+                                                    console.log([entry]);
+                                                    openDeleteModal([entry]);
+                                                  }
                                                   }
                                                 >
                                                   <Icon
@@ -917,8 +916,7 @@ function EntriesList(props: PropsFromRedux) {
                   className="relative inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none"
                   onClick={() => {
                     navigate(
-                      `/${(props as any).params.organisationId}/${
-                        (props as any).currentYear
+                      `/${(props as any).params.organisationId}/${(props as any).currentYear
                       }/journal-entry/add`
                     );
                   }}
