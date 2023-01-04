@@ -1,13 +1,20 @@
-import React from 'react'
+import React, { useState } from 'react'
 import Dashboard from '../../components/Dashboard';
 
 const BalanceSheet = () => {
+    const [checked, setChecked] = useState(true);
     return (
         <Dashboard>
             <div className='flex flex-col'>
                 <h1 className='font-bold text-3xl'>Balance Sheet</h1>
                 <span className='font-bold'>as on 31-03-2023</span>
-                <button className='border-2 border-black px-1 w-24 my-3'>Collapse All</button>
+                <div className='flex items-center my-4'>
+                    <button className='border-2 border-black px-1 w-24 mr-2'>Collapse All</button>
+                    <div className="check-container flex items-center">
+                        <input type="checkbox" id='checkbox' className="checkbox mr-1" checked={checked} onChange={() => setChecked(!checked)} />
+                        <label htmlFor="checkbox">Hide Zero Values</label>
+                    </div>
+                </div>
             </div>
             <table className="table-auto border-collapse border-black">
                 <thead>
