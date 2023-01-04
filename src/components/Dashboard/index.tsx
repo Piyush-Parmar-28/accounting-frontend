@@ -60,6 +60,18 @@ const menuItems = (organisationId: string, year: string) => {
       iconName: "outline/settings",
       route: `/${organisationId}/${year}/receipts/list`,
     },
+    {
+      name: "Reports",
+      iconName: "outline/settings",
+      route: "/reports",
+      children: [
+        {
+          name: "Balance Sheet",
+          iconName: "outline/document-add",
+          route: `/${organisationId}/${year}/reports/list`,
+        },
+      ],
+    },
   ];
 };
 
@@ -647,7 +659,7 @@ class Dashboard extends React.Component<DashboardProps, PropsFromRedux> {
                               key={menuItem.name}
                               className={
                                 (this.props as any).location.pathname ===
-                                menuItem.route
+                                  menuItem.route
                                   ? "bg-gray-900 text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md"
                                   : "text-gray-300 hover:bg-gray-700 hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md"
                               }
@@ -783,7 +795,7 @@ class Dashboard extends React.Component<DashboardProps, PropsFromRedux> {
                                                                   .props as any
                                                               ).location
                                                                 .pathname ===
-                                                              subSubItem.route
+                                                                subSubItem.route
                                                                 ? "bg-gray-900 text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md"
                                                                 : "text-gray-300 hover:bg-gray-700 hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md"
                                                             }
@@ -849,7 +861,7 @@ class Dashboard extends React.Component<DashboardProps, PropsFromRedux> {
                           key={menuItem.name}
                           className={
                             (this.props as any).location.pathname ===
-                            menuItem.route
+                              menuItem.route
                               ? "bg-gray-900 text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md"
                               : "text-gray-300 hover:bg-gray-700 hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md"
                           }
@@ -987,7 +999,7 @@ class Dashboard extends React.Component<DashboardProps, PropsFromRedux> {
                                                           (this.props as any)
                                                             .location
                                                             .pathname ===
-                                                          subSubItem.route
+                                                            subSubItem.route
                                                             ? "bg-gray-900 text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md"
                                                             : "text-gray-300 hover:bg-gray-700 hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md"
                                                         }

@@ -26,6 +26,8 @@ import Users from "./pages/Users/Index";
 import AddUser from "./pages/Users/Add";
 import EditUser from "./pages/Users/Edit";
 
+
+import BalanceSheet from './pages/Reports/BalanceSheet';
 // Login Import
 import Login from "./pages/Login";
 // import Settings from "./pages/Settings/Index";
@@ -295,6 +297,16 @@ class App extends React.Component<PropsFromRedux> {
                 element={
                   <this.PrivateRoute>
                     <ListJournalEntry />
+                  </this.PrivateRoute>
+                }
+              />
+
+              {/* List Journal Entry */}
+              <Route
+                path="/:organisationId/:year/reports/list/"
+                element={
+                  <this.PrivateRoute>
+                    <BalanceSheet />
                   </this.PrivateRoute>
                 }
               />
