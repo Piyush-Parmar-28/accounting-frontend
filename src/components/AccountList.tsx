@@ -84,8 +84,8 @@ function AccountList(props: Props & PropsFromRedux) {
       query === ""
         ? filteredByNature
         : filteredByNature.filter((account: any) => {
-            return account.name.toLowerCase().includes(query.toLowerCase());
-          });
+          return account.name.toLowerCase().includes(query.toLowerCase());
+        });
   }
 
   const clearFilter = () => {
