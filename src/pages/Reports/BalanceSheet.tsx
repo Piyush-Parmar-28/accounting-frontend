@@ -743,17 +743,17 @@ function EntriesList(props: PropsFromRedux) {
                               <td className="w-1/12 whitespace-nowrap py-4 pl-4 pr-3 text-sm text-black-900 sm:pl-6">xxx</td>
                             </tr>
                             <tr>
-                              <td className="w-1/12 whitespace-nowrap py-4 pl-4 pr-3 text-sm text-black-900 sm:pl-9">Secured Loans</td>
+                              <td className="w-1/12 whitespace-nowrap py-4 pl-4 pr-3 text-sm text-black-900 sm:pl-14">Secured Loans</td>
                               <td className="w-1/12 whitespace-nowrap py-4 pl-4 pr-3 text-sm text-black-900 sm:pl-6"></td>
                               <td className="w-1/12 whitespace-nowrap py-4 pl-4 pr-3 text-sm text-black-900 sm:pl-6">xxx</td>
                             </tr>
                             <tr>
-                              <td className="w-1/12 whitespace-nowrap py-4 pl-4 pr-3 text-sm text-black-900 sm:pl-9">Unsecured Loans</td>
+                              <td className="w-1/12 whitespace-nowrap py-4 pl-4 pr-3 text-sm text-black-900 sm:pl-14">Unsecured Loans</td>
                               <td className="w-1/12 whitespace-nowrap py-4 pl-4 pr-3 text-sm text-black-900 sm:pl-6"></td>
                               <td className="w-1/12 whitespace-nowrap py-4 pl-4 pr-3 text-sm text-black-900 sm:pl-6">xxx</td>
                             </tr>
                             <tr>
-                              <td className="w-1/12 whitespace-nowrap py-4 pl-4 pr-3 text-sm text-black-900 sm:pl-9">Bank OD/CC</td>
+                              <td className="w-1/12 whitespace-nowrap py-4 pl-4 pr-3 text-sm text-black-900 sm:pl-14">Bank OD/CC</td>
                               <td className="w-1/12 whitespace-nowrap py-4 pl-4 pr-3 text-sm text-black-900 sm:pl-6"></td>
                               <td className="w-1/12 whitespace-nowrap py-4 pl-4 pr-3 text-sm text-black-900 sm:pl-6">xxx</td>
                             </tr>
@@ -763,20 +763,20 @@ function EntriesList(props: PropsFromRedux) {
                               <td className="w-1/12 whitespace-nowrap py-4 pl-4 pr-3 text-sm text-black-900 sm:pl-6">xxx</td>
                             </tr>
                             <tr>
-                              <td className="w-1/12 whitespace-nowrap py-4 pl-4 pr-3 text-sm text-black-900 sm:pl-9">Creditors
+                              <td className="w-1/12 whitespace-nowrap py-4 pl-4 pr-3 text-sm text-black-900 sm:pl-14">Creditors
                               </td>
                               <td className="w-1/12 whitespace-nowrap py-4 pl-4 pr-3 text-sm text-black-900 sm:pl-6"></td>
                               <td className="w-1/12 whitespace-nowrap py-4 pl-4 pr-3 text-sm text-black-900 sm:pl-6">xxx</td>
                             </tr>
                             <tr>
-                              <td className="w-1/12 whitespace-nowrap py-4 pl-4 pr-3 text-sm text-black-900 sm:pl-9">
+                              <td className="w-1/12 whitespace-nowrap py-4 pl-4 pr-3 text-sm text-black-900 sm:pl-14">
                                 Duties and Taxes
                               </td>
                               <td className="w-1/12 whitespace-nowrap py-4 pl-4 pr-3 text-sm text-black-900 sm:pl-6"></td>
                               <td className="w-1/12 whitespace-nowrap py-4 pl-4 pr-3 text-sm text-black-900 sm:pl-6">xxx</td>
                             </tr>
                             <tr>
-                              <td className="w-1/12 whitespace-nowrap py-4 pl-4 pr-3 text-sm text-black-900 sm:pl-9">
+                              <td className="w-1/12 whitespace-nowrap py-4 pl-4 pr-3 text-sm text-black-900 sm:pl-14">
                                 ... Other Current Liabilities
                               </td>
                               <td className="w-1/12 whitespace-nowrap py-4 pl-4 pr-3 text-sm text-black-900 sm:pl-6"></td>
@@ -797,14 +797,14 @@ function EntriesList(props: PropsFromRedux) {
                               <td className="w-1/12 whitespace-nowrap py-4 pl-4 pr-3 text-sm text-black-900 sm:pl-6">xxx</td>
                             </tr>
                             <tr>
-                              <td className="w-1/12 whitespace-nowrap py-4 pl-4 pr-3 text-sm text-black-900 sm:pl-9">
+                              <td className="w-1/12 whitespace-nowrap py-4 pl-4 pr-3 text-sm text-black-900 sm:pl-14">
                                 Opening Balance
                               </td>
                               <td className="w-1/12 whitespace-nowrap py-4 pl-4 pr-3 text-sm text-black-900 sm:pl-6"></td>
                               <td className="w-1/12 whitespace-nowrap py-4 pl-4 pr-3 text-sm text-black-900 sm:pl-6">xxx</td>
                             </tr>
                             <tr>
-                              <td className="w-1/12 whitespace-nowrap py-4 pl-4 pr-3 text-sm text-black-900 sm:pl-9">
+                              <td className="w-1/12 whitespace-nowrap py-4 pl-4 pr-3 text-sm text-black-900 sm:pl-14">
                                 Current Period
                               </td>
                               <td className="w-1/12 whitespace-nowrap py-4 pl-4 pr-3 text-sm text-black-900 sm:pl-6"></td>
@@ -974,41 +974,32 @@ function EntriesList(props: PropsFromRedux) {
                               <td className="w-1/12 whitespace-nowrap py-4 pl-4 pr-3 text-sm text-black-900 sm:pl-6">xxx</td>
                             </tr>
                             <tr>
-                              <td className="w-1/12 whitespace-nowrap py-4 pl-4 pr-3 text-sm text-black-900 sm:pl-9">Secured Loans</td>
-                              <td className="w-1/12 whitespace-nowrap py-4 pl-4 pr-3 text-sm text-black-900 sm:pl-6"></td>
-                              <td className="w-1/12 whitespace-nowrap py-4 pl-4 pr-3 text-sm text-black-900 sm:pl-6">xxx</td>
-                            </tr>
-                            <tr>
-                              <td className="w-1/12 whitespace-nowrap py-4 pl-4 pr-3 text-sm text-black-900 sm:pl-9">Unsecured Loans</td>
-                              <td className="w-1/12 whitespace-nowrap py-4 pl-4 pr-3 text-sm text-black-900 sm:pl-6"></td>
-                              <td className="w-1/12 whitespace-nowrap py-4 pl-4 pr-3 text-sm text-black-900 sm:pl-6">xxx</td>
-                            </tr>
-                            <tr>
-                              <td className="w-1/12 whitespace-nowrap py-4 pl-4 pr-3 text-sm text-black-900 sm:pl-9">Bank OD/CC</td>
-                              <td className="w-1/12 whitespace-nowrap py-4 pl-4 pr-3 text-sm text-black-900 sm:pl-6"></td>
-                              <td className="w-1/12 whitespace-nowrap py-4 pl-4 pr-3 text-sm text-black-900 sm:pl-6">xxx</td>
-                            </tr>
-                            <tr>
-                              <td className="w-1/12 whitespace-nowrap py-4 pl-4 pr-3 text-sm text-black-900 sm:pl-9">Current Liabilities</td>
-                              <td className="w-1/12 whitespace-nowrap py-4 pl-4 pr-3 text-sm text-black-900 sm:pl-6"></td>
-                              <td className="w-1/12 whitespace-nowrap py-4 pl-4 pr-3 text-sm text-black-900 sm:pl-6">xxx</td>
-                            </tr>
-                            <tr>
-                              <td className="w-1/12 whitespace-nowrap py-4 pl-4 pr-3 text-sm text-black-900 sm:pl-9">Creditors
+                              <td className="w-1/12 whitespace-nowrap py-4 pl-4 pr-3 text-sm text-black-900 sm:pl-14">Cash
+
                               </td>
                               <td className="w-1/12 whitespace-nowrap py-4 pl-4 pr-3 text-sm text-black-900 sm:pl-6"></td>
                               <td className="w-1/12 whitespace-nowrap py-4 pl-4 pr-3 text-sm text-black-900 sm:pl-6">xxx</td>
                             </tr>
                             <tr>
-                              <td className="w-1/12 whitespace-nowrap py-4 pl-4 pr-3 text-sm text-black-900 sm:pl-9">
-                                Duties and Taxes
+                              <td className="w-1/12 whitespace-nowrap py-4 pl-4 pr-3 text-sm text-black-900 sm:pl-14">Bank
                               </td>
                               <td className="w-1/12 whitespace-nowrap py-4 pl-4 pr-3 text-sm text-black-900 sm:pl-6"></td>
                               <td className="w-1/12 whitespace-nowrap py-4 pl-4 pr-3 text-sm text-black-900 sm:pl-6">xxx</td>
                             </tr>
                             <tr>
-                              <td className="w-1/12 whitespace-nowrap py-4 pl-4 pr-3 text-sm text-black-900 sm:pl-9">
-                                ... Other Current Liabilities
+                              <td className="w-1/12 whitespace-nowrap py-4 pl-4 pr-3 text-sm text-black-900 sm:pl-14">Debtors
+                              </td>
+                              <td className="w-1/12 whitespace-nowrap py-4 pl-4 pr-3 text-sm text-black-900 sm:pl-6"></td>
+                              <td className="w-1/12 whitespace-nowrap py-4 pl-4 pr-3 text-sm text-black-900 sm:pl-6">xxx</td>
+                            </tr>
+                            <tr>
+                              <td className="w-1/12 whitespace-nowrap py-4 pl-4 pr-3 text-sm text-black-900 sm:pl-14">Closing Stock
+                              </td>
+                              <td className="w-1/12 whitespace-nowrap py-4 pl-4 pr-3 text-sm text-black-900 sm:pl-6"></td>
+                              <td className="w-1/12 whitespace-nowrap py-4 pl-4 pr-3 text-sm text-black-900 sm:pl-6">xxx</td>
+                            </tr>
+                            <tr>
+                              <td className="w-1/12 whitespace-nowrap py-4 pl-4 pr-3 text-sm text-black-900 sm:pl-14">... Other Current Assets
                               </td>
                               <td className="w-1/12 whitespace-nowrap py-4 pl-4 pr-3 text-sm text-black-900 sm:pl-6"></td>
                               <td className="w-1/12 whitespace-nowrap py-4 pl-4 pr-3 text-sm text-black-900 sm:pl-6">xxx</td>
