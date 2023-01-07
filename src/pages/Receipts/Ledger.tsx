@@ -153,42 +153,48 @@ function EntriesList(props: PropsFromRedux) {
       if (currentYear === undefined) {
          return;
       }
-      console.log(searchText);
+      // console.log(searchText);
 
       console.log("Props are: ");
       console.log(props);
       
-      
-      // const accountId = (props as any).state.selectedRow._id;
+      const orgId= "63b7aaa3f5b67bf0a9c8beff";
+      const accountId = "63b7ab7af5b67bf0a9c8bfdd";
 
-      // agent.Ledger.getLedgerDetails(
-      //    organisationId,
-      //    year,
-      //    accountId
-      // )
-      //    .then((response: any) => {
-      //       setState((prevState) => ({
-      //          ...prevState,
-      //          loading: false,
-      //          displayEntryDetails: response.receiptEntries,
-      //          totalRecords: response.count,
-      //          entries: response.receiptEntries,
-      //          pageTotal: response.pageTotal,
-      //          total: response.total,
-      //       }));
-      //    })
-      //    .catch((err: any) => {
-      //       setState((prevState) => ({
-      //          ...prevState,
-      //          loading: false,
-      //       }));
+      agent.Ledger.getLedgerDetails(
+         orgId,
+         year,
+         accountId,
+         skip,
+         limit
+      )
+         .then((response: any) => {
+            console.log("The response is: ");
+            console.log(response);
+            
+            
+            setState((prevState) => ({
+               ...prevState,
+               loading: false,
+               displayEntryDetails: response.receiptEntries,
+               totalRecords: response.count,
+               entries: response.receiptEntries,
+               pageTotal: response.pageTotal,
+               total: response.total,
+            }));
+         })
+         .catch((err: any) => {
+            setState((prevState) => ({
+               ...prevState,
+               loading: false,
+            }));
 
-      //       (props as any).onNotify(
-      //          "Could not load Organisation Details1",
-      //          err?.response?.data?.message || err?.message || err,
-      //          "danger"
-      //       );
-      //    });
+            (props as any).onNotify(
+               "Could not load Organisation Details1",
+               err?.response?.data?.message || err?.message || err,
+               "danger"
+            );
+         });
    };
 
    const downloadEntriesList = () => {
@@ -357,7 +363,7 @@ function EntriesList(props: PropsFromRedux) {
    };
 
    const openDeleteModal = (entry: any[]) => {
-      console.log(entry);
+      // console.log(entry);
 
       setState((prevState) => {
          return {
@@ -460,7 +466,7 @@ function EntriesList(props: PropsFromRedux) {
          });
       }
    };
-   console.log(state);
+   // console.log(state);
 
 
    return (

@@ -829,21 +829,6 @@ function EntriesList(props: PropsFromRedux) {
                                                   <span>View Log</span>
                                                 </button>
                                               </Menu.Item>
-
-                                              <Menu.Item>
-                                                <button
-                                                  className="flex items-center w-full p-1 px-4 py-2 text-sm hover:bg-gray-100 text-gray-900"
-                                                  onClick={() =>
-                                                    openLedger(entry)
-                                                  }
-                                                >
-                                                  <Icon
-                                                    name="outline/document-report"
-                                                    className="h-5 w-5 mr-2"
-                                                  />
-                                                  <span>View Ledger</span>
-                                                </button>
-                                              </Menu.Item>
                                             </div>
                                           </Menu.Items>
                                         </div>

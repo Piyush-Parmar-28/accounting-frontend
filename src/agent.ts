@@ -438,9 +438,10 @@ const ReceiptEntry = {
 };
 
 const Ledger = {
-  getLedgerDetails: (organisationId: string, year: string, accountId: string) =>
+  getLedgerDetails: (orgID: string, year: string, accountId: string, skip: number,
+    limit: number) =>
     requests.get(
-      `/account/accountslog?organisationId=${organisationId}&accountId=${accountId}`
+      `/ledger/getLedger?organisationId=${orgID}&year=${year}&accountId=${accountId}&skip=${skip}&limit=${limit}`
     )
 };
 

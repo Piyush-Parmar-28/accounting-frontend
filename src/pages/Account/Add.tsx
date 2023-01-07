@@ -42,7 +42,6 @@ type Props = {
 };
 
 const connector = connect(mapStateToProps, mapDispatchToProps);
-
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
 function AddAccount(props: Props & PropsFromRedux) {
@@ -569,7 +568,7 @@ function AddAccount(props: Props & PropsFromRedux) {
                                               type="radio"
                                               checked={
                                                 state.openingBalanceType ===
-                                                "dr"
+                                                  "dr"
                                                   ? true
                                                   : false
                                               }
@@ -590,7 +589,7 @@ function AddAccount(props: Props & PropsFromRedux) {
                                               type="radio"
                                               checked={
                                                 state.openingBalanceType ===
-                                                "cr"
+                                                  "cr"
                                                   ? true
                                                   : false
                                               }
@@ -619,7 +618,7 @@ function AddAccount(props: Props & PropsFromRedux) {
 
                         {/* if accountnature is debtors or creditors */}
                         {state.accountNature === "Debtors" ||
-                        state.accountNature === "Creditors" ? (
+                          state.accountNature === "Creditors" ? (
                           <div>
                             {/* gstin box */}
                             <div className="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:border-gray-200">
@@ -840,7 +839,7 @@ function AddAccount(props: Props & PropsFromRedux) {
                         {/* if account is direct/indirect expense */}
 
                         {state.accountNature === "Direct Expense" ||
-                        state.accountNature === "Indirect Expense" ? (
+                          state.accountNature === "Indirect Expense" ? (
                           <div className="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:border-gray-200 pb-32">
                             <label
                               htmlFor="first-name"
@@ -858,7 +857,7 @@ function AddAccount(props: Props & PropsFromRedux) {
                         ) : null}
                       </div>
                     </div>
-                    <div className="mt-5 sm:mt-4 sm:flex sm:justify-end py-4">
+                    <div className="mt-5 sm:mt-4 sm:flex sm:justify-center py-4">
                       <button
                         type="button"
                         className="w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm py-2  text-base bg-white font-medium text-gray-700 hover:bg-gray-50 focus:outline-none sm:w-32 sm:text-sm"
@@ -903,6 +902,15 @@ function AddAccount(props: Props & PropsFromRedux) {
                           <span className="w-full"></span>
                         </button>
                       )}
+
+                      {/* <Link to="/:organisationId/:year/receipts/list"> */}
+                        <button
+                          type="button"
+                          className="mt-3 sm:ml-4 w-full inline-flex items-center justify-center rounded-md border border-transparent border-gray-300 shadow-sm py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none sm:mt-0 sm:w-32 sm:text-sm"
+                          >
+                          Open Ledger
+                        </button>
+                      {/* </Link> */}
                     </div>
                   </div>
                 </form>
