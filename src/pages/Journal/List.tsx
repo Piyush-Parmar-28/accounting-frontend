@@ -792,6 +792,7 @@ function EntriesList(props: PropsFromRedux) {
                                                   <span>Delete</span>
                                                 </button>
                                               </Menu.Item>
+
                                               <Menu.Item>
                                                 <button
                                                   className="flex items-center w-full p-1 px-4 py-2 text-sm hover:bg-gray-100 text-gray-900"

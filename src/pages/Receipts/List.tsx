@@ -64,7 +64,7 @@ type PropsFromRedux = ConnectedProps<typeof connector>;
 function EntriesList(props: PropsFromRedux) {
   const navigate = useNavigate();
   const [pageType, setPageType] = React.useState("");
-
+  
   const pageURL = (props as any).location.pathname.split("/");
   useEffect(() => {
     if (pageURL[2] === "journal-entry") {
@@ -460,6 +460,15 @@ function EntriesList(props: PropsFromRedux) {
   };
   console.log(state);
     
+  const openLedger = (account: any) => {
+    setState((prevState) => ({
+      ...prevState,
+      selectedRow: account,
+      showBackDrop: false,
+    }));
+
+    logModalSetOpen(true);
+  };
 
   return (
     <Dashboard>
@@ -805,6 +814,7 @@ function EntriesList(props: PropsFromRedux) {
                                                   <span>Delete</span>
                                                 </button>
                                               </Menu.Item>
+
                                               <Menu.Item>
                                                 <button
                                                   className="flex items-center w-full p-1 px-4 py-2 text-sm hover:bg-gray-100 text-gray-900"
@@ -817,6 +827,21 @@ function EntriesList(props: PropsFromRedux) {
                                                     className="h-5 w-5 mr-2"
                                                   />
                                                   <span>View Log</span>
+                                                </button>
+                                              </Menu.Item>
+
+                                              <Menu.Item>
+                                                <button
+                                                  className="flex items-center w-full p-1 px-4 py-2 text-sm hover:bg-gray-100 text-gray-900"
+                                                  onClick={() =>
+                                                    openLedger(entry)
+                                                  }
+                                                >
+                                                  <Icon
+                                                    name="outline/document-report"
+                                                    className="h-5 w-5 mr-2"
+                                                  />
+                                                  <span>View Ledger</span>
                                                 </button>
                                               </Menu.Item>
                                             </div>
